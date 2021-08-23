@@ -16,7 +16,7 @@ https://blog.csdn.net/zhangcongyi420/article/details/89597995
 
 # 2 xml 映射⽂件中常用标签？
 注：这道题是京东⾯试官⾯试我时问的。
-答：除了常⻅的 select|insert|updae|delete 标签之外还有很多其他的标签， <resultMap> 、 <parameterMap> 、 <sql> 、 <include> 、 <selectKey> ，加上动态 sql 的 9个标签， trim|where|set|foreach|if|choose|when|otherwise|bind 等，其中为 sql ⽚段标签，通过<include> 标签引⼊ sql ⽚段， <selectKey> 为不⽀持⾃增的主键⽣成策略标签。
+答：除了常⻅的 select|insert|updae|delete 标签之外还有很多其他的标签， resultMap、 parameterMap 、 sql 、 include 、 selectKey ，加上动态 sql 的 9个标签， trim|where|set|foreach|if|choose|when|otherwise|bind 等，其中为 sql ⽚段标签，通过include 标签引⼊ sql ⽚段， selectKey 为不⽀持⾃增的主键⽣成策略标签。
 
 # 3 通常⼀个 xml 映射⽂件都会写⼀个 Dao 接⼝与之对应，这个 Dao 接⼝的⼯作原理是什么？ Dao 接⼝⾥的⽅法，参数不同时，⽅法能重载吗？
 注：这道题也是京东⾯试官⾯试我时问的。
@@ -24,7 +24,7 @@ https://blog.csdn.net/zhangcongyi420/article/details/89597995
 的值，接⼝的⽅法名，就是映射⽂件中 MappedStatement 的 id 值，接⼝⽅法内的参数，就是传递
 给 sql 的参数。 Mapper 接⼝是没有实现类的，当调⽤接⼝⽅法时，接⼝全限名+⽅法名拼接字符
 串作为 key 值，可唯⼀定位⼀个 MappedStatement ，举例： com.mybatis3.mappers.StudentDao.findStudentById ，可以唯⼀找到 namespace
-为 com.mybatis3.mappers.StudentDao 下⾯ id = findStudentById 的 MappedStatement 。在 Mybatis中，每⼀个 <select> 、 <insert> 、 <update> 、 <delete> 标签，都会被解析为⼀
+为 com.mybatis3.mappers.StudentDao 下⾯ id = findStudentById 的 MappedStatement 。在 Mybatis中，每⼀个 selec> 、 inser> 、update 、 delete 标签，都会被解析为⼀
 个 MappedStatement 对象。Dao 接⼝⾥的⽅法，是不能重载的，因为是全限名+⽅法名的保存和寻找策略。Dao 接⼝的⼯作原理是 JDK 动态代理， Mybatis 运⾏时会使⽤ JDK 动态代理为 Dao 接⼝⽣成代理 proxy 对象，代理对象 proxy 会拦截接⼝⽅法，转⽽执⾏ MappedStatement 所代表的 sql，然后将 sql 执⾏结果返回。 
 
 # 4 Mybatis 是如何进⾏分⻚的？分⻚插件的原理是什么？
@@ -50,7 +50,7 @@ https://blog.csdn.net/zhangcongyi420/article/details/89597995
 
 # 8 Mybatis 是如何将 sql 执⾏结果封装为⽬标对象并返回的？都有哪些映射形式？
 注：我出的。
-答：第⼀种是使⽤ <resultMap> 标签，逐⼀定义列名和对象属性名之间的映射关系。第⼆种是使
+答：第⼀种是使⽤ resultMap 标签，逐⼀定义列名和对象属性名之间的映射关系。第⼆种是使
 ⽤ sql 列的别名功能，将列别名书写为对象属性名，⽐如 T_NAME AS NAME，对象属性名⼀般
 是 name，⼩写，但是列名不区分⼤⼩写， Mybatis 会忽略列名⼤⼩写，智能找到与之对应对象
 属性名，你甚⾄可以写成 T_NAME AS NaMe， Mybatis ⼀样可以正常⼯作。
@@ -65,7 +65,7 @@ https://blog.csdn.net/zhangcongyi420/article/details/89597995
 关联对象查询，有两种实现⽅式，⼀种是单独发送⼀个 sql 去查询关联对象，赋给主对象，然后
 返回主对象。另⼀种是使⽤嵌套查询，嵌套查询的含义为使⽤ join 查询，⼀部分列是 A 对象的属
 性值，另外⼀部分列是关联对象 B 的属性值，好处是只发⼀个 sql 查询，就可以把主对象和其关
-联对象查出来。那么问题来了， join 查询出来 100 条记录，如何确定主对象是 5 个，⽽不是 100 个？其去重复的原理是 <resultMap> 标签内的 <id> ⼦标签，指定了唯⼀确定⼀条记录的 id 列， Mybatis 根据列值来完成 100 条记录的去重复功能， <id> 可以有多个，代表了联合主键的语意。
+联对象查出来。那么问题来了， join 查询出来 100 条记录，如何确定主对象是 5 个，⽽不是 100 个？其去重复的原理是 resultMap 标签内的 id ⼦标签，指定了唯⼀确定⼀条记录的 id 列， Mybatis 根据列值来完成 100 条记录的去重复功能，id 可以有多个，代表了联合主键的语意。
 同样主对象的关联对象，也是根据这个原理去重复的，尽管⼀般情况下，只有主对象会有重复记
 录，关联对象⼀般不会重复。举例：下⾯ join 查询出来 6 条记录，⼀、⼆列是 Teacher 对象列，第三列为 Student 对象列，Mybatis 去重复处理后，结果为 1 个⽼师 6 个学⽣，⽽不是 6 个⽼师 6 个学⽣。
 t_id t_name s_id
@@ -121,9 +121,9 @@ sql 问号占位符参数和获取列查询结果。
 # 17 简述 Mybatis 的 Xml 映射⽂件和 Mybatis 内部数据结构之间的映射关系？
 注：我出的
 答： Mybatis 将所有 Xml 配置信息都封装到 All-In-One 重量级对象 Configuration 内部。在 Xml
-映射⽂件中， <parameterMap> 标签会被解析为 ParameterMap 对象，其每个⼦元素会被解析为
-ParameterMapping 对象。 <resultMap> 标签会被解析为 ResultMap 对象，其每个⼦元素会被解
-析为 ResultMapping 对象。每⼀个 <select> <insert> <update> <delete> 标签均会被解析为
+映射⽂件中， parameterMap 标签会被解析为 ParameterMap 对象，其每个⼦元素会被解析为
+ParameterMapping 对象。resultMap 标签会被解析为 ResultMap 对象，其每个⼦元素会被解
+析为 ResultMapping 对象。每⼀个 select insert update delete 标签均会被解析为
 MappedStatement 对象，标签内的 sql 会被解析为 BoundSql 对象。
 
 # 18 为什么说 Mybatis 是半⾃动 ORM 映射⼯具？它与全⾃动的区别在哪⾥？
@@ -131,8 +131,6 @@ MappedStatement 对象，标签内的 sql 会被解析为 BoundSql 对象。
 答： Hibernate 属于全⾃动 ORM 映射⼯具，使⽤ Hibernate 查询关联对象或者关联集合对象时，
 可以根据对象关系模型直接获取，所以它是全⾃动的。⽽ Mybatis 在查询关联对象或关联集合对
 象时，需要⼿动编写 sql 来完成，所以，称之为半⾃动 ORM 映射⼯具。
-
-
 
 # 19 什么是ORM？ORM原理
  答：对象关系映射（Object-Relational Mapping，简称ORM）是一种为了解决程序的面向对象模型与数据库的关系模型互不匹配问题的技术；简单的说，ORM是通过使用描述对象和数据库之间映射的元数据（在Java中可以用XML或者是注解），将程序中的对象自动持久化到关系数据库中或者将关系数据库表中的行转换成Java对象，其本质上就是将数据从一种形式转换到另外一种形式。
@@ -145,8 +143,6 @@ MappedStatement 对象，标签内的 sql 会被解析为 BoundSql 对象。
 \- 资源管理和调度的分离，在数据访问层实现统一的资源调度（如缓存机制）。
 \- 数据抽象，提供更面向对象的数据操作。
 持久层框架有：- Hibernate – MyBatis
-
-
 
 # 21  什么是MyBatis的接口绑定？有哪些实现方式？
 
