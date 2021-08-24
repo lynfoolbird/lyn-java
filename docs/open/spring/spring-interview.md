@@ -1132,7 +1132,17 @@ POST请求乱码问题：
 ## 2.18 怎么把ModelMap里面的数据放入Session里面？
 可以在类上面加上@SessionAttributes注解,里面包含的字符串就是要放入session里面的key。
 
-## 2.19 Spring MVC拦截器如何使用？拦截器过滤器AOP区别及执行顺序？
+## 2.19 过滤器拦截器AOP区别及执行顺序？
+https://www.toutiao.com/i6727212676704895499/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1629302424&app=news_article&utm_source=weixin&utm_medium=toutiao_android&use_new_style=1&req_id=202108190000230102120770460C1EF4A7&share_token=5026fe5f-af84-4068-b8c7-2f297265716c&group_id=6727212676704895499
+
+![img](images/spring-filter-interceptor-aop-bijiao.png)
+
+过滤器、拦截器、切面，印象上都**能够起到截断拦截的作用**，应该如何选择？
+**Filter过滤器**
+过滤器可以**拦截到方法的请求和响应**(ServletRequest request, ServletResponse response),并对**请求响应**做出过滤操作。
+> 过滤器**依赖于servlet容器**。在实现上，基于函数回调，它可以对几乎所有请求进行过滤，一个过滤器实例只能在**容器初始化时调用一次。**
+
+使用过滤器的目的是用来**做一些过滤操作**，获取我们想要获取的数据，比如：在过滤器中修改字符编码；在**过滤器中修改HttpServletRequest的一些参数**，包括：过滤低俗文字、危险字符等。
 
 **定义拦截器**，实现HandlerInterceptor接口；接口中提供三个方法。
 
