@@ -260,7 +260,7 @@ class Client {
   }
 }
 ```
-## 1.17 BeanFactory 和 ApplicationContext有什么区别?
+## 1.17 BeanFactory 和 ApplicationContext有什么区别?和FactoryBean有什么区别？
 BeanFactory和ApplicationContext是Spring的两大核心接口，都可以当做Spring的容器。其中ApplicationContext是BeanFactory的子接口。
 - 依赖关系
 BeanFactory：是Spring里面最底层的接口，包含了各种Bean的定义，读取bean配置文档，管理bean的加载、实例化，控制bean的生命周期，维护bean之间的依赖关系。
@@ -278,6 +278,10 @@ ApplicationContext，它是在容器启动时，一次性创建了所有的Bean�
 BeanFactory通常以编程的方式被创建，ApplicationContext还能以声明的方式创建，如使用ContextLoader。
 - 注册方式
 BeanFactory和ApplicationContext都支持BeanPostProcessor、BeanFactoryPostProcessor的使用，但两者之间的区别是：BeanFactory需要手动注册，而ApplicationContext则是自动注册。
+
+**BeanFactory和FactoryBean的区别**
+BeanFactory是Spring容器中的一个很重要的类，它对于Bean的创建有一个统一的流程
+FactoryBean是一个工厂Bean，可以生成某一个类型Bean实例，它最大的一个作用是：可以让我们自定义Bean的创建过程
 
 ## 1.18 ApplicationContext通常的实现是什么？
 - FileSystemXmlApplicationContext ：
@@ -328,11 +332,23 @@ BeanFactory和ApplicationContext的关系
 
 至于高级容器 ApplicationContext，他包含了低级容器的功能，当他执行 refresh 模板方法的时候，将刷新整个容器的 Bean。同时其作为高级容器，包含了太多的功能。一句话，他不仅仅是 IoC。他支持不同信息源头，支持 BeanFactory 工具类，支持层级容器，支持访问文件资源，支持事件发布通知，支持接口回调等等。
 
-## 1.24 什么是 spring bean？
+## 1.24 什么是 spring bean？bean的实例化过程？
 它们是构成用户应用程序主干的对象。
 Bean 由 Spring IoC 容器管理。
 它们由 Spring IoC 容器实例化，配置，装配和管理。
 Bean 是基于用户提供给容器的配置元数据创建。
+
+**bean的实例化过程**
+
+1. 执行实例化前操作
+2. 创建Bean实例
+3. 将Bean缓存起来
+4. 给Bean填充属性值
+5. 初始化Bean
+   (1) 执行BeanPostProcessor-postProcessBeforeInitialization
+   (2) 执行InitializingBean->afterPropertiesSet
+   (3) 执行initMethod
+   (4) 执行BeanPostProcessor-postProcessAfterInitialization
 
 ## 1.25 spring 提供了哪些配置方式？
 - 基于xml配置
@@ -414,7 +430,7 @@ spring bean 容器的生命周期流程如下：
 ## 1.29 什么是bean装配？什么是bean的自动装配？
 装配，或bean装配是指在Spring容器中把bean组装到一起，前提是容器需要知道bean的依赖关系，如何通过依赖注入来把它们装配到一起。在Spring框架中，在配置文件中设定bean的依赖关系是一个很好的机制，Spring 容器能够自动装配相互合作的bean，这意味着容器不需要和配置，能通过Bean工厂自动处理bean之间的协作。这意味着 Spring可以通过向Bean Factory中注入的方式自动搞定bean之间的依赖关系。自动装配可以设置在每个bean上，也可以设定在特定的bean上。
 
-## 1.30 自动装配有哪些方式？@Autowire、@Resource、@Inject
+## 1.30 自动装配有哪些方式？ 自动装配有什么局限？@Autowire、@Resource、@Inject区别？
 Spring容器能够自动装配bean。也就是说，可以通过检查BeanFactory的内容让Spring自动解析bean的协作者。自动装配的不同模式：
 - no
 这是默认设置，表示没有自动装配 。 应使用显式 bean 引用进行装配 。
@@ -427,13 +443,28 @@ Spring容器能够自动装配bean。也就是说，可以通过检查BeanFactor
 - autodetect
 首先容器尝试通过构造函数使用 autowire 装配，如果不能，则尝试通过 byType 自动装配。
 
-## 1.31 自动装配有什么局限？
+**自动装配的局限**
 - 覆盖的可能性
-您始终可以使用和设置指定依赖项，这将覆盖自动装配。
--  基本元数据类型
-简单属性（如原数据类型，字符串和类）无法自动装配。
-模糊特性
+  您始终可以使用和设置指定依赖项，这将覆盖自动装配。
+- 基本元数据类型
+  简单属性（如原数据类型，字符串和类）无法自动装配。
+  模糊特性
 - 自动装配不如显式装配精确，如果有可能，建议使用显式装配。
+
+## 1.31 spring循环依赖怎么解决？
+三级缓存机制
+Bean实例化的过程：执行实例化前操作，创建Bean实例，将Bean缓存起来，给Bean填充属性值，初始化Bean
+(1) 执行BeanPostProcessor-postProcessBeforeInitialization
+(2) 执行InitializingBean->afterPropertiesSet
+(3) 执行initMethod
+(4) 执行BeanPostProcessor-postProcessAfterInitialization
+例如：A与B属性循环依赖。
+A执行第二，三步，调用构造函数并将实例加入缓存；
+A执行第四步填充属性时找不到B实例，于是先去执行B的实例化；
+B执行到第4步时从缓存中能够找到A实例，于是B实例化成功；
+接着再执行A的实例化。
+为什么spring无法解决构造方法中的循环依赖？
+调用构造函数后是第二步创建实例就要执行的事情，第二步都通过不了，自然就无法执行第三步加入缓存中。
 
 ## 1.32 使用@Autowired注解自动装配的过程是怎样的？
 使用@Autowired注解来自动装配指定的bean。在使用@Autowired注解之前需要在Spring配置文件进行配置，<context:annotation-config />。
@@ -682,7 +713,7 @@ public class UserService{
 
 (3)发生了错误异常这个问题在第二问讲过了，因为默认回滚的是：RuntimeException。如果是其他异常想要回滚，需要在@Transactional注解上加rollbackFor属性。又或者是异常被吞了，事务也会失效，不赘述！
 
-(4)数据库不支持事务毕竟spring事务用的是数据库的事务，如果数据库不支持事务，那spring事务肯定是无法生效滴！
+(4)数据库存储引擎不支持事务毕竟spring事务用的是数据库的事务，如果数据库不支持事务，那spring事务肯定是无法生效滴！
 
 数据源没有配置事务管理器也会导致事务失效;
 Springboot中的Application类上不加注解@EnableTransactionManagement，也会使事务不生效;
@@ -727,6 +758,26 @@ JDK动态代理只提供接口的代理，不支持类的代理。核心Invocati
 静态代理与动态代理区别在于生成AOP代理对象的时机不同，相对来说AspectJ的静态代理方式具有更好的性能，但是AspectJ需要特定的编译器进行处理，而Spring AOP则无需特定的编译器处理。
 
 >InvocationHandler 的 invoke(Object proxy,Method method,Object[] args)：proxy是最终生成的代理实例; method 是被代理目标实例的某个具体方法; args 是被代理目标实例某个方法的具体入参, 在方法反射调用时使用。
+
+JDK动态代理，生成被代理接口的匿名类作为代理类
+动态代理类实现InvocationHandler接口
+Proxy.newProxyInstance生成代理对象
+被代理类需要有接口
+
+CGLib动态代理，生成被代理类的子类作为代理类
+创建Enhancer
+创建MethodInterceptor接口实现类
+Enhancer.setSuperclass(被代理类)
+Enhancer.setCallback
+Enhancer.create生成代理类
+
+JDK动态代理的原理
+为接口创建代理类的字节码文件，使用ClassLoader将字节码文件加载到JVM，
+创建代理类实例对象，执行对象的目标方法，通过反射方式调用被代理类相应的方法
+
+springboot如何选择代理模式
+有接口，使用JDK动态代理（1.8后JDK动态代理效率高于CGLib动态代理）
+无接口，使用CGLib动态代理
 
 ### 1.66 如何理解 Spring 中的代理？
 将 Advice 应用于目标对象后创建的对象称为代理。在客户端对象的情况下，目标对象和代理对象是相同的。
@@ -1021,6 +1072,11 @@ https://www.cnblogs.com/java-chen-hao/p/11187914.html
 @RequestParam：
 用来获得静态的URL请求入参 spring注解时action里用到。
 
+参数绑定
+
+- 不同注解修饰的参数都有支持的方法参数处理器，例如@RequestParam对应的是RequestParamMethodArgumentResolver
+- 在请求处理流程中的调用目标方法环节，会使用对应的参数处理器解析参数
+
 ## 2.12 Spring MVC怎么样设定重定向和转发的？
 
 - **转发**：
@@ -1076,7 +1132,7 @@ POST请求乱码问题：
 ## 2.18 怎么把ModelMap里面的数据放入Session里面？
 可以在类上面加上@SessionAttributes注解,里面包含的字符串就是要放入session里面的key。
 
-## 2.19 Spring MVC拦截器如何使用？
+## 2.19 Spring MVC拦截器如何使用？拦截器过滤器AOP区别及执行顺序？
 
 **定义拦截器**，实现HandlerInterceptor接口；接口中提供三个方法。
 
@@ -1092,6 +1148,10 @@ afterCompletion：
 SpringMVC拦截器针对HandlerMapping进行拦截设置，如果在某个HandlerMapping中配置拦截，经过该 HandlerMapping映射成功的handler最终使用该 拦截器。(一般不推荐使用)
 类似全局的拦截器：
 SpringMVC配置类似全局的拦截器，SpringMVC框架将配置的类似全局的拦截器注入到每个HandlerMapping中
+
+**执行顺序**
+
+![img](images/spring-filter-interceptor-aspect.jpg)
 
 ## 2.20 如何在Web项目中配置Spring MVC？
  答：要使用Spring MVC需要在Web项目配置文件中配置其前端控制器DispatcherServlet，如下所示： 
@@ -1187,6 +1247,21 @@ SpringBoot启动会加载大量的自动配置类
 xxxxAutoConfigurartion：自动配置类；给容器中添加组件
 xxxxProperties:封装配置文件中相关属性；
 
+1. Import相关
+
+- 注解嵌套关系 @SpringBootApplication -> @EnableAutoConfiguration注解 -> @Import({AutoConfigurationImportSelector.class})
+- Import会将selectImports方法返回的所有全路径限定类名都会被spring扫描
+
+1. AutoConfigurationImportSelector相关
+
+- 核心方法调用链 selectImports -> getAutoConfigurationEntry -> getCandidateConfigurations -> loadSpringFactories
+- 将扫描classpath下面类路径为META-INF/spring.factories的所有文件（包括jar包），提取出key为org.springframework.boot.autoconfigure.EnableAutoConfiguration的所有数据。
+
+1. ConditionalOnClass注解
+
+- 官方组件一般都被ConditionalOnClass注解修饰，这是由于官方组件factories文件都不和jar包放一起。
+- 它表示标记的类存在时才会被spring装配，即导入了目标jar包时才会被spring装配
+
 ## 3.7 运行 SpringBoot 有哪几种方式？
 打包用命令或者放到容器中运行
 用 Maven/ Gradle 插件运行
@@ -1215,6 +1290,8 @@ SpringBoot在启动的时候从类路径下的META-INF/spring.factories中获取
 它会给容器中导入非常多的自动配置类 （xxxAutoConfiguration）, 就是给容器中导入这个场景需要的所有组件 ， 并配置好这些组件 ；
 有了自动配置类 ， 免去了我们手动编写配置注入功能组件等的工作；
 
+![img](images/springboot-startup-flow.jpg)
+
 ## 3.11 什么是YAML？YAML 配置的优势在哪里 ?
 YAML 是一种人类可读的数据序列化语言。它通常用于配置文件。与属性文件相比，如果我们想要在配置文件中添加复杂的属性，YAML 文件就更加结构化，而且更少混淆。可以看出 YAML 具有分层配置数据。
 
@@ -1235,6 +1312,7 @@ bootstrap(.yml 或者 .properties)：boostrap 由父 ApplicationContext 加载�
 application (.yml或者.properties)：由ApplicatonContext 加载，用于 SpringBoot项目自动化配置
 
 ## 3.14 你如何理解SpringBoot配置加载顺序？Spring Boot 常⽤的读取配置⽂件的⽅法有哪些？ Spring Boot 加载配置⽂件的优先级了解么？
+
 ```
 1. 开发者工具 `Devtools` 全局配置参数;
 
@@ -1269,6 +1347,9 @@ application (.yml或者.properties)：由ApplicatonContext 加载，用于 Sprin
 ## 3.15 什么是Spring Profiles？
 主要用来区分环境；
 Spring Profiles 允许用户根据配置文件（dev，test，prod 等）来注册 bean。因此，当应用程序在开发中运行时，只有某些 bean 可以加载，而在 PRODUCTION中，某些其他 bean 可以加载。假设我们的要求是 Swagger 文档仅适用于 QA 环境，并且禁用所有其他文档。这可以使用配置文件来完成。Spring Boot 使得使用配置文件非常简单。
+
+- 添加application-dev.properties
+- application.properties文件中添加配置`spring.profiles.active = dev`
 
 ## 3.16 如何在自定义端口上运行SpringBoot应用程序？
 SpringBoot默认监听的是8080端口；为了在自定义端口上运行 SpringBoot 应用程序，您可以在application.properties 中通过

@@ -8,7 +8,13 @@ mybatis一二级缓存
 
 https://blog.csdn.net/zhangcongyi420/article/details/89597995
 
-
+# 0 mybatis原理
+MyBatis也有四大核心类：
+SqlSession对象，该对象中包含了执行SQL语句的所有方法。类似于JDBC里面的Connection。
+Executor接口，它将根据SqlSession传递的参数动态地生成需要执行的SQL语句，同时负责查询缓存的维护。类似于JDBC里面的Statement/PrepareStatement。
+MappedStatement对象，该对象是对映射SQL的封装，用于存储要映射的SQL语句的id、参数等信息。
+ResultHandler对象，用于对返回的结果进行处理，最终得到自己想要的数据格式或类型。可以自定义返回类型。
+![img](images/mybatis-yuanli.jpg)
 
 # 1 #{}和${}的区别是什么？
 注：这道题是⾯试官⾯试我同事的。
@@ -26,6 +32,11 @@ https://blog.csdn.net/zhangcongyi420/article/details/89597995
 串作为 key 值，可唯⼀定位⼀个 MappedStatement ，举例： com.mybatis3.mappers.StudentDao.findStudentById ，可以唯⼀找到 namespace
 为 com.mybatis3.mappers.StudentDao 下⾯ id = findStudentById 的 MappedStatement 。在 Mybatis中，每⼀个 selec> 、 inser> 、update 、 delete 标签，都会被解析为⼀
 个 MappedStatement 对象。Dao 接⼝⾥的⽅法，是不能重载的，因为是全限名+⽅法名的保存和寻找策略。Dao 接⼝的⼯作原理是 JDK 动态代理， Mybatis 运⾏时会使⽤ JDK 动态代理为 Dao 接⼝⽣成代理 proxy 对象，代理对象 proxy 会拦截接⼝⽅法，转⽽执⾏ MappedStatement 所代表的 sql，然后将 sql 执⾏结果返回。 
+
+在spring中，Mapper接口我们都没有实现的方法却可以通过依赖注册的方式使用，是为什么呢？
+- mybatis使用动态代理的方式实现了Mapper接口
+- MapperFactoryBean，spring动态代理的方式将实现的mapper对象又进行了一层分装
+- 最终，当执行mapper时，将先去获取ThreadLocal中获取sqlSession，无则创建，然后调用sqlsession.Mapper的方式获得到最终的Mapper对象。
 
 # 4 Mybatis 是如何进⾏分⻚的？分⻚插件的原理是什么？
 注：我出的。
@@ -154,6 +165,9 @@ MappedStatement 对象，标签内的 sql 会被解析为 BoundSql 对象。
 # 22 什么是Mybatis的一级、二级缓存,如何开启?什么样的数据适合缓存?
 
 答：一级缓存是基于PerpetualCache的hashmap本地缓存，其存储作用域为Session，当Session flush后，默认打开一级缓存！二级缓存和一级缓存的机制是相同的，默认也是采用PerpetualCache的hashmap本地缓存，不过他的储存作用于在Mapper，而且可自定义存储源，要开启二级缓存，需要使用二级缓存属性类实现Serializable序列化的接口，可在它的映射文件中配置<cache/>缓存数据的更新机制，当某一个作用域（一级缓存session/二级缓存namespace）的进行了c/u/d操作后，默认该作用域下所有select中的缓存将被clear
+
+- 一级缓存是sqlsession级别的缓存，当调用close/clearCache或udpate时清空缓存，由于无事务时，一条sql的执行就会调用close方法，所以一级缓存只作用无同一事务中。
+- 二级缓存是应用级别的缓存，以namespace为维度。当namespace下发生增删改操作时清空缓存，分布式环境和多表操作存在问题，不推荐使用。
 
 # 23 Mybatis全局配置文件中有哪些标签?分别代表什么意思?
 答：
