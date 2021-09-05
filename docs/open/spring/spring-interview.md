@@ -674,52 +674,417 @@ PersistenceBrokerTransactionManager 管理Apache的OJB事务
 (2)通过编程代码回滚(不常用)
 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-### spring事务什么时候失效?
-spring事务的原理是AOP，进行了切面增强，那么失效的根本原因是这个AOP不起作用了！常见情况有如下几种
-(1) 发生自调用例如代码如下
+### Spring事务什么时候失效?
+![img](images/spring-transaction-inactive-scene.png)
+
+spring事务的原理是AOP，进行了切面增强，那么失效的根本原因是这个AOP不起作用了！常见情况有如下几种：
+
+1、访问权限问题
+
+java的访问权限主要有四种：private、default、protected、public，它们的权限从左到右，依次变大。
+
+但如果我们在开发过程中，把有某些事务方法，定义了错误的访问权限，就会导致事务功能出问题，例如：
 
 ```java
-@Service
-public class UserService{
-   public void update(User user) {
-        updateUser(user);
-    }
-    @Transactional
-    public void updateUser(User user) {
-        System.out.println("孤独烟真帅");
-        //do something
-    }
-}
+@Service 
+public class UserService { 
+     
+    @Transactional 
+    private void add(UserModel userModel) { 
+         saveData(userModel); 
+         updateData(userModel); 
+    } 
+} 
 ```
-此时是无效的，因此上面的代码等同于
+
+我们可以看到add方法的访问权限被定义成了private，这样会导致事务失效，spring要求被代理方法必须是public的。说白了，在AbstractFallbackTransactionAttributeSource类的computeTransactionAttribute方法中有个判断，如果目标方法不是public，则TransactionAttribute返回null，即不支持事务。
+
 ```java
-@Service
-public class UserService{
-   public void update(User user) {
-        this.updateUser(user);
-    }
-    @Transactional
-    public void updateUser(User user) {
-        System.out.println("孤独烟真帅");
-        //do something
-    }
-}
+protected TransactionAttribute computeTransactionAttribute(Method method, @Nullable Class<?> targetClass) { 
+    // Don't allow no-public methods as required. 
+    if (allowPublicMethodsOnly() && !Modifier.isPublic(method.getModifiers())) { 
+      return null; 
+    } 
+ 
+    // The method may be on an interface, but we need attributes from the target class. 
+    // If the target class is null, the method will be unchanged. 
+    Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass); 
+ 
+    // First try is the method in the target class. 
+    TransactionAttribute txAttr = findTransactionAttribute(specificMethod); 
+    if (txAttr != null) { 
+      return txAttr; 
+    } 
+ 
+    // Second try is the transaction attribute on the target class. 
+    txAttr = findTransactionAttribute(specificMethod.getDeclaringClass()); 
+    if (txAttr != null && ClassUtils.isUserLevelMethod(method)) { 
+      return txAttr; 
+    } 
+ 
+    if (specificMethod != method) { 
+      // Fallback is to look at the original method. 
+      txAttr = findTransactionAttribute(method); 
+      if (txAttr != null) { 
+        return txAttr; 
+      } 
+      // Last fallback is the class of the original method. 
+      txAttr = findTransactionAttribute(method.getDeclaringClass()); 
+      if (txAttr != null && ClassUtils.isUserLevelMethod(method)) { 
+        return txAttr; 
+      } 
+    } 
+    return null; 
+  } 
 ```
-此时这个this对象不是代理类，而是UserService对象本身！解决方法很简单，让那个this变成UserService的代理类即可，就不展开说明了！
 
-(2) 方法不是public的OK，我这里不想举源码。大家想一个逻辑就行！@Transactional注解的方法都是被外部其他类调用才有效！如果方法修饰符是private的，这个方法能被外部其他类调到么？既然调不到，事务生效有意义么？想通这套逻辑就行了
+2、 方法用final修饰
 
-记住:@Transactional 注解只能应用到 public 可见度的方法上。如果你在 protected、private 或者 package-visible 的方法上使用 @Transactional 注解，它也不会报错， 但是这个被注解的方法将不会有事务行为。
+有时候，某个方法不想被子类重写，这时可以将该方法定义成final的。普通方法这样定义是没问题的，但如果将事务方法定义成final，例如：
 
-(3)发生了错误异常这个问题在第二问讲过了，因为默认回滚的是：RuntimeException。如果是其他异常想要回滚，需要在@Transactional注解上加rollbackFor属性。又或者是异常被吞了，事务也会失效，不赘述！
+```java
+@Service 
+public class UserService {  
+    @Transactional 
+    public final void add(UserModel userModel){ 
+        saveData(userModel); 
+        updateData(userModel); 
+    } 
+} 
+```
 
-(4)数据库存储引擎不支持事务毕竟spring事务用的是数据库的事务，如果数据库不支持事务，那spring事务肯定是无法生效滴！
+我们可以看到add方法被定义成了final的，这样会导致事务失效。为什么?
+
+如果你看过spring事务的源码，可能会知道spring事务底层使用了aop，也就是通过jdk动态代理或者cglib，帮我们生成了代理类，在代理类中实现的事务功能。但如果某个方法用final修饰了，那么在它的代理类中，就无法重写该方法，而添加事务功能。
+
+注意：如果某个方法是static的，同样无法通过动态代理，变成事务方法。
+
+3、方法内部调用
+
+有时候我们需要在某个Service类的某个方法中，调用另外一个事务方法，比如：
+
+```java
+@Service 
+public class UserService { 
+ 
+    @Autowired 
+    private UserMapper userMapper; 
+ 
+    @Transactional  // 待确认，add是事务方法和非事务方法场景
+    public void add(UserModel userModel) { 
+        userMapper.insertUser(userModel); 
+        updateStatus(userModel); 
+    } 
+ 
+    @Transactional 
+    public void updateStatus(UserModel userModel) { 
+        doSameThing(); 
+    } 
+} 
+```
+我们看到在事务方法add中，直接调用事务方法updateStatus。从前面介绍的内容可以知道，updateStatus方法拥有事务的能力是因为spring aop生成代理了对象，但是这种方法直接调用了this对象的方法，所以updateStatus方法不会生成事务。
+
+由此可见，在同一个类中的方法直接内部调用，会导致事务失效。
+
+那么问题来了，如果有些场景，确实想在同一个类的某个方法中，调用它自己的另外一个方法，该怎么办呢?
+
+方法一：新加一个Service方法
+
+这个方法非常简单，只需要新加一个Service方法，把@Transactional注解加到新Service方法上，把需要事务执行的代码移到新方法中。具体代码如下：
+
+```java
+@Servcie 
+public class ServiceA { 
+   @Autowired 
+   prvate ServiceB serviceB; 
+ 
+   public void save(User user) { 
+         queryData1(); 
+         queryData2(); 
+         serviceB.doSave(user); 
+   } 
+ } 
+ 
+ @Servcie 
+ public class ServiceB { 
+ 
+    @Transactional(rollbackFor=Exception.class) 
+    public void doSave(User user) { 
+       addData1(); 
+       updateData2(); 
+    }  
+ } 
+
+```
+
+方法二：在该Service类中注入自己
+
+```java
+@Servcie 
+public class ServiceA { 
+   @Autowired 
+   prvate ServiceA serviceA; 
+ 
+   public void save(User user) { 
+         queryData1(); 
+         queryData2(); 
+         serviceA.doSave(user); 
+   } 
+ 
+   @Transactional(rollbackFor=Exception.class) 
+   public void doSave(User user) { 
+       addData1(); 
+       updateData2(); 
+    } 
+ } 
+```
+
+方法三：通过AopContent类
+
+```java
+@Servcie 
+public class ServiceA {  
+   public void save(User user) { 
+         queryData1(); 
+         queryData2(); 
+         ((ServiceA)AopContext.currentProxy()).doSave(user); 
+   }  
+   @Transactional(rollbackFor=Exception.class) 
+   public void doSave(User user) { 
+       addData1(); 
+       updateData2(); 
+    } 
+ } 
+```
+
+4、 未被spring管理
+
+在我们平时开发过程中，有个细节很容易被忽略。即使用spring事务的前提是：对象要被spring管理，需要创建bean实例。
+
+5、多线程调用
+在实际项目中，多线程的使用场景还是挺多的。如果spring事务用在多线程场景中，会有问题吗?
+```java
+@Slf4j 
+@Service 
+public class UserService {  
+    @Autowired 
+    private UserMapper userMapper; 
+    @Autowired 
+    private RoleService roleService;  
+    @Transactional 
+    public void add(UserModel userModel) throws Exception { 
+        userMapper.insertUser(userModel); 
+        new Thread(() -> { 
+            roleService.doOtherThing(); 
+        }).start(); 
+    } 
+} 
+ 
+@Service 
+public class RoleService {  
+    @Transactional 
+    public void doOtherThing() { 
+        System.out.println("保存role表数据"); 
+    } 
+} 
+```
+从上面的例子中，我们可以看到事务方法add中，调用了事务方法doOtherThing，但是事务方法doOtherThing是在另外一个线程中调用的。这样会导致两个方法不在同一个线程中，获取到的数据库连接不一样，从而是两个不同的事务。如果想doOtherThing方法中抛了异常，add方法也回滚是不可能的。
+
+如果看过spring事务源码的朋友，可能会知道spring的事务是通过数据库连接来实现的。当前线程中保存了一个map，key是数据源，value是数据库连接。
+
+```java
+private static final ThreadLocal<Map<Object, Object>> resources = 
+ 
+  new NamedThreadLocal<>("Transactional resources"); 
+```
+我们说的同一个事务，其实是指同一个数据库连接，只有拥有同一个数据库连接才能同时提交和回滚。如果在不同的线程，拿到的数据库连接肯定是不一样的，所以是不同的事务。
+
+6、表不支持事务
+众所周知，在mysql5之前，默认的数据库引擎是myisam。它的好处就不用多说了：索引文件和数据文件是分开存储的，对于查多写少的单表操作，性能比innodb更好。有些老项目中，可能还在用它。
+
+在创建表的时候，只需要把ENGINE参数设置成MyISAM即可：myisam好用，但有个很致命的问题是：不支持事务。
+
+7、未开启事务
+有时候，事务没有生效的根本原因是没有开启事务。
+
+如果你使用的是springboot项目，那么你很幸运。因为springboot通过
+DataSourceTransactionManagerAutoConfiguration类，已经默默的帮你开启了事务。
+
+你所要做的事情很简单，只需要配置spring.datasource相关参数即可。
+
+但如果你使用的还是传统的spring项目，则需要在applicationContext.xml文件中，手动配置事务相关参数。如果忘了配置，事务肯定是不会生效的。具体配置如下信息：
+
+```xml
+<!-- 配置事务管理器 -->  
+<bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">  
+    <property name="dataSource" ref="dataSource"></property>  
+</bean>  
+<tx:advice id="advice" transaction-manager="transactionManager">  
+    <tx:attributes>  
+        <tx:method name="*" propagation="REQUIRED"/> 
+    </tx:attributes>  
+</tx:advice>  
+<!-- 用切点把事务切进去 -->  
+<aop:config>  
+    <aop:pointcut expression="execution(* com.susan.*.*(..))" id="pointcut"/>  
+    <aop:advisor advice-ref="advice" pointcut-ref="pointcut"/>  
+</aop:config>  
+```
+
+8、错误的传播特性
+
+其实，我们在使用@Transactional注解时，是可以指定propagation参数的。
+
+9、自己吞了异常
+
+事务不会回滚，最常见的问题是：开发者在代码中手动try...catch了异常。
+
+10、手动抛了别的异常
+
+即使开发者没有手动捕获异常，但如果抛的异常不正确，spring事务也不会回滚。因为spring事务，默认情况下只会回滚RuntimeException(运行时异常)和Error(错误)，对于普通的Exception(非运行时异常)，它不会回滚。
+
+11、自定义了回滚异常
+
+在使用@Transactional注解声明事务时，有时我们想自定义回滚的异常，spring也是支持的。可以通过设置rollbackFor参数，来完成这个功能。
+
+但如果这个参数的值设置错了，就会引出一些莫名其妙的问题，例如：
+
+```java
+@Slf4j 
+@Service 
+public class UserService { 
+     
+    @Transactional(rollbackFor = BusinessException.class) 
+    public void add(UserModel userModel) throws Exception { 
+       saveData(userModel); 
+       updateData(userModel); 
+    } 
+} 
+```
+
+如果在执行上面这段代码，保存和更新数据时，程序报错了，抛了SqlException、DuplicateKeyException等异常。而BusinessException是我们自定义的异常，报错的异常不属于BusinessException，所以事务也不会回滚。
+
+即使rollbackFor有默认值，但阿里巴巴开发者规范中，还是要求开发者重新指定该参数。
+
+这是为什么呢?
+
+因为如果使用默认值，一旦程序抛出了Exception，事务不会回滚，这会出现很大的bug。所以，建议一般情况下，将该参数设置成：Exception或Throwable。
+
+12、嵌套事务回滚多了
+
+```java
+public class UserService { 
+ 
+    @Autowired 
+    private UserMapper userMapper; 
+ 
+    @Autowired 
+    private RoleService roleService; 
+ 
+    @Transactional 
+    public void add(UserModel userModel) throws Exception { 
+        userMapper.insertUser(userModel); 
+        roleService.doOtherThing(); 
+    } 
+} 
+ 
+@Service 
+public class RoleService { 
+ 
+    @Transactional(propagation = Propagation.NESTED) 
+    public void doOtherThing() { 
+        System.out.println("保存role表数据"); 
+    } 
+} 
+```
+
+这种情况使用了嵌套的内部事务，原本是希望调用roleService.doOtherThing方法时，如果出现了异常，只回滚doOtherThing方法里的内容，不回滚 userMapper.insertUser里的内容，即回滚保存点。。但事实是，insertUser也回滚了。why?
+
+因为doOtherThing方法出现了异常，没有手动捕获，会继续往上抛，到外层add方法的代理方法中捕获了异常。所以，这种情况是直接回滚了整个事务，不只回滚单个保存点。
+
+怎么样才能只回滚保存点呢?
+
+```java
+@Slf4j 
+@Service 
+public class UserService { 
+ 
+    @Autowired 
+    private UserMapper userMapper; 
+ 
+    @Autowired 
+    private RoleService roleService; 
+ 
+    @Transactional 
+    public void add(UserModel userModel) throws Exception { 
+ 
+        userMapper.insertUser(userModel); 
+        try { 
+            roleService.doOtherThing(); 
+        } catch (Exception e) { 
+            log.error(e.getMessage(), e); 
+        } 
+    } 
+} 
+```
+
+可以将内部嵌套事务放在try/catch中，并且不继续往上抛异常。这样就能保证，如果内部嵌套事务中出现异常，只回滚内部事务，而不影响外部事务。
 
 数据源没有配置事务管理器也会导致事务失效;
 Springboot中的Application类上不加注解@EnableTransactionManagement，也会使事务不生效;
 传播行为配置成@Transactional(propagation = Propagation.NOT_SUPPORTED)
 
+### Spring大事务问题
+
+![img](images/spring-transaction-big-transaction.jpg)
+
+比如：
+
+```java
+@Service 
+public class UserService {      
+    @Autowired  
+    private RoleService roleService; 
+     
+    @Transactional 
+    public void add(UserModel userModel) throws Exception { 
+       query1(); 
+       query2(); 
+       query3(); 
+       roleService.save(userModel); 
+       update(userModel); 
+    } 
+}  
+ 
+@Service 
+public class RoleService {      
+    @Autowired  
+    private RoleService roleService;      
+    @Transactional 
+    public void save(UserModel userModel) throws Exception { 
+       query4(); 
+       query5(); 
+       query6(); 
+       saveData(userModel); 
+    } 
+} 
+```
+
+但@Transactional注解，如果被加到方法上，有个缺点就是整个方法都包含在事务当中了。
+
+上面的这个例子中，在UserService类中，其实只有这两行才需要事务：
+
+```java
+roleService.save(userModel); 
+update(userModel); 
+```
+
+这种写法，会导致所有的query方法也被包含在同一个事务当中。
+
+如果query方法非常多，调用层级很深，而且有部分查询方法比较耗时的话，会造成整个事务非常耗时，而从造成大事务问题。
+
 ### Spring的事务隔离和数据库的事务隔离是一个概念么？
+
 OK，是一回事！我们先明确一点，数据库一般有四种隔离级别数据库有四种隔离级别分别为
 read uncommitted（未提交读）
 read committed（提交读、不可重复读）

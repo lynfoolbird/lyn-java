@@ -1,27 +1,22 @@
 1. 如何实现负载均衡，有哪些算法可以实现。
 2. 限流的算法有哪些？如何做限流策略，令牌桶和漏斗算法的使用场景。
-3. 如何做到接口的幂等性。
-4. 后台系统怎么防止请求重复提交。
 5. 为什么要分布式 id ？分布式 id ⽣成策略有哪些？
 6. 如何使用redis和zookeeper实现分布式锁？有什么区别优缺点，会有什么问题，分别适用什么场景。（延伸：如果知道redlock，讲讲他的算法实现，争议在哪里）
 7. 分布式事务的原理，优缺点，如何使用分布式事务，2pc 3pc 的区别，解决了哪些问题，还有
 哪些问题没解决，如何解决，你自己项目里涉及到分布式事务是怎么处理的。
-8. 什么是一致性hash。
-9. 说说你知道的几种HASH算法，简单的也可以。
+8. 什么是一致性hash。说说你知道的几种HASH算法，简单的也可以。
 10. 什么是paxos算法， 什么是zab协议。
 11. 什么是restful，讲讲你理解的restful
 12. 解释什么是MESI协议(缓存一致性)。
-13. 什么叫数据一致性，你怎么理解数据一致性。
-
-1. Zookeeper的用途，选举的原理是什么。
-2. Zookeeper watch机制原理。
-
-1. 了解RPC吗？有哪些常⻅的 RPC 框架？
-2. 一次RPC请求的流程是什么。
-3. 自己实现过rpc么，原理可以简单讲讲。Rpc要解决什么问题。
-4. 如果让你⾃⼰设计 RPC 框架你会如何设计？
+12. 什么叫数据一致性，你怎么理解数据一致性。
+15. 为什么不直接使用http调用而使用RPC？
+16. 了解RPC吗？有哪些常⻅的 RPC 框架？
+17. 一次RPC请求的流程是什么。
+18. 自己实现过rpc么，原理可以简单讲讲。Rpc要解决什么问题。
+19. 如果让你⾃⼰设计 RPC 框架你会如何设计？
 
 2.说说你平时用到的设计模式。
+
 3.编程中自己都怎么考虑一些设计原则的，比如开闭原则，以及在工作中的应用。
 
 1. 聊下曾经参与设计的服务器架构并画图，谈谈遇到的问题，怎么解决的。
@@ -35,6 +30,181 @@
 9. 一个在线文档系统，文档可以被编辑，如何防止多人同时对同一份文档进行编辑更新。
 10. 线上系统突然变得异常缓慢，你如何查找问题。
 11. 如果有人恶意创建非法连接，怎么解决。
+
+# 分布式
+## 为什么进行系统拆分？如何进行系统拆分？
+
+单体应用-》垂直应用-》SOA-》微服务
+
+1）要是不拆分，一个大系统几十万行代码，20个人维护一份代码，简直是悲剧啊。代码经常改着改着就冲突了，各种代码冲突和合并要处理，非常耗费时间；经常我改动了我的代码，你调用了我，导致你的代码也得重新测试，麻烦的要死；
+
+2）拆分了以后，整个世界清爽了，几十万行代码的系统，拆分成20个服务，平均每个服务就1~2万行代码，每个服务部署到单独的机器上。20个工程，20个git代码仓库里，20个码农，每个人维护自己的那个服务就可以了，是自己独立的代码，跟别人没关系。再也没有代码冲突了，爽。每次就测试我自己的代码就可以了，爽。每次就发布我自己的一个小服务就可以了，爽。技术上想怎么升级就怎么升级，保持接口不变就可以了，爽。
+
+一句话总结，如果是那种代码量多达几十万行的中大型项目，团队里有几十个人，那么如果不拆分系统，开发效率极其低下，问题很多。但是拆分系统之后，每个人就负责自己的一小部分就好了，可以随便玩儿随便弄。分布式系统拆分之后，可以大幅度提升复杂系统大型团队的开发效率。但是同时，也要提醒的一点是，系统拆分成分布式系统之后，大量的分布式系统面临的问题也是接踵而来，所以后面的问题都是在围绕分布式系统带来的复杂技术挑战在说。
+
+如何进行系统拆分？ 拆分原则
+
+这个问题说大可以很大，可以扯到领域驱动模型设计上去，说小了也很小，我不太想给大家太过于学术的说法，因为你也不可能背这个答案，过去了直接说吧。还是说的简单一点，大家自己到时候知道怎么回答就行了。 
+
+系统拆分分布式系统，拆成多个服务，拆成微服务的架构，拆很多轮的。上来一个架构师第一轮就给拆好了，第一轮；团队继续扩大，拆好的某个服务，刚开始是1个人维护1万行代码，后来业务系统越来越复杂，这个服务是10万行代码，5个人；第二轮，1个服务 -> 5个服务，每个服务2万行代码，每人负责一个服务。
+
+我个人建议，一个服务的代码不要太多，1万行左右，两三万撑死了吧 
+
+大部分的系统，是要进行多轮拆分的，第一次拆分，可能就是将以前的多个模块该拆分开来了，比如说将电商系统拆分成订单系统、商品系统、采购系统、仓储系统、用户系统，等等吧。但是后面可能每个系统又变得越来越复杂了，比如说采购系统里面又分成了供应商管理系统、采购单管理系统，订单系统又拆分成了购物车系统、价格系统、订单管理系统。
+
+（3）拆分后不用dubbo可以吗？ 
+
+当然可以了，大不了最次，就是各个系统之间，直接基于spring mvc，就纯http接口互相通信呗，还能咋样。但是这个肯定是有问题的，因为http接口通信维护起来成本很高，你要考虑超时重试、负载均衡等等各种乱七八糟的问题，比如说你的订单系统调用商品系统，商品系统部署了5台机器，你怎么把请求均匀地甩给那5台机器？这不就是负载均衡？你要是都自己搞那是可以的，但是确实很痛苦。所以dubbo说白了，是一种rpc框架，就是本地就是进行接口调用，但是dubbo会代理这个调用请求，跟远程机器网络通信，给你处理掉负载均衡了、服务实例上下线自动感知了、超时重试了，等等乱七八糟的问题。那你就不用自己做了，用dubbo就可以了。
+
+## 分布式系统的幂等性问题
+什么是幂等性、为什么需要幂等性、幂等性方案
+
+所谓幂等性，就是说一个接口，多次发起同一个请求，你这个接口得保证结果是准确的，比如不能多扣款，不能多插入一条数据，不能将统计值多加了1。这就是幂等性，不给大家来学术性词语了。
+
+假如你有个服务提供一个接口，结果这服务部署在了5台机器上，接着有个接口就是付款接口。然后人家用户在前端上操作的时候，不知道为啥，总之就是一个订单不小心发起了两次支付请求，然后这俩请求分散在了这个服务部署的不同的机器上，好了，结果一个订单扣款扣两次？尴尬了。。。
+
+其实保证幂等性主要是三点： 
+
+（1）对于每个请求必须有一个唯一的标识，举个例子：订单支付请求，肯定得包含订单id，一个订单id最多支付一次，对吧 
+
+（2）每次处理完请求之后，必须有一个记录标识这个请求处理过了，比如说常见的方案是在mysql中记录个状态啥的，比如支付之前记录一条这个订单的支付流水，而且支付流水采 
+
+（3）每次接收请求需要进行判断之前是否处理过的逻辑处理，比如说，如果有一个订单已经支付了，就已经有了一条支付流水，那么如果重复发送这个请求，则此时先插入支付流水，orderId已经存在了，唯一键约束生效，报错插入不进去的。然后你就不用再扣款了。
+
+​       上面只是给大家举个例子，实际运作过程中，你要结合自己的业务来，比如说用redis用orderId作为唯一键。只有成功插入这个支付流水，才可以执行实际的支付扣款。
+
+## 如何防止重复提交？
+
+
+
+## 分布式服务接口请求的顺序性如何保证？
+分布式系统接口的调用顺序，也是个问题，一般来说是不用保证顺序的。但是有的时候可能确实是需要严格的顺序保证。给大家举个例子，你服务A调用服务B，先插入再删除。好，结果俩请求过去了，落在不同机器上，可能插入请求因为某些原因执行慢了一些，导致删除请求先执行了，此时因为没数据所以啥效果也没有；结果这个时候插入请求过来了，好，数据插入进去了，那就尴尬了。
+本来应该是先插入 -> 再删除，这条数据应该没了，结果现在先删除 -> 再插入，数据还存在，最后你死都想不明白是怎么回事。
+
+所以这都是分布式系统一些很常见的问题
+
+首先，一般来说，我个人给你的建议是，你们从业务逻辑上最好设计的这个系统不需要这种顺序性的保证，因为一旦引入顺序性保障，会导致系统复杂度上升，而且会带来效率低下，热点数据压力过大等问题。下面我给个我们用过的方案吧，简单来说，首先你得**用dubbo的一致性hash负载均衡策略，将比如某一个订单id对应的请求都给分发到某个机器上去，接着就是在那个机器上因为可能还是多线程并发执行的，你可能得立即将某个订单id对应的请求扔一个内存队列里去，强制排队，这样来确保他们的顺序性**。但是这样引发的后续问题就很多，比如说要是某个订单对应的请求特别多，造成某台机器成热点怎么办？解决这些问题又要开启后续一连串的复杂技术方案。。。曾经这类问题弄的我们头疼不已，所以，还是建议什么呢？最好是比如说刚才那种，一个订单的插入和删除操作，能不能合并成一个操作，就是一个删除，或者是什么，避免这种问题的产生。
+
+![img](images/distribute-interface-shunxu.jpg)
+
+## 分布式session如何实现？
+
+session是啥？浏览器有个cookie，在一段时间内这个cookie都存在，然后每次发请求过来都带上一个特殊的jsessionid cookie，就根据这个东西，在服务端可以维护一个对应的session域，里面可以放点儿数据。一般只要你没关掉浏览器，cookie还在，那么对应的那个session就在，但是cookie没了，session就没了。常见于什么购物车之类的东西，还有登录状态保存之类的。
+![img](images/distribute-session.jpg)
+
+分布式session常见常用的是两种：
+
+（1）tomcat + redis
+
+这个其实还挺方便的，就是使用session的代码跟以前一样，还是基于tomcat原生的session支持即可，然后就是用一个叫做Tomcat RedisSessionManager的东西，让所有我们部署的tomcat都将session数据存储到redis即可。
+
+在tomcat的配置文件中，配置一下
+
+```xml
+<Valve className="com.orangefunction.tomcat.redissessions.RedisSessionHandlerValve" />
+
+<Manager className="com.orangefunction.tomcat.redissessions.RedisSessionManager"
+         host="{redis.host}"
+         port="{redis.port}"
+         database="{redis.dbnum}"
+         maxInactiveInterval="60"/>
+<!--sentinel场景 -->
+<Valve className="com.orangefunction.tomcat.redissessions.RedisSessionHandlerValve" />
+<Manager className="com.orangefunction.tomcat.redissessions.RedisSessionManager"
+	 sentinelMaster="mymaster"
+	 sentinels="<sentinel1-ip>:26379,<sentinel2-ip>:26379,<sentinel3-ip>:26379"
+	 maxInactiveInterval="60"/>
+```
+
+（2）spring session + redis 
+
+分布式会话的这个东西重耦合在tomcat中，如果我要将web容器迁移成jetty，难道你重新把jetty都配置一遍吗？
+
+```xml
+<!-- 依赖配置 -->
+<dependency>
+  <groupId>org.springframework.session</groupId>
+  <artifactId>spring-session-data-redis</artifactId>
+  <version>1.2.1.RELEASE</version>
+</dependency>
+<dependency>
+  <groupId>redis.clients</groupId>
+  <artifactId>jedis</artifactId>
+  <version>2.8.1</version>
+</dependency>
+<!--bean配置 -->
+<bean id="redisHttpSessionConfiguration"     class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+    <property name="maxInactiveIntervalInSeconds" value="600"/>
+</bean>
+
+<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+    <property name="maxTotal" value="100" />
+    <property name="maxIdle" value="10" />
+</bean>
+
+<bean id="jedisConnectionFactory"
+      class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy">
+    <property name="hostName" value="${redis_hostname}"/>
+    <property name="port" value="${redis_port}"/>
+    <property name="password" value="${redis_pwd}" />
+    <property name="timeout" value="3000"/>
+    <property name="usePool" value="true"/>
+    <property name="poolConfig" ref="jedisPoolConfig"/>
+</bean>
+
+<!--web.xml -->
+<filter>
+    <filter-name>springSessionRepositoryFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>springSessionRepositoryFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+```java
+// 示例代码
+@Controller
+@RequestMapping("/test")
+public class TestController {
+@RequestMapping("/putIntoSession")
+@ResponseBody
+    public String putIntoSession(HttpServletRequest request, String username){
+        request.getSession().setAttribute("name",  “leo”);
+        return "ok";
+    }
+
+@RequestMapping("/getFromSession")
+@ResponseBody
+    public String getFromSession(HttpServletRequest request, Model model){
+        String name = request.getSession().getAttribute("name");
+        return name;
+    }
+}
+
+```
+
+## zk的使用场景？
+
+（1）分布式协调：这个其实是zk很经典的一个用法，简单来说，就好比，你A系统发送个请求到mq，然后B消息消费之后处理了。那A系统如何知道B系统的处理结果？用zk就可以实现分布式系统之间的协调工作。A系统发送请求之后可以在zk上对某个节点的值注册个监听器，一旦B系统处理完了就修改zk那个节点的值，A立马就可以收到通知，完美解决。
+![img](images/zk-scene-xietiao.jpg)
+
+（2）分布式锁：对某一个数据连续发出两个修改操作，两台机器同时收到了请求，但是只能一台机器先执行另外一个机器再执行。那么此时就可以使用zk分布式锁，一个机器接收到了请求之后先获取zk上的一把分布式锁，就是可以去创建一个znode，接着执行操作；然后另外一个机器也尝试去创建那个znode，结果发现自己创建不了，因为被别人创建了。。。。那只能等着，等第一个机器执行完了自己再执行。
+
+![img](images/zk-scene-lock.jpg)
+
+（3）元数据/配置信息管理：zk可以用作很多系统的配置信息的管理，比如kafka、storm等等很多分布式系统都会选用zk来做一些元数据、配置信息的管理，包括dubbo注册中心不也支持zk么
+
+![img](images/zk-scene-saveconfig.jpg)
+
+（4）HA高可用性：这个应该是很常见的，比如hadoop、hdfs、yarn等很多大数据系统，都选择基于zk来开发HA高可用机制，就是一个重要进程一般会做主备两个，主进程挂了立马通过zk感知到切换到备用进程
+
+![img](images/zk-scene-ha.jpg)
+
+## zk的选举原理
+
+## zk的watch机制
 
 # dubbo面试题
 

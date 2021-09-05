@@ -109,10 +109,12 @@ QPS = 真实并发量/RT = 75W/0.5=100w/s
 ## 常⻅软件的QPS
 这⾥给出的 QPS 仅供参考，实际项⽬需要进⾏压测来计算。
 - Nginx ：⼀般情况下，系统的性能瓶颈基本不会是 Nginx。单机 Nginx 可以达到 30w +。
-- Redis: Redis 官⽅的性能测试报告： https://redis.io/topics/benchmarks 。从报告中，我们可以得出 Redis 的单机 QPS 可以达到 8w+（CPU性能有关系，也和执⾏的命令也有关系⽐如执⾏ SET 命令甚⾄可以达到10w+QPS）。
-- MySQL: MySQL 单机的 QPS 为 ⼤概在 4k 左右。
 - Tomcat ：单机 Tomcat 的QPS 在 2w左右。这个和你的 Tomcat 配置有很⼤关系，举个例⼦
-Tomcat ⽀持的连接器有 NIO、 NIO.2 和 APR。 AprEndpoint 是通过 JNI 调⽤ APR 本地库⽽实现⾮阻塞 I/O 的，性能更好， Tomcat 配置 APR 为 连接器的话， QPS 可以达到 3w左右。更多相关内容可以⾃⾏搜索 Tomcat 性能优化。
+  Tomcat ⽀持的连接器有 NIO、 NIO.2 和 APR。 AprEndpoint 是通过 JNI 调⽤ APR 本地库⽽实现⾮阻塞 I/O 的，性能更好， Tomcat 配置 APR 为 连接器的话， QPS 可以达到 3w左右。更多相关内容可以⾃⾏搜索 Tomcat 性能优化。
+- Redis: Redis 官⽅的性能测试报告： https://redis.io/topics/benchmarks 。从报告中，我们可以得出 Redis 的单机 QPS 可以达到 8w+（CPU性能有关系，也和执⾏的命令也有关系⽐如执⾏ SET 命令甚⾄可以达到10w+QPS）。
+- kafka：单机吞吐量10w级
+- elasticsearch
+- MySQL: MySQL 单机的 QPS 为 ⼤概在 4k 左右。
 
 ## 系统设计原则
 合适优于先进 > 演化优于⼀步到位 > 简单优于复杂
