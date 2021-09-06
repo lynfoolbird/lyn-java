@@ -31,7 +31,16 @@
 10. 线上系统突然变得异常缓慢，你如何查找问题。
 11. 如果有人恶意创建非法连接，怎么解决。
 
+
+
+面试官心里分析
+
+MQ、ES、Redis、Dubbo，上来先问你一些思考的问题，原理（kafka高可用架构原理、es分布式架构原理、redis线程模型原理、Dubbo工作原理），生产环境里可能会碰到的一些问题（每种技术引入之后生产环境都可能会碰到一些问题），系统设计（设计MQ，设计搜索引擎，设计一个缓存，设计rpc框架） 
+
+当然比如说，hard面试官，死扣，结合项目死扣细节，百度（深入底层，基础性），阿里（结合项目死扣细节，扣很深的技术底层），小米（数据结构和算法）。
+
 # 分布式
+
 ## 为什么进行系统拆分？如何进行系统拆分？
 
 单体应用-》垂直应用-》SOA-》微服务
@@ -212,6 +221,16 @@ public class TestController {
 
 https://mp.weixin.qq.com/s/uI5l5EMeiIxeZWBzma9Nhg
 
+（1）dubbo工作原理：服务注册，注册中心，消费者，代理通信，负载均衡
+
+（2）网络通信、序列化：dubbo协议，长连接，NIO，hessian序列化协议
+
+（3）负载均衡策略，集群容错策略，动态代理策略：dubbo跑起来的时候一些功能是如何运转的，怎么做负载均衡？怎么做集群容错？怎么生成动态代理？
+
+（4）dubbo SPI机制：你了解不了解dubbo的SPI机制？如何基于SPI机制对dubbo进行扩展？
+
+（5）dubbo的服务治理、降级、重试
+
 ## 什么是dubbo？
 Dubbo 是一个分布式、高性能、透明化的 RPC 服务框架，提供服务自动注册、自动发现等高效服务治理方案， 可以和 Spring 框架无缝集成。
 RPC 指的是远程调用协议，也就是说两个服务器交互数据。
@@ -227,18 +246,42 @@ RPC 指的是远程调用协议，也就是说两个服务器交互数据。
 - Cluster：服务框架，提供基于接口方法的透明远程过程调用，包括多协议支持，以及软负载均衡，失败容错，地址路由，动态配置等集群支持。
 - Registry：服务注册，基于注册中心目录服务，使服务消费方能动态的查找服务提供方，使地址透明，使服务提供方可以平滑增加或减少机器。
 
-## Dubbo的架构设计？
+## Dubbo的架构设计？工作原理？
 ![img](images/dubbo-architecture.jpg)
 Dubbo框架设计一共划分了10个层：
+
 - 服务接口层（Service）：该层是与实际业务逻辑相关的，根据服务提供方和服务消费方的业务设计对应的接口和实现。
+
 - 配置层（Config）：对外配置接口，以ServiceConfig和ReferenceConfig为中心。
+
 - 服务代理层（Proxy）：服务接口透明代理，生成服务的客户端Stub和服务器端Skeleton。
+
 - 服务注册层（Registry）：封装服务地址的注册与发现，以服务URL为中心。
+
 - 集群层（Cluster）：封装多个提供者的路由及负载均衡，并桥接注册中心，以Invoker为中心。
+
 - 监控层（Monitor）：RPC调用次数和调用时间监控。
+
 - 远程调用层（Protocol）：封将RPC调用，以Invocation和Result为中心，扩展接口为Protocol、Invoker和Exporter。
+
 - 信息交换层（Exchange）：封装请求响应模式，同步转异步，以Request和Response为中心。
+
 - 网络传输层（Transport）：抽象mina和netty为统一接口，以Message为中心。
+
+- serialize层，数据序列化层
+
+工作流程：
+
+1）第一步，provider向注册中心去注册
+
+2）第二步，consumer从注册中心订阅服务，注册中心会通知consumer注册好的服务
+
+3）第三步，consumer调用provider
+
+4）第四步，consumer和provider都异步的通知监控中心
+
+![img](images/dubbo-architecture-flow.jpg)
+
 
 ## Dubbo的服务调用流程？
 ![img](images/dubbo-service-call-flow.jpg)
@@ -246,10 +289,11 @@ Dubbo框架设计一共划分了10个层：
 ## Dubbo的核心组件？Dubbo服务注册与发现的流程？描述一个服务从发布到被消费的详细过程。
 ![img](images/dubbo-components.png)
 **流程说明：**
+
 - Provider(提供者)绑定指定端口并启动服务
 - Provider连接注册中心，并发本机IP、端口、应用信息和提供服务信息发送至注册中心存储
 - Consumer(消费者），连接注册中心 ，并发送应用信息、所求服务信息至注册中心
-- 注册中心根据 消费 者所求服务信息匹配对应的提供者列表发送至Consumer 应用缓存。
+- 注册中心根据消费者所求服务信息匹配对应的提供者列表发送至Consumer 应用缓存。
 - Consumer 在发起远程调用时基于缓存的消费者列表择其一发起调用。
 - Provider 状态变更会实时通知注册中心、
 **设计的原因：**
@@ -310,9 +354,9 @@ Dubbo 会在 Spring 实例化完 bean 之后，在刷新容器最后一步发布
 
 ## Dubbo支持哪些协议，每种协议的应用场景，优缺点？
 Dubbo 允许配置多协议，在不同服务上支持不同协议或者同一服务上同时支持多种协议。
-- dubbo： 单一长连接和NIO异步通讯，适合大并发小数据量的服务调用，以及消费者远大于提供者。传输协议TCP，异步，Hessian序列化；
+- dubbo： 单一长连接和NIO异步通讯，适合大并发小数据量的服务调用，以及消费者远大于提供者。传输协议TCP，异步，Hessian序列化；如果上亿次请求每次都是短连接的话，服务提供者会扛不住，而且因为走的是单一长连接，所以传输数据量太大的话，会导致并发能力降低。所以一般建议是传输数据量很小，支撑高并发访问。长连接NIO处理多请求而不是每个请求一个短链接
 - rmi： 采用JDK标准的rmi协议实现，传输参数和返回参数对象需要实现Serializable接口，使用java标准序列化机制，使用阻塞式短连接，传输数据包大小混合，消费者和提供者个数差不多，可传文件，传输协议TCP。
-多个短连接，TCP协议传输，同步传输，适用常规的远程服务调用和rmi互操作。在依赖低版本的Common-Collections包，java序列化存在安全漏洞；
+  多个短连接，TCP协议传输，同步传输，适用常规的远程服务调用和rmi互操作。在依赖低版本的Common-Collections包，java序列化存在安全漏洞；
 - webservice： 基于WebService的远程调用协议，集成CXF实现，提供和原生WebService的互操作。多个短连接，基于HTTP传输，同步传输，适用系统集成和跨语言调用；
 - http： 基于Http表单提交的远程调用协议，使用Spring的HttpInvoke实现。多个短连接，传输协议HTTP，传入参数大小混合，提供者个数多于消费者，需要给应用程序和浏览器JS调用；
 - hessian： 集成Hessian服务，基于HTTP通讯，采用Servlet暴露服务，Dubbo内嵌Jetty作为服务器时默认实现，提供与Hession服务互操作。多个短连接，同步HTTP传输，Hessian序列化，传入参数较大，提供者大于消费者，提供者压力较大，可传文件；
@@ -334,15 +378,19 @@ Dubbo不需要Web容器，如果硬要用 Web 容器，只会增加复杂性，�
 ## 服务上线怎么兼容旧版本？
 可以用版本号（version）过渡，多个不同版本的服务注册到注册中心，版本号不同的服务相互间不引用。这个和服务分组的概念有一点类似。
 
+## dubbo动态代理策略
+
+默认使用javassist动态字节码生成，创建代理类，但可以通过spi扩展机制配置自己的动态代理策略
+
 ## Dubbo可以对结果进行缓存吗？
 可以，Dubbo 提供了声明式缓存，用于加速热门数据的访问速度，以减少用户加缓存的工作量。
 
 ## Dubbo集群提供了哪些负载均衡策略？
-- Random LoadBalance: 随机选取提供者策略，有利于动态调整提供者权重。截面碰撞率高，调用次数越多，分布越均匀；
+- Random LoadBalance: 随机选取提供者策略，有利于动态调整提供者权重。截面碰撞率高，调用次数越多，分布越均匀；缺省时为Random随机调用
 - RoundRobin LoadBalance: 轮循选取提供者策略，平均分布，但是存在请求累积的问题；
 - LeastActive LoadBalance: 最少活跃调用策略，解决慢提供者接收更少的请求；
 - ConstantHash LoadBalance: 一致性Hash策略，使相同参数请求总是发到同一提供者，一台机器宕机，可以基于虚拟节点，分摊至其他提供者，避免引起提供者的剧烈变动；
-缺省时为Random随机调用
+
 
 ## Dubbo的集群容错方案有哪些？服务读写推荐的容错策略是怎样的？
 - Failover Cluster
@@ -382,9 +430,88 @@ Dubbo通过Token令牌防止用户绕过注册中心直连，然后在注册中�
 ## Dubbo服务治理？讲讲你理解的服务治理。
 ![img](images/dubbo-service-manage.png)
 - 过多的服务URL配置困难
+
 - 负载均衡分配节点压力过大的情况下也需要部署集群
+
 - 服务依赖混乱，启动顺序不清晰
+
 - 过多服务导致性能指标分析难度较大，需要监控
+
+服务治理，这个问题如果问你，其实就是看看你有没有服务治理的思想，因为这个是做过复杂微服务的人肯定会遇到的一个问题。
+
+服务降级，这个是涉及到复杂分布式系统中必备的一个话题，因为分布式系统互相来回调用，任何一个系统故障了，你不降级，直接就全盘崩溃？那就太坑爹了吧
+
+失败重试，分布式系统中网络请求如此频繁，要是因为网络问题不小心失败了一次，是不是要重试？
+
+超时重试，同上，如果不小心网络慢一点，超时了，如何重试？
+
+1、服务治理
+
+  1）调用链路自动生成
+
+一个大型的分布式系统，或者说是用现在流行的微服务架构来说吧，分布式系统由大量的服务组成。那么这些服务之间互相是如何调用的？调用链路是啥？说实话，几乎到后面没人搞的清楚了，因为服务实在太多了，可能几百个甚至几千个服务。那就需要基于dubbo做的分布式系统中，对各个服务之间的调用自动记录下来，然后自动将各个服务之间的依赖关系和调用链路生成出来，做成一张图，显示出来，大家才可以看到对吧。
+
+2）服务访问压力以及时长统计
+
+需要自动统计各个接口和服务之间的调用次数以及访问延时，而且要分成两个级别。一个级别是接口粒度，就是每个服务的每个接口每天被调用多少次，TP50，TP90，TP99，三个档次的请求延时分别是多少；第二个级别是从源头入口开始，一个完整的请求链路经过几十个服务之后，完成一次请求，每天全链路走多少次，全链路请求延时的TP50，TP90，TP99，分别是多少。
+
+这些东西都搞定了之后，后面才可以来看当前系统的压力主要在哪里，如何来扩容和优化啊
+
+ 3）其他的 
+
+服务分层（避免循环依赖），调用链路失败监控和报警，服务鉴权，每个服务的可用性的监控（接口调用成功率？几个9？）99.99%，99.9%，99%
+
+2、服务降级
+
+比如说服务A调用服务B，结果服务B挂掉了，服务A重试几次调用服务B，还是不行，直接降级，走一个备用的逻辑，给用户返回响应
+```java
+public interface HelloService {
+   void sayHello();
+}
+
+public class HelloServiceImpl implements HelloService {
+    public void sayHello()  {
+        System.out.println("hello world......");
+    }
+}
+```
+
+```xml
+<dubbo:application name="dubbo-provider" />
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" />
+    <dubbo:protocol name="dubbo" port="20880" />
+    <dubbo:service interface="com.zhss.service.HelloService" ref="helloServiceImpl" timeout="10000" />
+    <bean id="helloServiceImpl" class="com.zhss.service.HelloServiceImpl" />
+
+
+<dubbo:application name="dubbo-consumer"  />
+<dubbo:registry address="zookeeper://127.0.0.1:2181" />
+ <dubbo:reference id="fooService" interface="com.test.service.FooService"  timeout="10000" check="false" mock="return null">
+ </dubbo:reference>
+```
+
+现在就是mock，如果调用失败统一返回null。可以将mock修改为true，然后在跟接口同一个路径下实现一个Mock类，命名规则是接口名称加Mock后缀。然后在Mock类里实现自己的降级逻辑。
+```java
+public class HelloServiceMock implements HelloService {
+   public void sayHello() {
+         // 降级逻辑
+   }
+}
+```
+
+3、失败重试和超时重试
+
+所谓失败重试，就是consumer调用provider要是失败了，比如抛异常了，此时应该是可以重试的，或者调用超时了也可以重试。 
+
+<dubbo:reference id="xxxx" interface="xx" check="true" async="false" retries="3" timeout="2000"/> 
+
+某个服务的接口，要耗费5s，你这边不能干等着，你这边配置了timeout之后，我等待2s，还没返回，我直接就撤了，不能干等你 
+
+如果是超时了，timeout就会设置超时时间；如果是调用失败了自动就会重试指定的次数 
+
+你就结合你们公司的具体的场景来说说你是怎么设置这些参数的，timeout，一般设置为200ms，我们认为不能超过200ms还没返回
+
+ retries，3次，设置retries，还一般是在读请求的时候，比如你要查询个数据，你可以设置个retries，如果第一次没读到，报错，重试指定的次数，尝试再次读取2次
 
 ## 分布式服务调用方，不依赖服务提供方的话，怎么处理服务方挂掉后，大量无效资源请求的浪费，如果只是服务提供方吞吐不高的时候该怎么做，如果服务挂了，那么一会重启，该怎么做到最小的资源浪费，流量半开的实现机制是什么。
 
