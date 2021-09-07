@@ -10,3 +10,9 @@ hash冲突
 
 再hash法
 
+
+
+一致性hash
+
+hash slot
+
