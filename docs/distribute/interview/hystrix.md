@@ -83,3 +83,145 @@ hystrix为了实现高可用性的架构，设计hystrix的时候，一些设计
 （6）当一个服务调用出现失败，被拒绝，超时，短路等异常情况时，自动调用fallback降级机制
 
 （7）对属性和配置的修改提供近实时的支持
+
+
+
+1、pom.xml
+
+```xml
+<dependency>
+    <groupId>com.netflix.hystrix</groupId>
+    <artifactId>hystrix-core</artifactId>
+    <version>1.5.12</version>
+</dependency>
+```
+
+2、将商品服务接口调用的逻辑进行封装
+
+hystrix进行资源隔离，其实是提供了一个抽象，叫做command，就是说，你如果要把对某一个依赖服务的所有调用请求，全部隔离在同一份资源池内。对这个依赖服务的所有调用请求，全部走这个资源池内的资源，不会去用其他的资源了，这个就叫做资源隔离。
+
+hystrix最最基本的资源隔离的技术，线程池隔离技术，对某一个依赖服务，商品服务，所有的调用请求，全部隔离到一个线程池内，对商品服务的每次调用请求都封装在一个command里面，每个command（每次服务调用请求）都是使用线程池内的一个线程去执行的，所以哪怕是对这个依赖服务，商品服务，现在同时发起的调用量已经到了1000了，但是线程池内就10个线程，最多就只会用这10个线程去执行，不会说，对商品服务的请求，因为接口调用延迟，将tomcat内部所有的线程资源全部耗尽，不会出现了。不让超出这个量的请求去执行了，保护说，不要因为某一个依赖服务的故障，导致耗尽了缓存服务中的所有的线程资源去执行
+
+```java
+public class CommandHelloWorld extends HystrixCommand<String> {
+
+    private final String name;
+
+    public CommandHelloWorld(String name) {
+        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
+        this.name = name;
+    }
+
+    @Override
+    protected String run() {
+        return "Hello " + name + "!";
+    }
+
+}
+```
+
+HystrixCommand：是用来获取一条数据的
+HystrixObservableCommand：是设计用来获取多条数据的
+
+```java
+public class ObservableCommandHelloWorld extends HystrixObservableCommand<String> {
+
+    private final String name;
+
+    public ObservableCommandHelloWorld(String name) {
+        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
+        this.name = name;
+    }
+
+    @Override
+    protected Observable<String> construct() {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> observer) {
+                try {
+                    if (!observer.isUnsubscribed()) {
+                        observer.onNext("Hello " + name + "!");
+                        observer.onNext("Hi " + name + "!");
+                        observer.onCompleted();
+                    }
+                } catch (Exception e) {
+                    observer.onError(e);
+                }
+            }
+         } ).subscribeOn(Schedulers.io());
+    }
+}
+```
+
+3、command的四种调用方式
+
+同步：new CommandHelloWorld("World").execute()，
+
+new ObservableCommandHelloWorld("World").toBlocking().toFuture().get()
+
+如果你认为observable command只会返回一条数据，那么可以调用上面的模式，去同步执行，返回一条数据
+
+异步：new CommandHelloWorld("World").queue()，
+
+new ObservableCommandHelloWorld("World").toBlocking().toFuture()
+
+对command调用queue()，仅仅将command放入线程池的一个等待队列，就立即返回，拿到一个Future对象，后面可以做一些其他的事情，然后过一段时间对future调用get()方法获取数据
+
+// observe()：hot，已经执行过了
+// toObservable(): cold，还没执行过
+
+```java
+Observable<String> fWorld = new CommandHelloWorld("World").observe();
+assertEquals("Hello World!", fWorld.toBlocking().single());
+fWorld.subscribe(new Observer<String>() {
+    @Override
+    public void onCompleted() {    
+    }
+    
+    @Override
+    public void onError(Throwable e) {
+        e.printStackTrace();
+    }
+    
+    @Override
+    public void onNext(String v) {
+        System.out.println("onNext: " + v);
+    }
+});
+
+Observable<String> fWorld = new ObservableCommandHelloWorld("World").toObservable();
+assertEquals("Hello World!", fWorld.toBlocking().single());
+fWorld.subscribe(new Observer<String>() {
+    @Override
+    public void onCompleted() {    
+    }
+    
+    @Override
+    public void onError(Throwable e) {
+        e.printStackTrace();
+    }
+    
+    @Override
+    public void onNext(String v) {
+        System.out.println("onNext: " + v);
+    }
+});
+```
+
+
+
+hystrix里面，核心的一项功能，其实就是所谓的资源隔离，要解决的最最核心的问题，就是将多个依赖服务的调用分别隔离到各自自己的资源池内，避免说对某一个依赖服务的调用，因为依赖服务的接口调用的延迟或者失败，导致服务所有的线程资源全部耗费在这个服务的接口调用上，一旦说某个服务的线程资源全部耗尽的话，可能就导致服务就会崩溃，甚至说这种故障会不断蔓延。
+
+hystrix，资源隔离，两种技术，线程池的资源隔离，信号量的资源隔离
+
+信号量跟线程池，两种资源隔离的技术，区别到底在哪儿呢？
+
+2、线程池隔离技术和信号量隔离技术，分别在什么样的场景下去使用呢？？
+
+线程池：适合绝大多数的场景，99%的，线程池，对依赖服务的网络请求的调用和访问，timeout这种问题
+
+信号量：适合，你的访问不是对外部依赖的访问，而是对内部的一些比较复杂的业务逻辑的访问，但是像这种访问，系统内部的代码，其实不涉及任何的网络请求，那么只要做信号量的普通限流就可以了，因为不需要去捕获timeout类似的问题，算法+数据结构的效率不是太高，并发量突然太高，因为这里稍微耗时一些，导致很多线程卡在这里的话，不太好，所以进行一个基本的资源隔离和访问，避免内部复杂的低效率的代码，导致大量的线程被hang住
+
+优点在于，不用自己管理线程池拉，不用care timeout超时了，信号量做隔离的话，性能会相对来说高一些
+
+![img](images/hystrix-4-threadpool-vs-semaphore.jpg)

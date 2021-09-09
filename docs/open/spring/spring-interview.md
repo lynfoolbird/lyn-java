@@ -1577,11 +1577,16 @@ Spring Boot 提供一系列端点可以监控服务及应用，做健康检测�
 
 ## 3.3 SpringBoot与Spring、Springmvc区别？
 **Spring**
+
 Spring最重要的特征是依赖注入。所有Spring Modules不是依赖注入就是IOC控制反转。 当我们恰当的使用DI或者是IOC的时候，可以开发松耦合应用。
+
 **Spring MVC**
+
 Spring MVC提供了一种分离式的方法来开发Web应用。通过运用像DispatcherServelet，MoudlAndView 和 ViewResolver 等一些简单的概念，开发 Web 应用将会变的非常简单。
+
 **SpringBoot**
-Spring和Spring MVC的问题在于需要配置大量的参数。  SpringBoot通过一个自动配置和启动的项来解决这个问题。
+
+Spring和Spring MVC的问题在于需要配置大量参数。  SpringBoot通过一个自动配置和启动项来解决这个问题。
 
 ## 3.4  SpringBoot的核心注解是什么？由那些注解组成？
 启动类上@SpringBootApplication是 SpringBoot 的核心注解

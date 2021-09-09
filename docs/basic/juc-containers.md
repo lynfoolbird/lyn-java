@@ -33,12 +33,15 @@ ConcurrentLinkedQueue、ConcurrentLinkedDeque
 1.7 1.8 实现区别
 ![img](images/concurrenthashmap-structure.png)
 对JDK1.7中的ConcurrentHashMap而言
+
 内部主要是一个Segment数组，而数组的每一项又是一个HashEntry数组，元素都存在HashEntry数组里。因为每次锁定的是Segment对象，也就是整个HashEntry数组，所以又叫分段锁。
+
 对JDK1.8中的ConcurrentHashMap而言
+
 舍弃了分段锁的实现方式，元素都存在Node数组中，每次锁住的是一个Node对象，而不是某一段数组，所以支持的写的并发度更高。再者它引入了红黑树，在hash冲突严重时，读操作的效率更高。
 
-## 1.1  JDK.8实现
-在容器安全上，1.8 中的 ConcurrentHashMap 放弃了 JDK1.7 中的分段技术，而是采用了** CAS 机制 + synchronized** 来保证并发安全性，但是在 ConcurrentHashMap 实现里保留了 Segment 定义，这仅仅是为了保证序列化时的兼容性而已，并没有任何结构上的用处。
+## 1.1  JDK8实现
+在容器安全上，1.8 中的 ConcurrentHashMap 放弃了 JDK1.7 中的分段技术，而是采用了**CAS 机制 + synchronized** 来保证并发安全性，但是在 ConcurrentHashMap 实现里保留了 Segment 定义，这仅仅是为了保证序列化时的兼容性而已，并没有任何结构上的用处。
 
 在存储结构上，JDK1.8 中 ConcurrentHashMap 放弃了 HashEntry 结构而是采用了跟 HashMap 结构非常相似，采用 **Node 数组+链表+红黑树**的形式。
 ![img](images/concurrenthashmap-structure.png)
@@ -103,7 +106,9 @@ static class Node<K,V> implements Map.Entry<K,V> {
 ```
 ### 构造方法
 ConcurrentHashMap提供了5个构造方法，主要关注3个。
+
 **注意：**构造方法基本只做了参数校验，计算合理的capacity值，并没有初始化数组table。
+
 ```java
 public ConcurrentHashMap(int initialCapacity) {
     if (initialCapacity < 0)
@@ -233,14 +238,23 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ```
 整个put方法大致分为以下几步：
 1、校验K、V，并计算has值
+
 2、进入自旋，判断table是否已经初始化，如果否，则进行初始化；如果是，执行3
+
 3、判断当前槽上是否为null，如果是，通过CAS的方式新增节点；如果否，执行4
+
 4、判断当前槽上的节点是否正在转移（扩容过程），如果是，辅助扩容；如果否，执行5
-5、锁住当前槽，如果当前槽上是单链表，按照单链表的方式新增节点，如果是红黑树，按照红黑树的方式新增节点
+
+5、锁住当前槽，如果当前槽上是单链表，按照单链表的方式新增节点，如果是红黑树，按照红黑树方式新增节点
+
 6、判断链表是否需要转换成红黑树，如果是，转换成红黑树
+
 7、新增节点完成后，检测是否需要扩容，如果需要，就扩容
+
 从源码来看，ConcurrentHashMap中的put方法和HashMap的put方法执行的逻辑相差无几。只是利用了自旋 + CAS、Synchronized等来保证线程安全。
+
 接下来深入put方法中使用的一些内部方法：initTable、addCount等
+
 #### initTable
 initTable用于初始化table数组，其核心逻辑只有一行new操作，但是为了保证线程安全和高效，采用了**double-check + 自旋 + CAS**的方式，这也是多线程并发编程的常见手段。其实现如下：
 ```java
