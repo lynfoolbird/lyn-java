@@ -1,16 +1,16 @@
 **重点**
 
-多线程并发
+1 volatile 底层
 
-必会重点aqs、cas、线程安全
+2 cas 
 
-线程 状态流转、上下文切换
+3 aqs 理解
 
-cas aqs synchronized lock volatile
+4 synchronized 原理、锁升级过程
 
-threadlocal 内存泄漏  使用注意
+5 threadlocal 内存泄漏  使用注意
 
-threadpool 线程池状态、池中线程状态流转、线程池与threadlocal
+6 threadpool 
 
 https://blog.csdn.net/liuhuiteng/article/details/88371292
 

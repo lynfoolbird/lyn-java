@@ -1,6 +1,12 @@
+**重点**
 
+1 CMS、G1原理，ZGC亮点
 
-JVM参数调优、fullgc触发条件
+2 YGC、FGC、频繁gc问题处理
+
+3 JVM参数调优、fullgc触发条件
+
+4 JDK新特性
 
 # 1  java当中的四种引用
 
@@ -362,6 +368,7 @@ YGC 之后，存活的对象将会被复制到未使用的 Survivor 区。如果
 比如通过 jmap 命令 jmap -dump:format=b,file=dumpfile pid。导出之后再通过 Eclipse Memory Analyzer 等工具进行分析，定位到代码、修复。
 
 这里还会可能存在一个提问的点， CPU 飙高，同时 FGC 怎么办？比如办法比较类似：
+
 1.找到当前进程的 pid，**top -p pid -H** 查看资源占用，找到问题线程；
 
 2.**printf “%x\n” pid**，把线程 pid 转为16进制，比如 0x32d；
