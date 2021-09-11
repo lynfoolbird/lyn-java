@@ -225,3 +225,4 @@ hystrix，资源隔离，两种技术，线程池的资源隔离，信号量的�
 优点在于，不用自己管理线程池拉，不用care timeout超时了，信号量做隔离的话，性能会相对来说高一些
 
 ![img](images/hystrix-4-threadpool-vs-semaphore.jpg)
+

@@ -48,9 +48,11 @@ class ThreadSafeDateFormatter {
 }
 ```
 上面的代码使用到了ThreadLocal，将SimpleDateFormat对象用ThreadLocal包装了一层，使得多个线程内部都有一个SimpleDateFormat对象副本，每个线程使用自己的SimpleDateFormat，这样就不会产生线程安全问题了。那么以上介绍的是ThreadLocal的第一大场景的使用，也就是利用到了ThreadLocal的initialValue()方法，使得每个线程内都具备了一个SimpleDateFormat副本。
+
 **应用场景**
+
 - 场景一：通常多线程之间需要拥有同一个对象的副本，那么通常就采用initialValue()方法进行初始化，直接将需要拥有的对象存储到ThreadLocal中。
-- 场景二：如果多个线程中存储不同的信息，为了方便在其他方法里面获取到信息，那么这种场景适合使用set()方法。例如，在拦截器生成的用户信息，用ThreadLocal.set直接放入到ThreadLocal中去，以便在后续的方法中取出来使用。实例需要在多个方法中共享，但不希望被多线程共享。
+- 场景二：如果多个线程中存储不同的信息，为了方便在其他方法里面获取到信息，那么这种场景适合使用set()方法。例如，在拦截器生成的用户信息，用ThreadLocal.set直接放入到ThreadLocal中去，以便在后续的方法中取出来使用。实例需要在多个方法中共享，但不希望被多线程共享。再比如数据库连接池，是将connection放进threadlocal里的，以保证每个线程从连接池中获得的都是线程自己的connection。
 
 # 3 理解ThreadLocal原理
 ## 3.1 理解ThreadLocalMap数据结构

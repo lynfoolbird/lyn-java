@@ -1,7 +1,5 @@
 深入锁机制 
 
-synchronized   原理、锁升级、锁优化
-
 lock 
 
 悲观锁乐观锁 公平锁非公平锁 排它锁共享锁 可重入锁 偏向锁 自旋锁适应性自旋锁 重量锁轻量锁  监视器锁显式锁 锁粒度   读写分离锁   LockSupport Condition Signal Future ComplemetableFuture FutureTask   

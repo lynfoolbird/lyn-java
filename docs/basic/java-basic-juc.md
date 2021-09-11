@@ -8,6 +8,8 @@ https://www.processon.com/view/59277c9de4b037d0e7843778?fromnew=1#map
 
 原理源码 问题分析处理 性能调优 手写实现 使用demo
 
+无锁volatile+CAS，不变类，threadlocal、synchronized、lock，不共享
+
 1 基本概念 
 
 进程线程区别 协程 管程 同步和异步 并行和并发 阻塞和非阻塞 临界区 上下文切换
@@ -57,7 +59,7 @@ ConcurrentHashMap ConcurrentSkipListMap CopyOnwrite 线程不安全容器
 delayqueue  包装容器 同步容器 并发容器 1.7 1.8 实现区别
 
 10 高并发框架 Disrupror
-11 线程模型 生产者消费者 Reactor
+11 线程模型  Reactor、IO多路复用技术
 12 线程安全 理解 并发安全 单例 双检锁 死锁 排查及处理 临界区 
 13 面试专题
 14 最佳实践
