@@ -7,13 +7,13 @@ https://blog.lupf.cn/articles/2021/02/03/1612317246414.html
 
 Spring框架
 
-IOC/DI：原理
+IOC：原理
 
 AOP：spring aop 原理 动态代理
 
-事务：原理  失效、传播行为、@Transaction
+事务：原理  失效、传播行为、隔离级别、@Transaction
 
-beans：循环依赖 懒加载 注解原理及常用注解  beanfactory factorybean，aware接口
+beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanfactory factorybean，aware接口
 
 如何动态添加bean、如何添加外部jar中的bean
 
@@ -25,11 +25,9 @@ https://www.cnblogs.com/yg_zhang/p/13032797.html
 
 设计模式、源码
 
-线程安全：
-
 MVC实现原理：手写
 
-springboot：自动配置、starter及手写、启动、配置加载
+springboot：自动配置、starter及手写、启动过程、配置加载
 
 # 0 Spring，SpringMVC，SpringBoot，SpringCloud有什么区别和联系？
 
