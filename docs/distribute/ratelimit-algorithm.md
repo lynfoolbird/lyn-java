@@ -1,5 +1,7 @@
 [5种常用限流算法](https://www.toutiao.com/i6982119290774241823/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1631431217&app=news_article&utm_source=weixin&utm_medium=toutiao_android&use_new_style=1&req_id=202109121520170102120631605877748E&share_token=7353732b-1c49-49c7-8982-6793af1c24d3&group_id=6982119290774241823)
 
+[主流的四种限流策略，我都可以通过redis实现](https://www.toutiao.com/i6967956383346180616/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1630012397&app=news_article&utm_source=weixin&utm_medium=toutiao_android&use_new_style=1&req_id=20210827051317010212042056262CFAD2&share_token=fe2d1fba-6c01-47bb-8a71-4356848d391a&group_id=6967956383346180616)
+
 # 01 固定窗口
 
 固定窗口又称固定窗口（又称计数器算法，Fixed Window）限流算法，是最简单的限流算法，通过在单位时间内维护的计数器来控制该时间单位内的最大访问量。
