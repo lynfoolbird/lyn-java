@@ -4,6 +4,10 @@ https://www.baidu.com/s?ie=utf-8&f=3&rsv_bp=1&rsv_idx=1&tn=sitehao123_15&wd=mysq
 
 重点：索引、事务、锁、优化
 
+innodb默认隔离级别，要做分布式事务最高能到哪个级别？
+
+abc三列建立组合索引，a单独再建索引，查询a=?会选择哪个索引？
+
 https://blog.lupf.cn/articles/2021/02/03/1612317006386.html
 
 # 1 什么是MySQL?
