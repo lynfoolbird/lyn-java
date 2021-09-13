@@ -1,15 +1,101 @@
-类加载ClassLoader
+类加载 ClassLoader
 
-反射、注解原理
+反射 Class、Constructor、Method、Field
+
+注解原理
 
 动态代理技术：静态代理、动态代理 jdk、cglib 比较 性能; 应用AOP
 
 SPI技术：jdk spi、spring spi、dubbo spi
 
 
+# 动态代理
 
+## JDK动态代理
+demo代码
 
+```java
+// 外部类，用于演示mybatis场景（Dao接口原理）
+public class Session {
+    public List<String> select() {
+        return Arrays.asList("one", "two", "three");
+    }
+}
+// 接口类
+public interface ITestPrint {
+    List<String> sayHello(String str);
+}
+// JDK动态代理需要实现InvocationHandler
+public class TestProxy<T> implements InvocationHandler {
+    private Session session; // 用于演示mybatis场景
+    private String methodName; // 用于演示mybatis场景
+    /**
+     * 若是代理接口，则target字段为Class对象；
+     * 若是代理接口的实现类，则target字段值为实现类实例
+     */
+    private T target; // 目标对象
 
+    public TestProxy(T target, Session session, String methodName) {
+        this.target = target;
+        this.session = session;
+        this.methodName = methodName;
+    }
+
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("pre handler..."); // 前置处理逻辑
+        Object obj = null;
+        String fullMethodName = method.getDeclaringClass().getName()+"."+method.getName();
+        System.out.println("method's fullName=" + fullMethodName);
+        System.out.println("method's params=" + Arrays.toString(args));
+        System.out.println("method's returnType=" + method.getReturnType());
+        if (target instanceof Class) {
+            if ("SELECT".equals(this.methodName)) {
+                obj = this.session.select();
+            }
+        } else { // 调用目标对象方法
+            obj = method.invoke(target, args);
+        }
+        System.out.println(obj);
+        System.out.println("post handler");  // 后置处理逻辑
+        return obj;
+    }
+}
+// 代理工厂类
+public class ProxyFactory {
+    // 生成代理对象（目标是接口类场景）
+    public static  <T> T newInstance(Class<T> clazz, Session session) {
+        TestProxy<T> testProxy = new TestProxy(clazz, session, "SELECT");
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz},testProxy);
+    }
+    // 生成代理对象（目标是接口类的实例对象场景）
+    public static Object newInstance(Object obj, Session session) {
+        TestProxy testProxy = new TestProxy(obj, session, "SELECT");
+        return  Proxy.newProxyInstance(obj.getClass().getClassLoader(), obj.getClass().getInterfaces(),testProxy);
+    }
+}
+// 测试
+public class Client {
+    public static void main(String[] args) {
+        Session session = new Session();
+        ITestPrint print = ProxyFactory.newInstance(ITestPrint.class, session);
+        print.sayHello("pp");
+
+        ITestPrint pIns = new ITestPrint() {
+            public List<String> sayHello(String str) {
+                System.out.println(str);
+                return Arrays.asList(str);
+            }
+        };
+        ITestPrint print2 = (ITestPrint) ProxyFactory.newInstance(pIns, session);
+        print2.sayHello("abcdefg");
+    }
+}
+
+```
+
+## Cglib动态代理
+
+# SPI技术
 SPI，简单来说，就是service provider interface，说白了是什么意思呢，比如你有个接口，现在这个接口有3个实现类，那么在系统运行的时候对这个接口到底选择哪个实现类呢？这就需要spi了，需要根据指定的配置或者是默认的配置，去找到对应的实现类加载进来，然后用这个实现类的实例对象。
 
 接口A -> 实现A1，实现A2，实现A3
@@ -30,11 +116,11 @@ SPI机制，一般来说用在哪儿？插件扩展的场景，比如说你开�
 
 经典的思想体现，大家平时都在用，比如说jdbc，java定义了一套jdbc的接口，但是java是没有提供jdbc的实现类。但是实际上项目跑的时候，要使用jdbc接口的哪些实现类呢？一般来说，我们要根据自己使用的数据库，比如msyql，你就将mysql-jdbc-connector.jar，引入进来；oracle，你就将oracle-jdbc-connector.jar，引入进来。在系统跑的时候，碰到你使用jdbc的接口，他会在底层使用你引入的那个jar中提供的实现类。
 
-# JDK SPI
+## JDK SPI
 
 
 
-# Dubbo SPI
+## Dubbo SPI
 
 Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension(); 
 
@@ -85,9 +171,9 @@ dubbo里面提供了大量的类似上面的扩展点，就是说，你如果要
 
 然后对对应的组件，用类似<dubbo:protocol>用你的哪个key对应的实现类来实现某个接口，你可以自己去扩展dubbo的各种功能，提供你自己的实现。
 
-# Spring SPI
+## Spring SPI
 
 
 
-# SPI打破双亲委派模型
+## SPI打破双亲委派模型
 
