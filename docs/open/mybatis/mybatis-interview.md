@@ -52,6 +52,8 @@ $将传入的数据直接显示生成在SQL中。注意：使用$占位符可能
 注：我出的。
 答： Mybatis 仅可以编写针对ParameterHandler 、 ResultSetHandler 、 StatementHandler 、 Executor 这 4 种接⼝的插件，Mybatis 使⽤ JDK 的动态代理，为需要拦截的接⼝⽣成代理对象以实现接⼝⽅法拦截功能，每当执⾏这 4 种接⼝对象的⽅法时，就会进⼊拦截⽅法，具体就是 InvocationHandler 的 invoke() ⽅法，当然，只会拦截那些你指定需要拦截的⽅法。实现 Mybatis 的 Interceptor 接⼝并复写 intercept() ⽅法，然后在给插件编写注解，指定要拦截哪⼀个接⼝的哪些⽅法即可，记住，别忘了在配置⽂件中配置你编写的插件。
 
+[插件原理](https://www.toutiao.com/i7007476775697629734/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1631636479&app=news_article&utm_source=weixin&utm_medium=toutiao_android&use_new_style=1&req_id=202109150021180102120631570B1C0C7C&share_token=690e03f7-6828-4bfe-b8ef-5f4c35adabd3&group_id=7007476775697629734)
+
 # 6 Mybatis 执⾏批量插⼊，能返回数据库主键列表吗？
 注：我出的。
 答：能， JDBC 都能， Mybatis 当然也能。

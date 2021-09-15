@@ -19,7 +19,7 @@ AOP：spring aop 原理 动态代理
 
 beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanfactory factorybean，aware接口
 
-如何动态添加bean、如何添加外部jar中的bean
+如何动态添加bean、如何添加外部jar中的bean；动态代理对象添加到容器中？
 
 拦截器、过滤器、监听器、消息转换
 

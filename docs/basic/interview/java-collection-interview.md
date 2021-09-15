@@ -101,6 +101,8 @@ loadFactor表示HashMap的拥挤程度，影响hash操作到同一个数组位�
 
 因为在 put 元素的时候，如果触发扩容操作，也就是 rehash ，就会将原数组的内容重新 hash 到新的扩容数组中，但是在扩容这个过程中，其他线程也在进行 put 操作，如果这两个元素 hash 值相同，可能出现同时在同一数组下用链表表示，造成闭环，导致在get时会出现死循环，所以HashMap是线程不安全的。
 
+[1.7死循环解析](https://www.toutiao.com/i6760577925625414151/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1631486008&app=news_article&utm_source=weixin&utm_medium=toutiao_android&use_new_style=1&req_id=202109130633280102122040272AA74D66&share_token=6c2caa2a-a73e-4020-863e-d6069304abcc&group_id=6760577925625414151)
+
 ## 1.12  JDK8中对HashMap做了哪些改变？
 1.在java 1.8中，如果链表的长度超过了8，那么链表将转换为红黑树。（桶的数量必须大于64，小于64的时候只会扩容）--该处桶的数量64判断有何意义？
 

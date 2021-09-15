@@ -72,8 +72,12 @@ spring循环依赖、spring设计模式、IOC、AOP、MVC流程
 
 自动配置原理、手写starter、启动过程、与springmvc区别
 
+springboot 启动后执行方法：实现CommandLineRunner接口；实现ApplicationRunner接口；实现ApplicationListener接口；实现InitializingBean；@PostConstruct
+
 ## 2.2 mybatis
-mybatis/mybatis plus jdbc orm 分页插件实现原理、一级二级缓存、执行过程、只写接口原理
+mybatis/mybatis plus jdbc orm 
+
+分页插件实现原理、一级二级缓存、执行过程、只写接口原理
 
 常用标签、#$区别
 
