@@ -2,12 +2,6 @@ mybatis一二级缓存
 
 数据源/JDBC/数据库连接池/ORM
 
-执行原理
-
-动态代理
-
-https://blog.csdn.net/zhangcongyi420/article/details/89597995
-
 # 0 mybatis原理
 MyBatis也有四大核心类：
 
@@ -20,7 +14,10 @@ MappedStatement对象，该对象是对映射SQL的封装，用于存储要映�
 ResultHandler对象，用于对返回的结果进行处理，最终得到自己想要的数据格式或类型。可以自定义返回类型。
 ![img](images/mybatis-yuanli.jpg)
 
+https://blog.csdn.net/zhangcongyi420/article/details/89597995
+
 # 1 #{}和${}的区别是什么？
+
 注：这道题是⾯试官⾯试我同事的。
 答：${} 是 Properties ⽂件中的变量占位符，它可以⽤于标签属性值和 sql 内部，属于静态⽂本替换，⽐如${driver}会被静态替换为 com.mysql.jdbc.Driver 。#{} 是 sql 的参数占位符， Mybatis 会将 sql 中的 #{} 替换为?号，在 sql 执⾏前会使⽤PreparedStatement 的参数设置⽅法，按序给 sql 的?号占位符设置参数值，⽐如ps.setInt(0, parameterValue)， #{item.name} 的取值⽅式为使⽤反射从参数对象中获取item 对象的 name 属性值，相当于 param.getItem().getName() 。 #将传入的数据都当成一个字符串，会对传入的数据自动加上引号；
 
@@ -37,7 +34,11 @@ $将传入的数据直接显示生成在SQL中。注意：使用$占位符可能
 答： Dao 接⼝，就是⼈们常说的 Mapper 接⼝，接⼝的全限名，就是映射⽂件中的 namespace的值，接⼝的⽅法名，就是映射⽂件中 MappedStatement 的 id 值，接⼝⽅法内的参数，就是传递给 sql 的参数。 Mapper 接⼝是没有实现类的，当调⽤接⼝⽅法时，接⼝全限名+⽅法名拼接字符串作为 key 值，可唯⼀定位⼀个 MappedStatement ，
 
 举例： com.mybatis3.mappers.StudentDao.findStudentById ，可以唯⼀找到 namespace
-为 com.mybatis3.mappers.StudentDao 下⾯ id = findStudentById 的 MappedStatement 。在 Mybatis中，每⼀个 selec> 、 inser> 、update 、 delete 标签，都会被解析为⼀个 MappedStatement 对象。Dao 接⼝⾥的⽅法，是不能重载的，因为是全限名+⽅法名的保存和寻找策略。Dao 接⼝的⼯作原理是 JDK 动态代理， Mybatis 运⾏时会使⽤ JDK 动态代理为 Dao 接⼝⽣成代理 proxy 对象，代理对象 proxy 会拦截接⼝⽅法，转⽽执⾏ MappedStatement 所代表的 sql，然后将 sql 执⾏结果返回。 
+为 com.mybatis3.mappers.StudentDao 下⾯ id = findStudentById 的 MappedStatement 。在 Mybatis中，每⼀个 selec> 、 inser> 、update 、 delete 标签，都会被解析为⼀个 MappedStatement 对象。
+
+Dao 接⼝⾥的⽅法，是不能重载的，因为是全限名+⽅法名的保存和寻找策略。
+
+Dao 接⼝的⼯作原理是 JDK 动态代理， Mybatis 运⾏时会使⽤ JDK 动态代理为 Dao 接⼝⽣成代理 proxy 对象，代理对象 proxy 会拦截接⼝⽅法，转⽽执⾏ MappedStatement 所代表的 sql，然后将 sql 执⾏结果返回。 
 
 在spring中，Mapper接口我们都没有实现的方法却可以通过依赖注册的方式使用，是为什么呢？
 - mybatis使用动态代理的方式实现了Mapper接口
@@ -147,6 +148,8 @@ Hibernate 属于全⾃动 ORM 映射⼯具，使⽤ Hibernate 查询关联对象
 2. 通过xml里面写sql语句来绑定，在这种情况下，要指定xml映射文件里面的namespace必须为接口的全路径名，当sql语句比较简单的时候，用注解绑定，当sql语句比较复杂的时候，用xml绑定，一般使用xml绑定的比较多！
 
 # 22 什么是Mybatis的一级、二级缓存,如何开启?什么样的数据适合缓存?
+
+[聊聊MyBatis缓存机制](https://tech.meituan.com/2018/01/19/mybatis-cache.html)
 
 一级缓存是基于PerpetualCache的hashmap本地缓存，其存储作用域为Session，当Session flush后，默认打开一级缓存！二级缓存和一级缓存的机制是相同的，默认也是采用PerpetualCache的hashmap本地缓存，不过他的储存作用于在Mapper，而且可自定义存储源，要开启二级缓存，需要使用二级缓存属性类实现Serializable序列化的接口，可在它的映射文件中配置<cache/>缓存数据的更新机制，当某一个作用域（一级缓存session/二级缓存namespace）的进行了c/u/d操作后，默认该作用域下所有select中的缓存将被clear
 
