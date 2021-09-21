@@ -1,0 +1,64 @@
+@startuml DDD工程模块间依赖关系
+
+[ddd-service-api]
+[ddd-service-app]
+[ddd-service-domain]
+[ddd-service-persistence]
+[ddd-service-common]
+[ddd-service-external]
+[ddd-service-provider]
+
+database db
+
+note right of [ddd-service-api]
+API层：接口服务层，
+IxxApi：声明API接口；
+定义inputdto和outputdto
+end note
+note right of [ddd-service-app]
+APP层：应用服务层，
+XXApiImpl：API接口实现类，调用应用服务；
+XXAppService：应用服务类，编排领域服务；
+XXAssembler：dto与do转换类
+end note
+note right of [ddd-service-domain]
+DOMAIN层：领域服务层，调用repository接口
+IXXAggregateRepository：声明repository接口，每个聚合一个repo；
+XXPO：持久化对象，每个实体一个
+XXAggregateAR：定义聚合根；
+XXEntity：聚合内其他实体
+XXVO：值对象
+XXFactory；po和do转换类
+IXXExternalService：声明external接口，对接第三方服务；
+end note
+note right of [ddd-service-common]
+COMMON层：项目内公共模块
+utils，exception、consts、model
+end note
+note bottom of [ddd-service-persistence]
+PERSISTENCE层：持久化模块，
+XXAggregateRepositoryImpl：repository接口实现类；
+IXXDao：提供dao和mapper；每个实体对应一个dao
+end note
+note bottom of [ddd-service-external]
+EXTERNAL层：防腐层，对接第三方
+XXExternalServiceImpl：external接口实现类
+end note
+note top of [ddd-service-provider]
+PROVIDER层：打包启动模块，
+工程启动类；项目配置信息；打包配置
+end note
+
+[ddd-service-api] <-- [ddd-service-app]
+[ddd-service-app] --> [ddd-service-domain]
+[ddd-service-domain] <-- [ddd-service-persistence]
+[ddd-service-domain] --> [ddd-service-common]
+[ddd-service-external] -> [ddd-service-domain]
+[ddd-service-provider] -> [ddd-service-app]
+[ddd-service-provider] --> [ddd-service-external]
+[ddd-service-provider] -> [ddd-service-persistence]
+[ddd-service-persistence] --> db
+
+
+
+@enduml
