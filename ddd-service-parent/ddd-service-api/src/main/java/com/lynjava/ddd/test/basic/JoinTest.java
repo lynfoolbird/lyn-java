@@ -1,0 +1,88 @@
+package com.lynjava.ddd.test.basic;
+
+public class JoinTest {
+    private static volatile int i=1;
+    public static void main(String[] args) throws Exception {
+//        Thread before = null;
+//        for (int i=1; i<101; i++) {
+//            String threadName = "Thread-"+i;
+//            Thread t = new Thread (new Dominuo(before), threadName);
+//            t.start();
+//            before = t;
+//        }
+//        final Object monitor = new Object();
+//        Runnable runnable = new Runnable() {
+//            public void run() {
+//                synchronized (monitor) {
+//                    for (;i<100;) {
+//                        System.out.println(Thread.currentThread().getName() + ":" + i++);
+//                        try {
+//                            monitor.notifyAll();
+//                            monitor.wait();
+//                        } catch (Exception e) {
+//                        }
+//                    }
+//                   monitor.notifyAll();
+//                }
+//            }
+//        };
+//        new Thread(runnable, "odd").start();
+//        new Thread(runnable, "even").start();
+        Object monitor = new Object();
+        new Thread(new OddEven(true, monitor)).start();
+        new Thread(new OddEven(false, monitor)).start();
+    }
+}
+
+class OddEven implements Runnable {
+
+    private boolean printOdd;
+
+    private Object monitor;
+
+    public OddEven(boolean printOdd, Object monitor) {
+        this.printOdd = printOdd;
+        this.monitor = monitor;
+    }
+
+    public void run() {
+        synchronized (monitor) {
+            for (int i=1; i<=100; i++) {
+                if (printOdd && i % 2 == 1) {
+                    System.out.println(Thread.currentThread().getName() + ":" + i);
+                }
+                if (!printOdd && i % 2 == 0) {
+                    System.out.println(Thread.currentThread().getName() + ":" + i);
+                }
+                try {
+                    monitor.notifyAll();
+                    monitor.wait();
+                } catch (Exception e) {
+                }
+            }
+            monitor.notifyAll();
+        }
+        System.out.println(Thread.currentThread().getName()+" end");
+    }
+}
+
+class Dominuo implements Runnable {
+    private Thread beforeThread;
+
+    public Dominuo(Thread thread) {
+        this.beforeThread = thread;
+    }
+    public void run() {
+        String ss = Thread.currentThread().getName() + ":dao";
+        if (null == beforeThread) {
+            System.out.println(ss);
+            return;
+        }
+        try {
+            beforeThread.join();
+            System.out.println(ss);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

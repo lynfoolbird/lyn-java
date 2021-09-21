@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- 父项目打包类型需是pom -->
+    <packaging>pom</packaging>
+
+    <groupId>com.lynjava</groupId>
+    <artifactId>ddd-demo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>ddd-service-api</module>         <!-- 接口层：对外提供服务接口 -->
+        <module>ddd-service-app</module>         <!-- 应用服务层：应用服务，编排领域服务 -->
+        <module>ddd-service-domain</module>      <!-- 领域层：领域服务 -->
+        <module>ddd-service-common</module>      <!-- 公共层：项目内公共模块 -->
+        <module>ddd-service-external</module>    <!-- 防腐层：对接第三方 -->
+        <module>ddd-service-provider</module>    <!-- provider：启动类、打包、配置-->
+        <module>ddd-service-persists</module>    <!-- 持久层：repo实现、dao、mapper -->
+    </modules>
+
+    <!-- 父项目为 springboot  -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.3</version>
+    </parent>
+
+    <properties>
+        <hutool.version>5.7.13</hutool.version>
+        <fastjson.version>1.2.75</fastjson.version>
+        <guava.version>30.1.1-jre</guava.version>
+    </properties>
+
+    <!-- 在父项目中作依赖版本说明，不会引入具体jar包；
+     子项目中引入具体依赖时不用再写版本号，由父项目统一管理版本 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 在父项目中直接引入依赖，所有子项目均会继承该依赖 -->
+    <dependencies>
+        <!-- spring boot依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- cxf starter 依赖 -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+        <!-- json-provider依赖，cxf服务不会自动进行json转换，需要配置json转换器 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+
+        <!-- 常用工具依赖 begin -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <!-- 因为父项目中已有依赖版本说明，此处不需再写版本号 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
+        <!-- 常用工具依赖 end -->
+
+    </dependencies>
+
+
+</project>
