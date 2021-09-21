@@ -5,33 +5,19 @@ springmvc学习
 
 https://www.toutiao.com/a7002412183980130827/
 
-**每项都输出重点、重点掌握几遍**
+**重点掌握几遍**
 
-https://blog.lupf.cn/articles/2021/02/03/1612317246414.html
+Spring：IOC原理、AOP原理、事务原理失效传播行为隔离级别@Transaction实现原理
 
-Spring框架
+​               bean加载过程、循环依赖、注解原理及常用注解  beanfactory factorybean，aware接口
 
-IOC：原理
+​               如何动态添加bean、如何添加外部jar中的bean；动态代理对象添加到容器中？动态数据源
 
-AOP：spring aop 原理 动态代理
+​               设计模式、源码
 
-事务：原理  失效、传播行为、隔离级别、@Transaction
+SpringMVC：实现原理、手写
 
-beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanfactory factorybean，aware接口
-
-如何动态添加bean、如何添加外部jar中的bean；动态代理对象添加到容器中？
-
-拦截器、过滤器、监听器、消息转换
-
-https://www.cnblogs.com/yg_zhang/p/13032797.html
-
-实践：动态数据源
-
-设计模式、源码
-
-MVC实现原理：手写
-
-springboot：自动配置、starter及手写、启动过程、配置加载
+SpringBoot：自动配置、starter及手写、启动过程、配置加载
 
 # 0 Spring，SpringMVC，SpringBoot，SpringCloud有什么区别和联系？
 
@@ -108,7 +94,7 @@ AOP编程的支持，Spring提供面向切面编程，可以方便的实现对�
 
 方便程序的测试，Spring对Junit4支持，可以通过注解方便的测试Spring程序。
 
-方便集成各种优秀框架，Spring不排斥各种优秀的开源框架，其内部提供了对各种优秀框架的直接支持（如：Struts、Hibernate、MyBatis等）。
+方便集成各种优秀框架，Spring不排斥各种优秀的开源框架，其内部提供了对各种优秀框架的直接支持。
 
 降低JavaEE API的使用难度，Spring对JavaEE开发中非常难用的一些API（JDBC、JavaMail、远程调用等），都提供了封装，使这些API应用难度大大降低。
 
@@ -565,7 +551,7 @@ JtaTransactionManager       使用JTA管理事务
 
 PersistenceBrokerTransactionManager 管理Apache的OJB事务 
 
-这些事务的父接口都是PlatformTransactionManager。Spring的事务管理机制是一种典型的策略模式，PlatformTransactionManager代表事务管理接口，该接口定义了三个方法，该接口并不知道底层如何管理事务，但是它的实现类必须提供getTransaction()方法（开启事务）、commit()方法（提交事务）、rollback()方法（回滚事务）的多态实现，这样就可以用不同的实现类代表不同的事务管理策略。使用JTA全局事务策略时，需要底层应用服务器支持，而不同的应用服务器所提供的JTA全局事务可能存在细节上的差异，因此实际配置全局事务管理器是可能需要使用JtaTransactionManager的子类，如：WebLogicJtaTransactionManager（Oracle的WebLogic服务器提供）、UowJtaTransactionManager（IBM的WebSphere服务器提供）等。
+这些事务的父接口都是PlatformTransactionManager。Spring的事务管理机制是一种典型的策略模式，PlatformTransactionManager代表事务管理接口，该接口定义了三个方法，该接口并不知道底层如何管理事务，但是它的实现类必须提供getTransaction()方法（开启事务）、commit()方法（提交事务）、rollback()方法（回滚事务）的多态实现，这样就可以用不同的实现类代表不同的事务管理策略。使用JTA全局事务策略时，需要底层应用服务器支持，而不同的应用服务器所提供的JTA全局事务可能存在细节上的差异，因此实际配置全局事务管理器是可能需要使用JtaTransactionManager的子类，如：WebLogicJtaTransactionManager、UowJtaTransactionManager等。
 
 ### 2 Spring支持的事务管理类型是什么？你更倾向用那种事务管理类型？
 
@@ -1102,7 +1088,7 @@ Springboot如何选择代理模式：
 - 切面（Aspect）：
 切面是通知和切点的结合。通知和切点共同定义了切面的全部内容。 在Spring AOP中，切面可以使用通用类（基于模式的风格） 或者在普通类中以 @AspectJ 注解来实现。
 - 连接点（Join point）：
-指方法，在Spring AOP中，一个连接点 总是 代表一个方法的执行。 应用可能有数以千计的时机应用通知。这些时机被称为连接点。连接点是在应用执行过程中能够插入切面的一个点。这个点可以是调用方法时、抛出异常时、甚至修改一个字段时。切面代码可以利用这些点插入到应用的正常流程之中，并添加新的行为。
+指方法，在Spring AOP中，一个连接点总是 代表一个方法的执行。 应用可能有数以千计的时机应用通知。这些时机被称为连接点。连接点是在应用执行过程中能够插入切面的一个点。这个点可以是调用方法时、抛出异常时、甚至修改一个字段时。切面代码可以利用这些点插入到应用的正常流程之中，并添加新的行为。
 - 通知（Advice）：在AOP术语中，切面的工作被称为通知。
 - 切入点（Pointcut）：
 切点的定义会匹配通知所要织入的一个或多个连接点。我们通常使用明确的类和方法名称，或是利用正则表达式定义所匹配的类和方法名称来指定这些切点。
@@ -1517,7 +1503,7 @@ Spring Boot 配置过程中无代码生成，也无需 XML 配置文件就能完
 - 应用监控
 Spring Boot 提供一系列端点可以监控服务及应用，做健康检测。
 
-## 3.3 SpringBoot与Spring、Springmvc区别？
+## 3.3 SpringBoot与Spring、SpringMVC区别？
 **Spring**
 
 Spring最重要的特征是依赖注入。所有Spring Modules不是依赖注入就是IOC控制反转。 当我们恰当的使用DI或者是IOC的时候，可以开发松耦合应用。
