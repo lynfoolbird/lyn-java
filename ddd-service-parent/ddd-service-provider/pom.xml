@@ -17,24 +17,33 @@
         <dependency>
             <groupId>com.lynjava</groupId>
             <artifactId>ddd-service-app</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.lynjava</groupId>
             <artifactId>ddd-service-external</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.lynjava</groupId>
             <artifactId>ddd-service-persists</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <!-- 项目内模块依赖 end -->
+
+
 
     </dependencies>
 
     <build>
-        <finalName>demo-service-provider</finalName>
+<!--        <finalName>demo-service-provider</finalName>-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.yml</include>
+                    <include>config/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -45,11 +54,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--                <configuration>-->
-                <!--                    &lt;!&ndash; 指定该Main Class为全局的唯一入口 &ndash;&gt;-->
-                <!--                    <mainClass>com.lynjava.demo.app.DemoServiceApplication</mainClass>-->
-                <!--&lt;!&ndash;                    <layout>ZIP</layout>&ndash;&gt;-->
-                <!--                </configuration>-->
             </plugin>
         </plugins>
     </build>

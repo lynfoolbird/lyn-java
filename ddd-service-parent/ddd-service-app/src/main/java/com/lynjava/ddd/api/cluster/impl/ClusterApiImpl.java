@@ -1,8 +1,8 @@
-package com.lynjava.ddd.app.cluster.impl;
+package com.lynjava.ddd.api.cluster.impl;
 
 import com.lynjava.ddd.api.cluster.IClusterApi;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
-import com.lynjava.ddd.app.cluster.ClusterAppService;
+import com.lynjava.ddd.app.cluster.service.ClusterAppService;
 
 import javax.inject.Inject;
 import javax.inject.Named;

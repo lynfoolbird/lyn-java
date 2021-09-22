@@ -15,7 +15,6 @@
         <dependency>
             <groupId>com.lynjava</groupId>
             <artifactId>ddd-service-domain</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

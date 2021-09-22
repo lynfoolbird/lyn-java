@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @RestController
 @RequestMapping("/test")
@@ -26,10 +29,28 @@ public class TestController extends BaseAdminController{
     @Autowired
     private MainOperateService mainOperateService;
 
+    @Autowired
+    private ExecutorService executorService;
+
     @GetMapping("/{strategy}")
     public String doOperate(@PathVariable("strategy") String strategy) {
         mainOperateService.doOperate(strategy);
         return "success";
+    }
+
+    @GetMapping("/test2")
+    public String test2() {
+        Callable callable = new Callable() {
+            @Override
+            public Object call() throws Exception {
+                System.out.println(Thread.currentThread().getName());
+                Thread.sleep(2000L);
+                return null;
+            }
+        };
+        executorService.submit(callable);
+        System.out.println(((ThreadPoolExecutor)executorService).getCorePoolSize());
+        return "kkkk";
     }
 
     @RequestMapping("/test3.do")

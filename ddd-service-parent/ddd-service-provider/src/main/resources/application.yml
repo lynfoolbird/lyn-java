@@ -1,0 +1,6 @@
+# 线程池配置
+thread-pool:
+  corePoolSize:10
+  maxPoolSize:20
+  keepAliveTime:100
+  blockQueueSize:10

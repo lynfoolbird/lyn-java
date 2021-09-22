@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.lynjava</groupId>
             <artifactId>ddd-service-common</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

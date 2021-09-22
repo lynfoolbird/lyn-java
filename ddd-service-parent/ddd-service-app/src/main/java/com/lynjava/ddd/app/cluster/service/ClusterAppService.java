@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.cluster;
+package com.lynjava.ddd.app.cluster.service;
 
 
 import com.lynjava.ddd.app.cluster.assmbler.ClusterAssmbler;
