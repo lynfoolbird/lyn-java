@@ -300,6 +300,10 @@ IoC 在 Spring 里，只需要低级容器就可以实现，2 个步骤：
 至于高级容器 ApplicationContext，他包含了低级容器的功能，当他执行 refresh 模板方法的时候，将刷新整个容器的 Bean。同时其作为高级容器，包含了太多的功能。他支持不同信息源头，支持 BeanFactory 工具类，支持层级容器，支持访问文件资源，支持事件发布通知，支持接口回调等等。
 
 ## 1.13 什么是 Spring bean？bean的实例化过程？
+https://www.cnblogs.com/wyq178/p/11415877.html
+
+https://blog.csdn.net/caoyuanyenang/article/details/110505166
+
 Bean由Spring IoC 容器实例化，配置，装配和管理。Bean 是基于用户提供给容器的配置元数据创建。
 
 **bean的实例化过程**
