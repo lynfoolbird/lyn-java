@@ -49,7 +49,7 @@ public class TestController extends BaseAdminController{
             }
         };
         executorService.submit(callable);
-        System.out.println(((ThreadPoolExecutor)executorService).getCorePoolSize());
+        System.out.println(((ThreadPoolExecutor)executorService).getActiveCount());
         return "kkkk";
     }
 

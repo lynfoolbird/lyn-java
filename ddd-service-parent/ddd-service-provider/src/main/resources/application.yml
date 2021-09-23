@@ -1,6 +1,8 @@
+# 注意：冒号后面要有一个空格
+
 # 线程池配置
 thread-pool:
-  corePoolSize:10
-  maxPoolSize:20
-  keepAliveTime:100
-  blockQueueSize:10
+  corePoolSize: 10
+  maxPoolSize: 20
+  keepAliveTime: 100
+  blockQueueSize: 10

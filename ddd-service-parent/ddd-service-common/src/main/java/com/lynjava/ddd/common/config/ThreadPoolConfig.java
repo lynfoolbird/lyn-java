@@ -1,7 +1,8 @@
 package com.lynjava.ddd.common.config;
 
 import cn.hutool.core.thread.RejectPolicy;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,19 +10,18 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+@Getter
+@Setter
 @Configuration
 @ConfigurationProperties(prefix = "thread-pool")
-@Data
 public class ThreadPoolConfig {
-// TODO 待解决：多模块工程，common模块无法读取provide下的配置文件
-    private Integer corePoolSize=1;
+    private Integer corePoolSize;
 
-    private Integer maxPoolSize = 2;
+    private Integer maxPoolSize = 20;
 
-    private Integer blockQueueSize = 1;
+    private Integer blockQueueSize = 10;
 
-    private Integer keepAliveTime = 10;
+    private Integer keepAliveTime = 100;
 
     // 线程工厂
     private ThreadFactory buildCommonThreadFactory() {
@@ -37,6 +37,7 @@ public class ThreadPoolConfig {
 
     @Bean
     public ExecutorService executorService() {
+        System.out.println(this.corePoolSize);
         ExecutorService executorService = new ThreadPoolExecutor(corePoolSize,
                 maxPoolSize,
                 keepAliveTime, TimeUnit.SECONDS,
