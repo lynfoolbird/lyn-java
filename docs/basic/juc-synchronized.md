@@ -4,6 +4,8 @@ JDK内置隐式锁synchronized
 
 synchronized   原理、锁升级、锁优化
 
+https://www.cnblogs.com/aspirant/p/11470858.html
+
 # 1 简介
 ## 1.1 功能作用
 在**并发场景**中，保证**同一时刻**只有**一个线程**对有**并发隐患的代码**进行操作。

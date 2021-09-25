@@ -6,7 +6,11 @@ github：735835816@qq.com   lynfoolbird/三南@生
 
 gitee：
 
+https://github.com/AobingJava 面试题
 
+advanced-java
+
+javaguide
 
 绩效：业务目标；价值观与行为目标；组织与人员管理目标；个人能力提升目标；
 
@@ -99,7 +103,7 @@ oracle
 
 红黑树
 
-leetcode、牛客网、oj、剑指offer
+leetcode、牛客网、oj、剑指offer  刷题练习
 
 labuladong的算法小抄  github、gitee
 
@@ -215,6 +219,8 @@ api/app/domain/persit  每个子域一个模块 用包区分；跨聚合用id引
 
 ⾼可⽤架构设计： 分布式、超时和重试机制、集群容错机制、应对接⼝级故障： 降级、 熔断、 限流、排队；哨兵机制、keepalived
 
+大数据量：分治、并发、筛选、定期清理
+
 
 # 7 善用工具
 maven/gradle
@@ -238,6 +244,12 @@ mybatis-plus
 亮点、难题及解决方案、架构、技术栈
 
 大厂面经、互联网面经
+
+方法论：PDCA 四象限 SMART 5W2H
+
+leader思维  架构师思维  通用 扩展
+
+
 
 
 

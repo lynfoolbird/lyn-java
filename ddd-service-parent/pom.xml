@@ -111,7 +111,7 @@
 
     </dependencies>
 
-    <!-- 发布管理 -->
+    <!-- 发布库管理 -->
     <distributionManagement>
     </distributionManagement>
 
