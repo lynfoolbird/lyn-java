@@ -22,7 +22,8 @@
 
 TODO
 1 部署：打出的war包部署到tomcat启动问题？如何打出可执行jar？pom依赖管理
-2 统一异常处理，统一返回封装，日志ELK、参数校验（validator、jsonschema、代码）
+2 统一异常处理，统一返回封装，日志ELK、参数校验（validator、jsonschema、代码）、启动后执行、
+  pojo转换工具类MapStruct、dozer 深拷贝 浅拷贝; spring event, spring batch
   https://mp.weixin.qq.com/s/lZr-gTAKoA_FJSshu7KXvA
   https://cloud.tencent.com/developer/article/1650522
 3 过滤器、拦截器、自定义注解、AOP

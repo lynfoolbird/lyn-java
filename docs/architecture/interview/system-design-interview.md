@@ -103,7 +103,7 @@ Redis本身是支持事务，有很多原子命令，也可以用LUA，还可以
 
 **数据库**
 
-更新库存：update product set count=count=#{购买数量} where id=#{productId} and count-#{购买数量}>0
+更新库存：update product set count=count-#{购买数量} where id=#{productId} and count-#{购买数量}>0
 
 单独给秒杀建立一个数据库，为秒杀服务，表的设计也是竟可能的简单点，现在的互联网架构部署都是**分库**的。
 

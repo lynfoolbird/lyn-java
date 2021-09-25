@@ -184,7 +184,7 @@ nginx lua openresty
 
 限流：限流算法(固定窗口计数器、滑动窗口、令牌桶、漏桶算法)；接入层限流（nginx）、应用层限流（单机限流、分布式限流）；工具：guava ratelimit、hystrix、阿里sentinel 原理；自定义注解+AOP、自定义注解+拦截器+Redis+Lua；
 
-负载均衡：分流；软负载均衡（DNS、LVS四层、nginx七层）、硬负载均衡 （F5）；客户端、服务端负载均衡；算法：随机、轮询、加权轮询、IP哈希、url哈希、最少连接等；Ribbon、LoadBalancer、Feign；DNS负载均衡-> F5 -> nginx负载均衡
+负载均衡：分流；软负载均衡（DNS、LVS四层、nginx七层）、硬负载均衡 （F5）；客户端、服务端负载均衡；算法：随机、轮询、加权轮询、IP哈希、url哈希、最少连接、一致性hash等；Ribbon、LoadBalancer、Feign；DNS负载均衡-> F5 -> nginx负载均衡
 
 高可用：HAProxy、keepalived
 

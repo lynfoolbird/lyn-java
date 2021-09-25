@@ -1,4 +1,4 @@
-package com.lynjava.ddd.persistence.cluster;
+package com.lynjava.ddd.persistence.cluster.repository.impl;
 
 import com.lynjava.ddd.domain.cluster.repository.IClusterRepository;
 import com.lynjava.ddd.domain.cluster.repository.po.ClusterPO;
