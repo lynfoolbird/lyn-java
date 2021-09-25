@@ -95,7 +95,7 @@ Kafka 采⽤的就是发布 - 订阅模型。
 概念，与之对应的是 Partition（分区）。
 
 # 4 什么是Producer、 Consumer、 Broker、 Topic、Partition？
-Kafka 将⽣产者发布的消息发送到 Topic（主题） 中，需要这些消息的消费者可以订阅这些Topic（主题） ，如下图所示：
+Kafka 将⽣产者发布的消息发送到 Topic 中，需要这些消息的消费者可以订阅这些Topic（主题） ，如下图所示：
 
 ![img](images/kafka-concept.png)
 
@@ -103,17 +103,16 @@ Kafka 将⽣产者发布的消息发送到 Topic（主题） 中，需要这些�
 
 1. Producer（⽣产者） : 产⽣消息的⼀⽅。
 2. Consumer（消费者） : 消费消息的⼀⽅。
-3. Broker（代理） : 可以看作是⼀个独⽴的 Kafka 实例。多个 Kafka Broker 组成⼀个 Kafka
-Cluster。
+3. Broker（代理） : 可以看作是⼀个独⽴的Kafka实例。多个Kafka Broker组成⼀个 Kafka Cluster。
 
 同时，你⼀定也注意到每个 Broker 中⼜包含了 Topic 以及 Partition 这两个重要的概念：
 
 Topic（主题） : Producer 将消息发送到特定的主题， Consumer 通过订阅特定的 Topic来消费消息。
 
-Partition（分区） : Partition 属于 Topic 的⼀部分。⼀个 Topic 可以有多个 Partition ，并且同⼀ Topic 下的 Partition 可以分布在不同的 Broker 上，这也就表明⼀个 Topic 可以横跨多  个 Broker 。
+Partition（分区） : Partition 属于 Topic 的⼀部分。⼀个 Topic 可以有多个 Partition ，并且同⼀ Topic 下的 Partition 可以分布在不同的 Broker 上，这也就表明⼀个Topic可以横跨多个Broker 。
 
 # 5 Kafka 的多副本机制了解吗？带来了什么好处？ 
-还有⼀点我觉得⽐较重要的是 Kafka 为分区（Partition）引⼊了多副本（Replica）机制。分区（Partition）中的多个副本之间会有⼀个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进⾏同步。
+还有⼀点我觉得⽐较重要的是 Kafka 为分区（Partition）引⼊了多副本（Replica）机制。分区（Partition）中的多个副本之间会有⼀个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到 leader 副本，然后 follower副本才能从 leader 副本中拉取消息进⾏同步。
 >⽣产者和消费者只与 leader 副本交互。你可以理解为其他副本只是 leader 副本的拷⻉，它们的存在只是为了保证消息存储的安全性。当 leader 副本发⽣故障时会从 follower 中选举出⼀个 leader,但是 follower 中如果有和 leader 同步程度达不到要求的参加不了 leader 的竞选
 
 Kafka 的多分区（Partition）以及多副本（Replica）机制有什么好处呢？
@@ -156,25 +155,23 @@ ex.getMessage()));
 
 **消费者丢失消息的情况**
 
-我们知道消息在被追加到 Partition(分区)的时候都会分配⼀个特定的偏移量（offset）。偏移量（offset)表示 Consumer 当前消费到的 Partition(分区)的所在的位置。 Kafka 通过偏移量（offset）可以保证消息在分区内的顺序性。当消费者拉取到了分区的某个消息之后，消费者会⾃动提交了 offset。⾃动提交的话会有⼀个问题，试想⼀下，当消费者刚拿到这个消息准备进⾏真正消费的时候，突然挂掉了，消息实际上并没有被消费，但是 offset 却被⾃动提交了。解决办法也⽐较粗暴，我们⼿动关闭⾃动提交 offset，每次在真正消费完消息之后之后再⾃⼰⼿动提交 offset 。 但是，细⼼的朋友⼀定会发现，这样会带来消息被重新消费的问题。⽐如你刚刚消费完消息之后，还没提交 offset，结果⾃⼰挂掉了，那么这个消息理论上就会被消费两次。
+消息在被追加到 Partition的时候都会分配⼀个特定的偏移量（offset）。偏移量表示 Consumer 当前消费到的 Partition的所在的位置。 Kafka 通过偏移量可以保证消息在分区内的顺序性。当消费者拉取到了分区的某个消息之后，消费者会⾃动提交了 offset。⾃动提交的话会有⼀个问题，当消费者刚拿到这个消息准备进⾏真正消费的时候，突然挂掉了，消息实际上并没有被消费，但是 offset 却被⾃动提交了。解决办法也⽐较粗暴，⼿动关闭⾃动提交 offset，每次在真正消费完消息之后再⼿动提交 offset 。 但是这样会带来消息被重新消费的问题。⽐如你刚刚消费完消息之后，还没提交 offset，结果⾃⼰挂掉了，那么这个消息理论上就会被消费两次。
 
 **Kafka 弄丢了消息**
 
-我们知道 Kafka 为分区（Partition）引⼊了多副本（Replica）机制。分区（Partition）中的多个副本之间会有⼀个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进⾏同步。⽣产者和消费者只与leader 副本交互。你可以理解为其他副本只是 leader 副本的拷⻉，它们的存在只是为了保证消息存储的安全性。
+Kafka 为分区引⼊了多副本（Replica）机制。分区中的多个副本之间会有⼀个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进⾏同步。⽣产者和消费者只与leader 副本交互。
 
 试想⼀种情况：假如 leader 副本所在的 broker 突然挂掉，那么就要从 follower 副本重新选出⼀个 leader ，但是 leader 的数据还有⼀些没有被 follower 副本的同步的话，就会造成消息丢失。
 
 - 设置 acks = all
-解决办法就是我们设置 acks = all。 acks 是 Kafka ⽣产者(Producer) 很重要的⼀个参数。acks 的默认值即为1，代表我们的消息被leader副本接收之后就算被成功发送。当我们配置 acks= all 代表则所有副本都要接收到该消息之后该消息才算真正成功被发送。
+解决办法就是我们设置 acks = all。 acks 是 Kafka ⽣产者很重要的⼀个参数。acks 的默认值即为1，代表我们的消息被leader副本接收之后就算被成功发送。当我们配置 acks= all 代表则所有副本都要接收到该消息之后该消息才算真正成功被发送。
 
 - 设置 replication.factor >= 3
-为了保证 leader 副本能有 follower 副本能同步消息，我们⼀般会为 topic 设置 replication.factor>= 3。这样就可以保证每个 分区(partition) ⾄少有 3 个副本。虽然造成了数据冗余，但是带来了数据的安全性。
-
+为了保证 leader 副本能有 follower 副本能同步消息，⼀般会为 topic 设置 replication.factor>= 3。保证每个 分区(partition) ⾄少有 3 个副本。虽然造成了数据冗余，但是带来了数据的安全性。
 - 设置 min.insync.replicas > 1
-⼀般情况下我们还需要设置 min.insync.replicas> 1 ，这样配置代表消息⾄少要被写⼊到 2 个副本才算是被成功发送。 min.insync.replicas 的默认值为 1 ，在实际⽣产中应尽量避免默认值1。但是，为了保证整个 Kafka 服务的⾼可⽤性，你需要确保 replication.factor >min.insync.replicas 。为什么呢？设想⼀下加⼊两者相等的话，只要是有⼀个副本挂掉，整个分区就⽆法正常⼯作了。这明显违反⾼可⽤性！⼀般推荐设置成 replication.factor = min.insync.replicas + 1。
-
+⼀般情况下需要设置 min.insync.replicas> 1 ，代表消息⾄少要被写⼊到 2 个副本才算是被成功发送。 min.insync.replicas 默认值为 1 ，⽣产中应尽量避免默认值1。为保证Kafka 服务⾼可⽤，需要确保 replication.factor >min.insync.replicas 。为什么？假如两者相等，只要是有⼀个副本挂掉，整个分区就⽆法正常⼯作了。这明显违反⾼可⽤性！⼀般推荐设置成 replication.factor = min.insync.replicas + 1。
 - 设置 unclean.leader.election.enable = false
-我们最开始也说了我们发送的消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进⾏同步。多个 follower 副本之间的消息同步情况不⼀样，当我们配置了unclean.leader.election.enable = false 的话，当 leader 副本发⽣故障时就不会从 follower 副本中和 leader 同步程度达不到要求的副本中选择出 leader ，这样降低了消息丢失的可能性。
+消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进⾏同步。多个 follower 副本之间的消息同步情况不⼀样，当我们配置了unclean.leader.election.enable = false 的话，当 leader 副本发⽣故障时就不会从 follower 副本中和 leader 同步程度达不到要求的副本中选择出 leader ，降低了消息丢失的可能性。
 
 （1）acks=0： 表示producer不需要等待任何broker确认收到消息的回复，就可以继续发送下一条消息。性能最高，但是最容易丢消息。大数据统计报表场景，对性能要求很高，对数据丢失不敏感的情况可以用这种。
 
@@ -256,9 +253,9 @@ ex.getMessage()));
 
 6）等快速消费完积压数据之后，得恢复原先部署架构，重新用原先的consumer机器来消费消息
 
-（2）由于消息数据格式变动或消费者程序有bug，导致消费者一直消费不成功，也可能导致broker积压大量未消费消息。
+（2）由于消息数据格式变动或消费者程序有bug，导致消费者一直消费不成功，也可能导致消息积压
 
-此种情况可以将这些消费不成功的消息转发到其它队列里去(类似死信队列)，后面再慢慢分析死信队列里的消息处理问题。
+此种情况可以将消费不成功的消息转发到其它队列里去(类似死信队列)，后面再分析死信队列的消息处理问题。
 
 （3）延迟消息丢失
 
@@ -266,7 +263,7 @@ ex.getMessage()));
 
 这个情况下，就不是说要增加consumer消费积压的消息，因为实际上没啥积压，而是丢了大量的消息。我们可以采取一个方案，就是批量重导，将丢失的那批数据，写个临时程序，一点一点的查出来，然后重新灌入mq里面去
 
-# 11 延时队列
+# 11 延时队列 优先级队列
 
 延时队列存储的对象是延时消息。所谓的“延时消息”是指消息被发送以后，并不想让消费者立刻获取，而是等待特定的时间后，消费者才能获取这个消息进行消费，延时队列的使用场景有很多， 比如 ：
 
@@ -274,7 +271,9 @@ ex.getMessage()));
 
 2）订单完成1小时后通知用户进行评价。
 
-实现思路：发送延时消息时先把消息按照不同的延迟时间段发送到指定的队列中（topic_1s，topic_5s，topic_10s，...topic_2h，这个一般不能支持任意时间段的延时），然后通过定时器进行轮训消费这些topic，查看消息是否到期，如果到期就把这个消息发送到具体业务处理的topic中，队列中消息越靠前的到期时间越早，具体来说就是定时器在一次消费过程中，对消息的发送时间做判断，看下是否延迟到对应时间了，如果到了就转发，如果还没到这一次定时任务就可以提前结束了。
+实现思路：
+
+发送延时消息时先把消息按照不同的延迟时间段发送到指定的队列中（topic_1s，topic_5s，topic_10s，...topic_2h，这个一般不能支持任意时间段的延时），然后通过定时器进行轮训消费这些topic，查看消息是否到期，如果到期就把这个消息发送到具体业务处理的topic中，队列中消息越靠前的到期时间越早，具体来说就是定时器在一次消费过程中，对消息的发送时间做判断，看下是否延迟到对应时间了，如果到了就转发，如果还没到这一次定时任务就可以提前结束了。
 
 # 12 消息回溯
 

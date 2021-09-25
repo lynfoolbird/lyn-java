@@ -23,16 +23,16 @@ https://blog.lupf.cn/articles/2021/02/03/1612316917867.html#toc_h4_35
 ### 1.1 简单介绍下redis
 简单来说 Redis 就是⼀个使⽤ C 语⾔开发的内存数据库，读写速度⾮常快，因此 Redis 被⼴泛应⽤于缓存⽅向。另外， Redis 除了做缓存之外， Redis 也经常⽤来做分布式锁，甚⾄是消息队列。Redis 提供了多种数据类型来⽀持不同的业务场景。 Redis 还⽀持事务 、持久化、 Lua 脚本、多种集群⽅案。
 
-Redis 本质上是一个 Key-Value 类型的内存数据库，定期通过异步操作把数据库数据 flush 到硬盘上进行保存。因为是纯内存操作，Redis 的性能非常出色，每秒可以处理超过 10 万次读写操作，是已知性能最快的 Key-Value DB。Redis 的出色之处不仅仅是性能，Redis 最大的魅力是支持保存多种数据结构，此外单个value 的最大限制是 1GB，不像 memcached 只能保存 1MB 的数据，因此 Redis 可以用来实现很多有用的功能，比方说用他的 List 来做FIFO 双向链表，实现一个轻量级的高性能消息队列服务，用他的 Set 可以做高性能的 tag 系统等等。另外 Redis 也可以对存入的Key-Value 设置 expire 时间。
+Redis是一个 Key-Value 类型的内存数据库，定期通过异步操作把数据库数据 flush 到硬盘上进行保存。因为是纯内存操作，Redis 的性能非常出色，每秒可以处理超过 10 万次读写操作，是已知性能最快的 Key-Value DB。Redis最大的魅力是支持保存多种数据结构，此外单个value 的最大限制是 1GB，不像 memcached 只能保存 1MB 的数据，因此 Redis 可以用来实现很多有用的功能，比方说用他的 List 来做FIFO 双向链表，实现一个轻量级的高性能消息队列服务，用他的 Set 可以做高性能的 tag 系统等等。另外 Redis 也可以对存入的Key-Value 设置 expire 时间。
 
 Redis 的主要缺点是数据库容量受到物理内存的限制，不能用作海量数据的高性能读写，因此 Redis 适合的场景主要局限在较小数据量的高性能操作和运算上。
 
 ### 1.2 分布式缓存常⻅的技术选型⽅案有哪些？redis和memcached对比？为什么选择redis做缓存？
 分布式缓存的话，使⽤的⽐较多的主要是 Memcached 和 Redis。两者都是高性能内存数据库，都有过期策略。
-1. memcached 所有的值均是简单的字符串，Redis ⽀持更丰富的数据类型（⽀持更复杂的应⽤场景） 。 Redis 不仅仅⽀持简单的 k/v 类型的数据，同时还提供 list， set， zset， hash 等数据结构的存储。 Memcached 只⽀持最简单的 k/v 数据类型。
+1. Redis⽀持更丰富的数据类型 。 Redis 不仅⽀持简单的 k/v 类型的数据，同时还提供 list， set， zset， hash 等数据结构的存储。 Memcached 只⽀持最简单的 k/v 数据类型， 所有的值均是简单的字符串。
 2. Redis 的速度比 memcached 快很多
-3. Redis ⽀持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进⾏使⽤,⽽ Memecache 把数据全部存在内存之中。
-4. Memcached 没有原⽣的集群模式，需要依靠客户端来实现往集群中分⽚写⼊数据；但是Redis ⽬前是原⽣⽀持 cluster 模式的。
+3. Redis ⽀持数据持久化，可以将内存中数据保持在磁盘中，重启的时候可以再次加载,⽽ Memecache 把数据全部存在内存之中。
+4. Memcached 没有集群模式，依靠客户端来实现往集群中分⽚写⼊数据；但Redis原⽣⽀持 cluster 模式的。
 5. Memcached 是多线程，⾮阻塞 IO 复⽤的⽹络模型； Redis 使⽤单线程的多路 IO 复⽤模型。 
 6. Redis ⽀持发布订阅模型、 Lua 脚本、事务等，⽽Memcached不⽀持。并且Redis⽀持更多的编程语⾔。
 7. Memcached过期数据删除策略只⽤惰性删除，⽽ Redis 同时使⽤惰性删除与定期删除。
