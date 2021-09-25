@@ -2,6 +2,8 @@ package com.lynjava.ddd.api.cluster;
 
 
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
+import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
+import com.lynjava.ddd.api.shared.Result;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -15,7 +17,7 @@ public interface IClusterApi {
 
     @GET
     @Path("/{id}")
-    Object getCluster(@PathParam("id") String id, @QueryParam("type") String type);
+    Result<ClusterOutputDto> getCluster(@PathParam("id") String id, @QueryParam("type") String type);
 
     @POST
     @Path("")

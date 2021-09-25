@@ -23,6 +23,8 @@
 TODO
 1 部署：打出的war包部署到tomcat启动问题？如何打出可执行jar？pom依赖管理
 2 统一异常处理，统一返回封装，日志ELK、参数校验（validator、jsonschema、代码）
+  https://mp.weixin.qq.com/s/lZr-gTAKoA_FJSshu7KXvA
+  https://cloud.tencent.com/developer/article/1650522
 3 过滤器、拦截器、自定义注解、AOP
 4 mybatis集成 mysql集成 连接池 事务  动态多数据源
 5 springevent、动态加载bean，启动后执行runner；异步@Async、定时调度@Schedule、事务@Transaction、线程池
