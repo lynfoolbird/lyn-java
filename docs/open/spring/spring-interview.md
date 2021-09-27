@@ -414,6 +414,8 @@ Spring容器能够自动装配bean，通过检查BeanFactory内容让Spring自�
 - 自动装配不如显式装配精确，如果有可能，建议使用显式装配。
 
 ## 1.18 Spring循环依赖怎么解决？
+https://www.zhihu.com/question/438247718
+
 三级缓存机制
 
 Bean实例化的过程：执行实例化前操作，创建Bean实例，将Bean缓存起来，给Bean填充属性值，初始化Bean
