@@ -14,9 +14,9 @@ import javax.inject.Named;
 public class ClusterAssmbler {
 
     public ClusterAR toDO(ClusterInputDto clusterInputDto) {
-        ClusterAR ClusterAR = new ClusterAR();
-        BeanUtils.copyProperties(clusterInputDto, ClusterAR);
-        return ClusterAR;
+        ClusterAR clusterAR = new ClusterAR();
+        BeanUtils.copyProperties(clusterInputDto, clusterAR);
+        return clusterAR;
 
     }
 

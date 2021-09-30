@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.components;
+package com.lynjava.ddd.components;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

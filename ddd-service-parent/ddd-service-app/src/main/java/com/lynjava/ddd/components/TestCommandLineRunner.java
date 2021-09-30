@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.components;
+package com.lynjava.ddd.components;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;

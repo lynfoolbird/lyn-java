@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class OrderVO {
+public class TestVO {
     private String orderId;
 
     private String orderName;

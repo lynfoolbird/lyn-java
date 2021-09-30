@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.components;
+package com.lynjava.ddd.components;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

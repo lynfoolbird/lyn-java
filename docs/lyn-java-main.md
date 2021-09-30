@@ -78,6 +78,8 @@ spring循环依赖、spring设计模式、IOC、AOP、MVC流程
 
 springboot 启动后执行方法：实现CommandLineRunner接口；实现ApplicationRunner接口；实现ApplicationListener接口；实现InitializingBean；@PostConstruct
 
+SpEL获取List对象中某个字段集合 #serverMemberList.![id]
+
 ## 2.2 mybatis
 mybatis/mybatis plus jdbc orm 
 
@@ -197,12 +199,6 @@ nginx lua openresty
 DDD CQRS 六边形架构
 
 《实现领域驱动设计》
-
-跨子域要在app层编排；聚合(子域内)在domain层；防腐层external接口在app层、domain层声明；
-
-api/app/domain/persit  每个子域一个模块 用包区分；跨聚合用id引用而非对象引用；
-
-子域内每个聚合一个repo，对应一个或多个Dao，每个实体对应一个Dao，值对象不具有Dao
 
 
 # 6 架构设计与性能调优
