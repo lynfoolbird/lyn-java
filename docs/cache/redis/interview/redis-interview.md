@@ -904,6 +904,8 @@ redis cluster的高可用的原理，几乎跟哨兵是类似的
 
 ### 1.29 大key优化
 
+newKey = oldKey + (hash(field)%10000)
+
 分拆到不同redis实例，降低单个redis实例io压力
 
 - 单个key存储大value

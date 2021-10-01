@@ -59,7 +59,8 @@ TODO
 4 mybatis集成 mysql集成 连接池 事务  动态多数据源 cxf集成swagger
 5 springevent、动态加载bean，启动后执行runner；异步@Async、定时调度@Schedule、事务@Transaction、线程池
   RestTemplate http连接池
-6 中间件集成：redis、kafka，es，mycat、任务调度xxljob
+6 中间件集成：redis、kafka，es，mycat、任务调度xxljob；工作流Activity snake；模板引擎freemaker，thmleaf、beatle；
+  规则引擎；消息集成：短信、邮件
 7 分布式：zk
 
 工程二 dubbo demo

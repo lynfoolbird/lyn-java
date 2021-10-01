@@ -2,6 +2,12 @@
 
 架构师面试：架构设计、系统设计、JVM、性能优化
 
+github 敖丙aobing  TFdream 
+
+https://mp.weixin.qq.com/s/gYpZCSYK3YYEvGFFeHdFJQ
+
+architect-awesome    java-interview-advanced   javaguide  石杉
+
 github：735835816@qq.com   lynfoolbird/三南@生
 
 gitee：
@@ -216,6 +222,12 @@ DDD CQRS 六边形架构
 ⾼可⽤架构设计： 分布式、超时和重试机制、集群容错机制、应对接⼝级故障： 降级、 熔断、 限流、排队；哨兵机制、keepalived
 
 大数据量：分治、并发、筛选、定期清理
+
+多线程设计模式
+
+连接池：c3p0、dbcp；druid、HikariCP
+
+远程调用：RMI、springhttpinvoke、webservice、rpc、http、restful
 
 
 # 7 善用工具
