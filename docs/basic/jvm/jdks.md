@@ -121,7 +121,3 @@ JVM新特性：元空间
 # JDK7
 
 try-with-resouce；catch多个异常；ForkJoin框架；switch支持String
-
-
-
-JDK15-JDK5

@@ -91,8 +91,7 @@ Kafka 主要有两⼤应⽤场景：
 
 Kafka 采⽤的就是发布 - 订阅模型。
 
->RocketMQ 的消息模型和 Kafka 基本是完全⼀样的。唯⼀的区别是 Kafka 中没有队列这个
-概念，与之对应的是 Partition（分区）。
+>RocketMQ 的消息模型和 Kafka 基本是完全⼀样的。唯⼀的区别是 Kafka 中没有队列这个概念，与之对应的是 Partition（分区）。
 
 # 4 什么是Producer、 Consumer、 Broker、 Topic、Partition？
 Kafka 将⽣产者发布的消息发送到 Topic 中，需要这些消息的消费者可以订阅这些Topic（主题） ，如下图所示：
