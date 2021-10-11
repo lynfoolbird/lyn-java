@@ -1,40 +1,30 @@
-重点面试题：如注解原理，hashmap、Concurrenthashmap...
-
 架构师面试：架构设计、系统设计、JVM、性能优化
 
-github 敖丙aobing  TFdream 
-
-https://mp.weixin.qq.com/s/gYpZCSYK3YYEvGFFeHdFJQ
-
-architect-awesome    java-interview-advanced   javaguide  石杉
-
-github：735835816@qq.com   lynfoolbird/三南@生
-
-gitee：
-
-https://github.com/AobingJava 面试题
-
-http://javainterview.gitee.io/luffy/
-
-advanced-java
-
-javaguide
-
 绩效：业务目标；价值观与行为目标；组织与人员管理目标；个人能力提升目标；
-
-
-
-beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanfactory factorybean，aware接口
-
-Nginx；Java dsmiley.httpproxy包
-
-静态代理、动态代理 JDK cglib 区别 应用场景 aop  spring中使用
-
-
 
 危机意识  不可替代性
 
 增加技能包 掌握核心科技 python与AI、go、安全
+
+
+
+github：735835816@qq.com   lynfoolbird/三南@生
+
+https://github.com/xingshaocheng/architect-awesome   architect-awesome  
+
+https://github.com/AobingJava     敖丙Java
+
+http://javainterview.gitee.io/luffy/   对线面试官
+
+https://gitee.com/shishan100/Java-Interview-Advanced  石杉架构
+
+https://gitee.com/SnailClimb/JavaGuide/          JavaGuide
+
+https://github.com/TFdream TFdream 
+
+
+
+阿里面试 https://mp.weixin.qq.com/s/gYpZCSYK3YYEvGFFeHdFJQ
 
 https://blog.csdn.net/weixin_47066028/article/details/112887939?utm_medium=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~default-5.pc_relevant_baidujshouduan&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~OPENSEARCH~default-5.pc_relevant_baidujshouduan
 
@@ -87,6 +77,10 @@ spring循环依赖、spring设计模式、IOC、AOP、MVC流程
 springboot 启动后执行方法：实现CommandLineRunner接口；实现ApplicationRunner接口；实现ApplicationListener接口；实现InitializingBean；@PostConstruct
 
 SpEL获取List对象中某个字段集合 #serverMemberList.![id]
+
+beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanfactory factorybean，aware接口
+
+静态代理、动态代理 JDK cglib 区别 应用场景 aop  spring中使用
 
 ## 2.2 mybatis
 mybatis/mybatis plus jdbc orm 
@@ -174,6 +168,8 @@ xxl-job、elasticJob、quartz、spring task
 ## 4.7 WEB服务
 tomcat
 nginx lua openresty
+
+Nginx；Java dsmiley.httpproxy包
 
 # 5 分布式微服务
 
