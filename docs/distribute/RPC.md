@@ -170,4 +170,10 @@ Protobuf是跨语言的。
 
 # 手写RPC
 
-基于Netty和Protobuf实现lynRPC，用zookeeper作注册中心
+基于Netty和Protobuf实现lynRPC，用zookeeper作注册中心，支持SPI扩展
+
+客户端 依赖接口， clientStub动态代理对象（接口代理），完成请求消息编组（包括接口类、方法、及参数等），发送网络请求，对响应消息解组
+
+服务端 实现接口，serverStub动态代理对象（实现类代理），请求消息解组，执行方法，响应消息（包括响应结果等）编组
+
+服务注册与发现
