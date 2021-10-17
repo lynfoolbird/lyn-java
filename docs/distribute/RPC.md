@@ -79,13 +79,13 @@ RPC和MQ适用场景：
 
 4.随着业务增长，有的处理端处理量会成为瓶颈，会进行同步调用到异步消息的改造。
 
-![1634043712810](images\rpc-mq.png)
+![1634043712810](images/rpc-mq.png)
 
 # RPC流程
 
 RPC流程
 
-![1634044005314](images\rpc-flow.png)
+![1634044005314](images/rpc-flow.png)
 
 1.客户端处理过程中调用Client stub（就像调用本地方法一样），传入参数；
 
@@ -138,7 +138,7 @@ java领域：
 
 远程提供者需要以某种形式提供服务调用相关的信息，包括但不限于服务接口定义、数据结构、或者中间态的服务定义文件。例如Facebook的Thrift的IDL文件，Web service的WSDL文件；服务的调用者需要通过一定的途径获取远程服务调用相关的信息。
 
-![1634045272473](images\rpc-service-baolu.png)
+![1634045272473](images/rpc-service-baolu.png)
 
 # RPC涉及关键技术
 
@@ -158,13 +158,13 @@ java 里至少提供了两种技术来提供动态代码生成，一种是 jdk �
 
 RPC框架通信与具体的协议无关。RPC 可基于 HTTP 或 TCP 协议，Web Service 就是基于 HTTP 协议的 RPC，它具有良好的跨平台性，但其性能却不如基于TCP 协议的 RPC。
 
-![1634046054544](images\rpc-tongxin.png)
+![1634046054544](images/rpc-tongxin.png)
 
 ## 序列化
 
 两方面会直接影响 RPC 的性能，一是传输方式，二是序列化
 
-![1634046257642](images\rpc-xuliehua.png)
+![1634046257642](images/rpc-xuliehua.png)
 
 Protobuf是跨语言的。
 
