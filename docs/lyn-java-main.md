@@ -4,7 +4,7 @@
 
 危机意识  不可替代性
 
-增加技能包 掌握核心科技 python与AI、go、安全
+增加技能包 掌握核心科技 python与AI、go、安全、容器化k8s、docker
 
 
 
@@ -157,7 +157,7 @@ Solr、elastic search
 
 ## 4.4 分库分表
 
-mycat
+mycat、sharding-jdbc
 
 ## 4.5 文件系统
 FastDFS
@@ -198,15 +198,11 @@ Nginx；Java dsmiley.httpproxy包
 
 高可用：HAProxy、keepalived
 
-
-
-DDD CQRS 六边形架构
-
-《实现领域驱动设计》
+DDD CQRS 六边形架构  《实现领域驱动设计》
 
 istio、service mesh
 
-容器化 k8s docker
+容器化 k8s docker  go语言
 
 
 # 6 架构设计与性能调优
@@ -265,5 +261,5 @@ leader思维  架构师思维  通用 扩展
 
 
 
-
+职业规划未来规划：架构师/驾照...教师资格证？
 
