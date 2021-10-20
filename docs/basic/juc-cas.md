@@ -1,4 +1,7 @@
+CAS、原子变量
+
 # 0 思维导图
+
 ![img](images/cas-xmind.jpg)
 
 # 1 基本概念
@@ -6,6 +9,7 @@
 
 它包含3个参数CAS（V，E，N），V表示待更新的内存值，E表示预期值，N表示新值，当 V值等于E值时，才会将V值更新成N值，如果V值和E值不等，不做更新，这就是一次CAS的操作。
 ![img](images/cas-flow.png)
+
 简单说，CAS需要你额外给出一个期望值，也就是你认为这个变量现在应该是什么样子的，如果变量不是你想象的那样，说明它已经被别人修改过了，你只需要重新读取，设置新期望值，再次尝试修改就好了。
 
 # 2 CAS如何保证原子性
@@ -18,8 +22,10 @@
 ## 2.1 总线锁定
 
 总线（BUS）是计算机组件间的传输数据方式，也就是说CPU与其他组件连接传输数据，就是靠总线完成的，比如CPU对内存的读写。
+
 ![img](images/cas-bus.jpg)
 总线锁定是指CPU使用了总线锁，所谓总线锁就是使用CPU提供的LOCK#信号，当CPU在总线上输出LOCK#信号时，其他CPU的总线请求将被阻塞。
+
 ![img](images/cas-bus-lock.png)
 
 ## 2.2 缓存锁定
@@ -50,6 +56,7 @@ CAS只能针对一个共享变量使用，如果多个共享变量就只能使�
 
 最后来说自旋锁的实现，实现自旋锁可以基于CAS实现，先定义lockValue对象默认值1，1代表锁资源空闲，0代表锁资源被占用，代码如下：
 ![img](images/cas-spinlock.png)
+
 上面定义了AtomicInteger类型的lockValue变量，AtomicInteger是Java基于C A S实现的Integer原子操作类，还定义了3个函数lock、tryLock、unLock
 
 tryLock函数-获取锁：
@@ -67,7 +74,8 @@ CAS更新
 lock函数-自旋获取锁：
 **执行tryLock函数，返回true停止，否则一直循环**
 ![img](images/cas-spinlock-flow.jpg)
-从上图可以看出，只有tryLock成功的线程（把lockValue更新为0），才会执行代码块，其他线程个tryLock自旋等待lockValue被更新成1，tryLock成功的线程执行unLock（把lockValue更新为1），自旋的线程才会tryLock成功。
+
+从上图可看出，只有tryLock成功的线程（把lockValue更新为0），才会执行代码块，其他线程个tryLock自旋等待lockValue被更新成1，tryLock成功的线程执行unLock（把lockValue更新为1），自旋的线程才会tryLock成功。
 
 ## 3.3 ABA问题
 CAS需要检查待更新的内存值有没有被修改，如果没有则更新，但是存在这样一种情况，如果一个值原来是A，变成了B，然后又变成了A，在CAS检查的时候会发现没有被修改。
@@ -88,3 +96,5 @@ CAS需要检查待更新的内存值有没有被修改，如果没有则更新�
 # 4 原子变量
 
 atomic包
+
+LongAddr优化

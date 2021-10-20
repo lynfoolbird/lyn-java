@@ -1,10 +1,12 @@
-https://www.toutiao.com/a6916740022851060227/?channel=&source=search_tab
+
 
 JDK内置隐式锁synchronized
 
 synchronized   原理、锁升级、锁优化
 
-https://www.cnblogs.com/aspirant/p/11470858.html
+[1W字的Synchronized 精讲，你服不服？](https://www.toutiao.com/a6916740022851060227/?channel=&source=search_tab)
+
+[深入分析Synchronized原理(阿里面试题)](https://www.cnblogs.com/aspirant/p/11470858.html)
 
 # 1 简介
 ## 1.1 功能作用
@@ -38,11 +40,15 @@ public class SynchronizedDemo implements Runnable {
 }
 ```
 **结果** ：显然不等于400000次所以出现了运算错误
+
 **原因**：count++;非原子操作，该语句包含三个操作：
+
 1. 线程t1、t2 从主内存中获取共享变量count的值，到自己的工作内存中
 2. 将自己的工作内存中的count值进行+1操作
 3. 将修改完的count变量的值存入到主内存中
+
 ![img](images/synchronized-jmm.png)
+
 **注意**：他们是将自己工作内存中的值进行改变刷回主内存，假设当前count的值为8，t1、t2将count的值复制到自己的工作内存中进行修改，如果此时t1将count变成9、t2此时也将count的值变成9，当t1、t2两个线程都将值刷回主内存的时候count值为9，并不是10，这个时候就会造成最后的结果和预期的不一致。
 
 ## 1.3 正确案例
@@ -88,7 +94,9 @@ public void run() {
 ## 2.1 对象锁
 ### 2.1.1 修饰普通方法
 **修饰普通方法默认锁对象为this当前实例对象**
-public synchronized void method() ;在普通方法上面加synchronized
+
+public synchronized void method() ; 在普通方法上面加synchronized
+
 ```java
 public class SynchronizedDemo3 implements Runnable {
     static SynchronizedDemo3 synchronizedDemo3 = new SynchronizedDemo3();
@@ -125,19 +133,27 @@ public class SynchronizedDemo3 implements Runnable {
 
 ### 2.1.2 修饰代码块
 **锁对象是this当前对象**
+
 ![img](images/synchronized-block-demo1.png)
+
 **输出结果**：线程 t1 和线程 t2 执行过程是顺序执行的
 
 **锁对象是自定义对象**
+
 ![img](images/synchronized-block-demo2.png)
+
 **输出结果**：线程 t1 和线程 t2 执行形成了顺序，这种情况下和this没有什么区别，但是如果是多个同步代码块的话就需要进行自定义对象锁了
 
 **多个同步代码块使用自定义对象锁，（两个自定义对象锁对应两个同步代码块）**
+
 ![img](images/synchronized-block-demo3.png)
+
 **输出结果**：输出顺序线程t1 和线程t2 代码进行了交叉执行，出现了乱序
 
 **多个同步代码块使用自定义对象锁（一个自定义对象锁对应两个同步代码块）**
+
 ![img](images/synchronized-block-demo4.png)
+
 **输出结果**：线程 t1 和线程 t2 执行形成了顺序
 
 ## 2.2 类锁
@@ -223,7 +239,9 @@ public class SynchronizedDemo5 implements Runnable {
 可重入、不可中断（原子性）、是否公平？
 ## 3.1 可重入性
 就是说你已经获取了一把锁，等想要再次请求的时候不需要释放这把锁和其他线程一起竞争该锁，可以直接使用该锁。好处：避免死锁；粒度：线程而非调用
+
 demo1：证明同一个方法是可重入
+
 ```java
 public class SynchronizedDemo6 {
     int count = 0;
@@ -241,7 +259,9 @@ public class SynchronizedDemo6 {
 }
 ```
 输出：0 1
+
 demo2：可重入不要求是同一个方法
+
 ```java
 public class SynchronizedDemo7 {
     private synchronized void method1() {
@@ -258,7 +278,9 @@ public class SynchronizedDemo7 {
 }
 ```
 输出：method1 method2
+
 demo3：可重入不要求是同一个类中的
+
 ```java
 public class SynchronizedDemo8 {
     public synchronized void doSomething() {
@@ -293,13 +315,16 @@ public void test() {
 }
 ```
 利用 javap -verbose 类的名字查看编译后的文件：
+
 ![img](images/synchronized-block-class.png)
+
 **monitorenter**：每个对象都是一个监视器锁（monitor）。当monitor被占用时就会处于锁定状态，线程执行monitorenter指令时尝试获取monitor的所有权，过程如下:
+
 1. 如果monitor的进入数为0，则该线程进入monitor，然后将进入数设置为1，该线程即为monitor的所有者
 2. 如果线程已经占有该monitor，只是重新进入，则进入monitor的进入数加1**可重入性质**
 3. 如果其他线程已经占用了monitor，则该线程进入阻塞状态，直到monitor的进入数为0，再重新尝试获取monitor的所有权。
-**monitorexit**：执行monitorexit的线程必须是objectref所对应的monitor的所有者。指令执行时，monitor的进入数减1，如果减1后进入数为0，那线程退出monitor，不再是这个monitor的所有者。其他被这个monitor阻塞的线程可以尝试去获取这个 monitor 的所有权
-**monitorexit指令出现了两次，第1次为同步正常退出释放锁；第2次为发生异步退出释放锁**
+
+**monitorexit**：执行monitorexit的线程必须是objectref所对应的monitor的所有者。指令执行时，monitor的进入数减1，如果减1后进入数为0，那线程退出monitor，不再是这个monitor的所有者。其他被这个monitor阻塞的线程可以尝试去获取这个 monitor 的所有权。**monitorexit指令出现了两次，第1次为同步正常退出释放锁；第2次为发生异步退出释放锁**
 
 ### 4.1.2  synchronized加在方法上
 **无论时普通方法还是静态方法**
@@ -310,8 +335,10 @@ public synchronized void test() {
 }
 ```
 利用 javap -verbose 类的名字查看编译后的文件：
+
 ![img](images/synchronized-method-class.png)
-方法的同步并没有通过指令**monitorenter**和**monitorexit**来完成，不过相对于普通方法，其常量池中多了**ACC_SYNCHRONIZED**标示符。JVM就是根据该标示符来实现方法的同步的：当方法调用时，调用指令将会检查方法的** ACC_SYNCHRONIZED** 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。在方法执行期间，其他任何线程都无法再获得同一个monitor对象，其实底层还是monitor对象锁。
+
+方法的同步并没有通过指令**monitorenter**和**monitorexit**来完成，不过相对于普通方法，其常量池中多了**ACC_SYNCHRONIZED**标示符。JVM就是根据该标示符来实现方法的同步的：当方法调用时，调用指令将会检查方法的**ACC_SYNCHRONIZED** 访问标志是否被设置，如果设置了，执行线程将先获取monitor，获取成功之后才能执行方法体，方法执行完后再释放monitor。在方法执行期间，其他任何线程都无法再获得同一个monitor对象，其实底层还是monitor对象锁。
 
 
 # 5 JVM对synchronized的优化
@@ -321,7 +348,9 @@ public synchronized void test() {
 **无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态**
 
 **锁的膨胀过程：**
+
 无锁状态 -> 偏向锁 -> 轻量级锁 -> 重量级锁
+
 只能从低到高升级，不会出现锁的降级
 
 ## 5.2 自旋锁
@@ -350,6 +379,7 @@ public synchronized void test() {
 当一个线程访问同步块并获取锁时，会在对象头和栈帧中的锁记录里存储锁偏向的线程ID，以后该线程进入和退出同步块时不需要花费CAS操作来争夺锁资源，只需要检查是否为偏向锁、锁标识为以及ThreadID即可，处理流程如下：
 1. 暂停拥有偏向锁的线程
 2. 判断锁对象是否还处于被锁定状态，否，则恢复到无锁状态（01），以允许其余线程竞争。是，则挂起持有锁的当前线程，并将指向当前线程的锁记录地址的指针放入对象头,升级为轻量级锁状态（00），然后恢复持有锁的当前线程，进入轻量级锁的竞争模式
+
 ![img](images/synchronized-biased.png)
 
 ## 5.7 轻量级锁
@@ -359,15 +389,23 @@ public synchronized void test() {
 3. 拷贝成功后，虚拟机将使用CAS操作尝试将对象Mark Word中的Lock Word更新为指向当前线程Lock Record的指针，并将Lock record里的owner指针指向object mark word。如果更新成功，则执行步骤（4），否则执行步骤（5）。
 4. 如果这个更新动作成功了，那么当前线程就拥有了该对象的锁，并且对象Mark Word的锁标志位设置为“00”，即表示此对象处于轻量级锁定状态。
 5. 如果这个更新操作失败了，虚拟机首先会检查对象Mark Word中的Lock Word是否指向当前线程的栈帧，如果是，就说明当前线程已经拥有了这个对象的锁，那就可以直接进入同步块继续执行。否则说明多个线程竞争锁，进入自旋执行（3），若自旋结束时仍未获得锁，轻量级锁就要膨胀为重量级锁，锁标志的状态值变为“10”，Mark Word中存储的就是指向重量级锁（互斥量）的指针，当前线程以及后面等待锁的线程也要进入阻塞状态。
+
 ![img](images/synchronized-light.png)
+
 **轻量级锁的释放也是通过CAS操作来进行的**，主要步骤如下：
+
 1. 通过CAS操作尝试把线程中复制的Displaced Mark Word对象替换当前的Mark Word
 2. 如果替换成功，整个同步过程就完成了，恢复到无锁状态（01）
 3. 如果替换失败，说明有其他线程尝试过获取该锁（此时锁已膨胀），那就要在释放锁的同时，唤醒被挂起的线程
 
-**问题**：为什么升级为轻量锁时要把对象头里的Mark Word复制到线程栈的锁记录中呢？
+**问题**：
+
+**为什么升级为轻量锁时要把对象头里的Mark Word复制到线程栈的锁记录中呢？**
+
 因为在申请对象锁时需要以该值作为CAS的比较条件，同时在升级到重量级锁时，能通过这个比较判定是否在持有锁的过程中此锁被其他线程申请过，如果被其他线程申请了，则在释放锁的时候要唤醒被挂起的线程。
-为什么会尝试CAS不成功以及什么情况下会不成功？
+
+**为什么会尝试CAS不成功以及什么情况下会不成功？**
+
 CAS本身是不带锁机制的，其是通过比较来操作得。假设如下场景：线程A和线程B都在对象头里的锁标识为无锁状态进入，那么如线程A先更新对象头为其锁记录指针成功之后，线程B再用CAS去更新，就会发现此时的对象头已经不是其操作前的对象了，所以CAS会失败。也就是说，只有两个线程并发申请锁的时候会发生CAS失败。此时线程B进行CAS自旋，等待对象头的锁标识重新变回无锁状态或对象头内容等于对象，这也就意味着线程A执行结束，此时线程B的CAS操作终于成功了，于是线程B获得了锁以及执行同步代码的权限。如果线程A的执行时间较长，线程B经过若干次CAS时钟没有成功，则锁膨胀为重量级锁，即线程B被挂起阻塞、等待重新调度。
 
 ## 5.8 重量级锁

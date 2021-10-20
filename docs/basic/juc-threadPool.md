@@ -31,20 +31,32 @@ Spring中线程池 异步任务
 # 3 线程池设计思路
 有句话叫做艺术来源于生活，编程语言也是如此，很多设计思想能映射到日常生活中，比如面向对象思想、封装、继承，等等。今天我们要说的线程池，它同样可以在现实世界找到对应的实体——工厂。
 先假想一个工厂的生产流程：
+
 ![img](images/threadpool-demo-1.jpg)
 工厂中有固定的一批工人，称为正式工人，工厂接收的订单由这些工人去完成。当订单增加，正式工人已经忙不过来了，工厂会将生产原料暂时堆积在仓库中，等有空闲的工人时再处理（因为工人空闲了也不会主动处理仓库中的生产任务，所以需要调度员实时调度）。仓库堆积满了后，订单还在增加怎么办？工厂只能临时扩招一批工人来应对生产高峰，而这批工人高峰结束后是要清退的，所以称为临时工。当时临时工也已招满后（受限于工位限制，临时工数量有上限），后面的订单只能忍痛拒绝了。
 
 我们做如下一番映射：
+
 工厂——线程池
+
 订单——任务（Runnable）
+
 正式工人——核心线程
+
 临时工——普通线程
+
 仓库——任务队列
+
 调度员——getTask()
+
 getTask()是一个方法，将任务队列中的任务调度给空闲线程，在解读线程池有详细介绍。
+
 映射后，形成线程池流程图如下，两者是不是有异曲同工之妙？
+
 ![img](images/threadpool-demo-2.png)
+
 这样，线程池的**工作原理**或者说流程就很好理解了，提炼成一个简图：
+
 ![img](images/threadpool-flow.png)
 
 **线程池创建过程**：创建一个阻塞队列以容纳任务，在第一次执行任务时创建足够多的线程(不超过许可线程数)，并处理任务，之后每个工作线程自行从任务队列中获得任务，知道任务队列中的任务数量为0为止，此时线程将出于等待状态，一旦有任务再加入队列中，即唤醒工作线程进行处理，实现线程的可复用性。
@@ -54,7 +66,9 @@ getTask()是一个方法，将任务队列中的任务调度给空闲线程，�
 # 4 深入线程池
 
 JDK线程池类结构：
+
 ![img](images/threadpool-class.png)
+
 从Java线程池Executor框架体系可以看出：线程池的真正实现类是ThreadPoolExecutor，因此我们接下来重点研究这个类。
 
 ## 4.1 构造方法
@@ -91,7 +105,9 @@ public ThreadPoolExecutor(int corePoolSize,
 - **handler**（可选）：拒绝策略。当线程池中线程数达到maximumPoolSize且workQueue打满时，后续提交的任务将被拒绝，handler可以指定用什么方式拒绝任务。
 
 **任务队列**
+
 使用ThreadPoolExecutor需要指定一个实现了BlockingQueue接口的任务等待队列。在ThreadPoolExecutor线程池的API文档中，一共推荐了三种等待队列，它们是：SynchronousQueue、LinkedBlockingQueue和ArrayBlockingQueue；
+
 1. SynchronousQueue：同步队列。这是一个内部没有任何容量的阻塞队列，任何一次插入操作的元素都要等待相对的删除/读取操作，否则进行插入操作的线程就要一直等待，反之亦然。
 2. **LinkedBlockingQueue**：无界队列（严格来说并非无界，上限是Integer.MAX_VALUE），基于链表结构。使用无界队列后，当核心线程都繁忙时，后续任务可以无限加入队列，因此线程池中线程数不会超过核心线程数。这种队列可以提高线程池吞吐量，但代价是牺牲内存空间，甚至会导致内存溢出。另外，使用它时可以指定容量，这样它也就是一种有界队列了。
 3. ArrayBlockingQueue：有界队列，基于数组实现。在线程池初始化时，指定队列的容量，后续无法再调整。这种有界队列有利于防止资源耗尽，但可能更难调整和控制。
@@ -103,10 +119,14 @@ public ThreadPoolExecutor(int corePoolSize,
 4. LinkedTransferQueue：由链表结构组成的无界阻塞队列。这个队列比较特别的时，采用一种预占模式，意思就是消费者线程取元素时，如果队列不为空，则直接取走数据，若队列为空，那就生成一个节点（节点元素为null）入队，然后消费者线程被等待在这个节点上，后面生产者线程入队时发现有一个元素为null的节点，生产者线程就不入队了，直接就将元素填充到该节点，并唤醒该节点等待的线程，被唤醒的消费者线程取走元素。
 
 **拒绝策略**
+
 线程池有一个重要的机制：拒绝策略。当线程池workQueue已满且无法再创建新线程池时，就要拒绝后续任务了。拒绝策略需要实现RejectedExecutionHandler接口，不过Executors框架已经为我们实现了4种拒绝策略：
 AbortPolicy（默认）：丢弃任务并抛出RejectedExecutionException异常。
+
 CallerRunsPolicy：直接运行这个任务的run方法，但并非是由线程池的线程处理，而是交由任务的调用线程处理。
+
 DiscardPolicy：直接丢弃任务，不抛出任何异常。
+
 DiscardOldestPolicy：将当前处于等待队列列头的等待任务强行取出，然后再试图将当前被拒绝的任务提交到线程池执行。
 
 ## 4.2 线程池状态
@@ -122,17 +142,25 @@ private static final int TIDYING    =  2 << COUNT_BITS;
 private static final int TERMINATED =  3 << COUNT_BITS;
 ```
 runState表示当前线程池的状态，它是一个 volatile 变量用来保证线程之间的可见性。
+
 **RUNNING**：当创建线程池后，线程池的初始化状态，可以添加待执行的任务。
+
 **SHUTDOWN**：如果调用了shutdown()方法，则线程池处于SHUTDOWN状态，此时线程池不能够接受新的任务，它会等待所有任务执行完毕；
+
 **STOP**：如果调用了shutdownNow()方法，则线程池处于STOP状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；
+
 **TERMINATED**：当线程池处于SHUTDOWN或STOP状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为TERMINATED状态。
+
 **TIDYING**：线程池自主整理状态，调用 terminated() 方法进行线程池整理。
+
 ![img](images/threadpool-pool-state.png)
 
 **线程池中任务状态**
+
 ![img](images/threadpool-task-state.png)
 
 **线程池中工作线程Worker状态**
+
 线程池中线程只有两种状态：可运行状态和等待状态。在没有任务时他们出于等待状态，运行时可以循环地执行任务。
 
 **jvm中线程状态**
@@ -144,6 +172,7 @@ runState表示当前线程池的状态，它是一个 volatile 变量用来保�
 初始化&容量调整&任务提交&关闭
 
 1、线程初始化
+
 默认情况下，创建线程池之后，线程池中是没有线程的，需要提交任务之后才会创建线程。
 在实际中如果需要线程池创建之后立即创建线程，可以通过以下两个方法办到：
 
@@ -151,19 +180,28 @@ runState表示当前线程池的状态，它是一个 volatile 变量用来保�
 - prestartAllCoreThreads()：int prestartAllCoreThreads()，初始化所有核心线程，并返回初始化的线程数
 
 2、线程池容量调整
+
 ThreadPoolExecutor提供了动态调整线程池容量大小的方法：
-setCorePoolSize：设置核心池大小
-setMaximumPoolSize：设置线程池最大能创建的线程数目大小
+
+- setCorePoolSize：设置核心池大小
+
+- setMaximumPoolSize：设置线程池最大能创建的线程数目大小
+
 当上述参数从小变大时，ThreadPoolExecutor进行线程赋值，还可能立即创建新的线程来执行任务。
 
 3、提交任务
-execute()：不能有返回方法，提交runnable
-submit()：可以使用 Future 接收线程池执行的返回值，提交callable
+
+- execute()：不能有返回方法，提交runnable
+
+- submit()：可以使用 Future 接收线程池执行的返回值，提交callable
 
 4、线程池关闭
+
 ThreadPoolExecutor提供了两个方法，用于线程池的关闭：
-shutdown()：不会立即终止线程池，而是要等所有任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务
-shutdownNow()：立即终止线程池，并尝试打断正在执行的任务，并且清空任务缓存队列，返回尚未执行的任务
+
+- shutdown()：不会立即终止线程池，而是要等所有任务缓存队列中的任务都执行完后才终止，但再也不会接受新的任务
+
+- shutdownNow()：立即终止线程池，并尝试打断正在执行的任务，并且清空任务缓存队列，返回尚未执行的任务
 
 ```java
 import java.util.concurrent.ArrayBlockingQueue;
@@ -200,40 +238,57 @@ public class MyTest {
 
 ## 4.4  Executors封装线程池
 Executors工具类封装好了4种常见的功能线程池：
+
 1、FixedThreadPool
+
 固定容量线程池。其特点是最大线程数就是核心线程数，意味着线程池只能创建核心线程，keepAliveTime为0，即线程执行完任务立即回收。任务队列未指定容量，代表使用默认值Integer.MAX_VALUE。适用于需要控制并发线程的场景。
 
 2、SingleThreadExecutor
+
 单线程线程池。特点是线程池中只有一个线程（核心线程），线程执行完任务立即回收，使用有界阻塞队列（容量未指定，使用默认值Integer.MAX_VALUE）
 
 3、 ScheduledThreadPool
+
 定时线程池。指定核心线程数量，普通线程数量无限，线程执行完任务立即回收，任务队列为延时阻塞队列。这是一个比较特别的线程池，适用于执行定时或周期性的任务。
 
 4、CachedThreadPool
+
 缓存线程池。没有核心线程，普通线程数量为Integer.MAX_VALUE（可以理解为无限），线程闲置60s后回收，任务队列使用SynchronousQueue这种无容量的同步队列。适用于任务量大但耗时低的场景。
 
 ![img](images/threadpool-4pool.png)
 
 # 5 源码解读
 OK，相信前面内容阅读起来还算轻松愉悦吧，那么从这里开始就进入深水区了，如果后面内容能吃透，那么线程池知识就真的被你掌握了。我们知道，向线程池提交任务是用ThreadPoolExecutor的execute()方法，但在其内部，线程任务的处理其实是相当复杂的，涉及到ThreadPoolExecutor、Worker、Thread三个类的6个方法：
+
 ![img](images/threadpool-exec-mainflow.png)
+
 ## 5.1 execute()
 在ThreadPoolExecutor类中，任务提交方法的入口是execute(Runnable command)方法（submit()方法也是调用了execute()），该方法其实只在尝试做一件事：经过各种校验之后，调用 addWorker(Runnable command,boolean core)方法为线程池创建一个线程并执行任务，与之相对应，execute() 的结果有两个：
+
 **参数说明**：
+
 Runnable command：待执行的任务
 
 **执行流程**：
+
 1、通过 ctl.get() 得到线程池的当前线程数，如果线程数小于corePoolSize，则调用 addWorker(commond,true)方法创建新的线程执行任务，否则执行步骤2；
+
 2、步骤1失败，说明已经无法再创建新线程，那么考虑将任务放入阻塞队列，等待执行完任务的线程来处理。基于此，判断线程池是否处于Running状态（只有Running状态的线程池可以接受新任务），如果任务添加到任务队列成功则进入步骤3，失败则进入步骤4；
+
 3、来到这一步需要说明任务已经加入任务队列，这时要二次校验线程池的状态，会有以下情形：
+
 线程池不再是Running状态了，需要将任务从任务队列中移除，如果移除成功则拒绝本次任务
 线程池是Running状态，则判断线程池工作线程是否为0，是则调用 addWorker(commond,true)添加一个没有初始任务的线程（这个线程将去获取已经加入任务队列的本次任务并执行），否则进入步骤4；
 线程池不是Running状态，但从任务队列移除任务失败（可能已被某线程获取？），进入步骤4；
+
 4、将线程池扩容至maximumPoolSize并调用 addWorker(commond,false)方法创建新的线程执行任务，失败则拒绝本次任务。
 
 **流程图**：
+
 ![img](images/threadpool-execute-flow.png)
+
 **源码解读**：
+
 ```java
 /**
  * 在将来的某个时候执行给定的任务。任务可以在新线程中执行，也可以在现有的池线程中执行。
@@ -284,29 +339,37 @@ public void execute(Runnable command) {
 
 ## 5.2  addWorker()
 addWorker(Runnable firstTask, boolean core) 方法，顾名思义，向线程池添加一个带有任务的工作线程。
+
 **参数说明**：
+
 Runnable firstTask：新创建的线程应该首先运行的任务（如果没有，则为空）。
+
 boolean core：该参数决定了线程池容量的约束条件，即当前线程数量以何值为极限值。参数为 true 则使用corePollSize 作为约束值，否则使用maximumPoolSize。
 
 **执行流程**：
 
 1、外层循环判断线程池的状态是否可以新增工作线程。这层校验基于下面两个原则：
-线程池为Running状态时，既可以接受新任务也可以处理任务
+线程池为Running状态时，既可以接受新任务也可以处理任务；
+
 线程池为关闭状态时只能新增空任务的工作线程（worker）处理任务队列（workQueue）中的任务不能接受新任务
 
 2、内层循环向线程池添加工作线程并返回是否添加成功的结果。
+
 首先校验线程数是否已经超限制，是则返回false，否则进入下一步
+
 通过CAS使工作线程数+1，成功则进入步骤3，失败则再次校验线程池是否是运行状态，是则继续内层循环，不是则返回外层循环
 
 3、核心线程数量+1成功的后续操作：添加到工作线程集合，并启动工作线程
-首先获取锁之后，	再次校验线程池状态（具体校验规则见代码注解），通过则进入下一步，未通过则添加线程失败
-线程池状态校验通过后，再检查线程是否已经启动，是则抛出异常，否则尝试将线程加入线程池
-检查线程是否启动成功，成功则返回true，失败则进入 addWorkerFailed 方法
+
+首先获取锁之后，再次校验线程池状态（具体校验规则见代码注解），通过则进入下一步，未通过则添加线程失败
+线程池状态校验通过后，再检查线程是否已经启动，是则抛出异常，否则尝试将线程加入线程池，检查线程是否启动成功，成功则返回true，失败则进入 addWorkerFailed 方法。
 
 **流程图**：
+
 ![img](images/threadpool-addWorker-flow.png)
 
 **源码解读**
+
 ```java
 private boolean addWorker(Runnable firstTask, boolean core) {
     // 外层循环：判断线程池状态
@@ -399,7 +462,10 @@ private boolean addWorker(Runnable firstTask, boolean core) {
 ```
 
 ## 5.3 Worker类
-Worker类是内部类，既实现了Runnable，又继承了AbstractQueuedSynchronizer（以下简称AQS），所以其既是一个可执行的任务，又可以达到锁的效果。Worker类主要维护正在运行任务的线程的中断控制状态，以及其他次要的记录。这个类适时地继承了AbstractQueuedSynchronizer类，以简化获取和释放锁（该锁作用于每个任务执行代码）的过程。这样可以防止去中断正在运行中的任务，只会中断在等待从任务队列中获取任务的线程。我们实现了一个简单的不可重入互斥锁，而不是使用可重入锁，因为我们不希望工作任务在调用setCorePoolSize之类的池控制方法时能够重新获取锁。另外，为了在线程真正开始运行任务之前禁止中断，我们将锁状态初始化为负值，并在启动时清除它（在runWorker中）。
+Worker类是内部类，既实现了Runnable，又继承了AbstractQueuedSynchronizer（以下简称AQS），所以其既是一个可执行的任务，又可以达到锁的效果。
+
+Worker类主要维护正在运行任务的线程的中断控制状态，以及其他次要的记录。这个类适时地继承了AbstractQueuedSynchronizer类，以简化获取和释放锁（该锁作用于每个任务执行代码）的过程。这样可以防止去中断正在运行中的任务，只会中断在等待从任务队列中获取任务的线程。我们实现了一个简单的不可重入互斥锁，而不是使用可重入锁，因为我们不希望工作任务在调用setCorePoolSize之类的池控制方法时能够重新获取锁。另外，为了在线程真正开始运行任务之前禁止中断，我们将锁状态初始化为负值，并在启动时清除它（在runWorker中）。
+
 ```java
 private final class Worker
     extends AbstractQueuedSynchronizer
@@ -500,9 +566,11 @@ private final class Worker
 可以说，runWorker(Worker w) 是线程池中真正处理任务的方法，前面的execute() 和 addWorker() 都是在为该方法做准备和铺垫。
 
 **参数说明**：
+
 Worker w：封装的Worker，携带了工作线程的诸多要素，包括Runnable（待处理任务）、lock（锁）、completedTasks（记录线程池已完成任务数）
 
 **执行流程**：
+
 1、判断当前任务或者从任务队列中获取的任务是否不为空，都为空则进入步骤2，否则进入步骤3
 
 2、任务为空，则将completedAbruptly置为false（即线程不是突然终止），并执行processWorkerExit(w,completedAbruptly)方法进入线程退出程序
@@ -520,8 +588,11 @@ Worker w：封装的Worker，携带了工作线程的诸多要素，包括Runnab
 7、再次进行循环条件判断。
 
 **流程图**：
+
 ![img](images/threadpool-runWorker-flow.png)
+
 **源码解读**
+
 ```java
 final void runWorker(Worker w) {
     Thread wt = Thread.currentThread();
@@ -596,19 +667,27 @@ final void runWorker(Worker w) {
 由函数调用关系图可知，在ThreadPoolExecutor类的实现中，Runnable getTask() 方法是为void runWorker(Worker w)方法服务的，它的作用就是在任务队列（workQueue）中获取 task（Runnable）。
 
 **参数说明**：
+
 无参数
 
 **执行流程**：
 
 1、将timedOut（上次获取任务是否超时）置为false（首次执行方法，无上次，自然为false），进入一个无限循环
+
 2、如果线程池为Shutdown状态且任务队列为空（线程池shutdown状态可以处理任务队列中的任务，不再接受新任务，这个是重点）或者线程池为STOP或TERMINATED状态，则意味着线程池不必再获取任务了，当前工作线程数量-1并返回null，否则进入步骤3
+
 3、如果线程池数量超限制或者时间超限且（任务队列为空或当前线程数>1），则进入步骤4，否则进入步骤5。
+
 4、移除工作线程，成功则返回null，不成功则进入下轮循环。
+
 5、尝试用poll() 或者 take()（具体用哪个取决于timed的值）获取任务，如果任务不为空，则返回该任务。如果为空，则将timeOut 置为 true进入下一轮循环。如果获取任务过程发生异常，则将 timeOut置为 false 后进入下一轮循环。
 
 **流程图**：
+
 ![img](images/threadpool-getTask-flow.png)
+
 **源码解读**：
+
 ```java
 private Runnable getTask() {
     // 最新一次poll是否超时
@@ -675,10 +754,13 @@ private Runnable getTask() {
 processWorkerExit(Worker w, boolean completedAbruptly)执行线程退出的方法
 
 **参数说明**：
+
 Worker w：要结束的工作线程。
+
 boolean completedAbruptly： 是否突然完成（异常导致），如果工作线程因为用户异常死亡，则completedAbruptly参数为 true。
 
 **执行流程**：
+
 1、如果 completedAbruptly 为 true，即工作线程因为异常突然死亡，则执行工作线程-1操作。
 
 2、主线程获取锁后，线程池已经完成的任务数追加 w（当前工作线程） 完成的任务数，并从worker的set集合中移除当前worker。
@@ -686,9 +768,13 @@ boolean completedAbruptly： 是否突然完成（异常导致），如果工作
 3、根据线程池状态进行判断是否执行tryTerminate()结束线程池。
 
 4、是否需要增加工作线程，如果线程池还没有完全终止，仍需要保持一定数量的线程。
+
 如果当前线程是突然终止的，调用addWorker()创建工作线程；
+
 当前线程不是突然终止，但当前工作线程数量小于线程池需要维护的线程数量，则创建工作线程。需要维护的线程数量为corePoolSize（取决于成员变量 allowCoreThreadTimeOut是否为 false）或1。
+
 **源码详读**：
+
 ```java
 /**
  * Performs cleanup and bookkeeping for a dying worker. Called

@@ -1,37 +1,30 @@
 并发容器类
 
-ConcurrentHashMap 
+ConcurrentHashMap  ConcurrentSkipListMap 、ConcurrentSkipListSet
 
 https://www.toutiao.com/a6903498529885438475/?channel=&source=search_tab
 
-
-
 https://blog.csdn.net/qq_18661793/article/details/81161193?utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control
-
-
 
 https://blog.csdn.net/weixin_43848065/article/details/107204950?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-8.base&spm=1001.2101.3001.4242
 
 https://blog.csdn.net/csdnsevenn/article/details/87485459?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.base&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.base
 
-ConcurrentSkipListMap 、ConcurrentSkipListSet
+写时复制容器 CopyOnwriteArrayList、CopyOnwriteArraySet
 
-CopyOnwriteArrayList、CopyOnwriteArraySet
+阻塞式队列 blockingqueue Synchronousqueue  delayqueue  PriorityQueue
 
-线程不安全容器  
-
-阻塞式队列blockqueue Synchronousqueue
-delayqueue  
-
-ConcurrentLinkedQueue、ConcurrentLinkedDeque
+ConcurrentLinkedQueue、ConcurrentLinkedDeque 延迟队列、优先级队列
 
 
-包装容器 同步容器 并发容器 
+线程不安全容器   同步容器  包装容器 并发容器 
 
 
 # 1 ConcurrentHashMap
 1.7 1.8 实现区别
+
 ![img](images/concurrenthashmap-structure.png)
+
 对JDK1.7中的ConcurrentHashMap而言
 
 内部主要是一个Segment数组，而数组的每一项又是一个HashEntry数组，元素都存在HashEntry数组里。因为每次锁定的是Segment对象，也就是整个HashEntry数组，所以又叫分段锁。
@@ -44,6 +37,7 @@ ConcurrentLinkedQueue、ConcurrentLinkedDeque
 在容器安全上，1.8 中的 ConcurrentHashMap 放弃了 JDK1.7 中的分段技术，而是采用了**CAS 机制 + synchronized** 来保证并发安全性，但是在 ConcurrentHashMap 实现里保留了 Segment 定义，这仅仅是为了保证序列化时的兼容性而已，并没有任何结构上的用处。
 
 在存储结构上，JDK1.8 中 ConcurrentHashMap 放弃了 HashEntry 结构而是采用了跟 HashMap 结构非常相似，采用 **Node 数组+链表+红黑树**的形式。
+
 ![img](images/concurrenthashmap-structure.png)
 
 ```java
@@ -237,6 +231,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 }
 ```
 整个put方法大致分为以下几步：
+
 1、校验K、V，并计算has值
 
 2、进入自旋，判断table是否已经初始化，如果否，则进行初始化；如果是，执行3
@@ -251,7 +246,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 
 7、新增节点完成后，检测是否需要扩容，如果需要，就扩容
 
-从源码来看，ConcurrentHashMap中的put方法和HashMap的put方法执行的逻辑相差无几。只是利用了自旋 + CAS、Synchronized等来保证线程安全。
+从源码来看，ConcurrentHashMap中的put方法和HashMap的put方法执行的逻辑相差无几。只是利用了自旋 + CAS+Synchronized等来保证线程安全。
 
 接下来深入put方法中使用的一些内部方法：initTable、addCount等
 
@@ -549,12 +544,14 @@ final long sumCount() {
 
 https://blog.csdn.net/zzu_seu/article/details/106675596
 
-### 1.2.1 数据结构 
-JDK1.7中ConcurrentHashMap是Segment数组 + HashEntry数组结构，HashEntry存储键值对。 
+### 数据结构 
+JDK7中ConcurrentHashMap是Segment数组 + HashEntry数组结构，HashEntry存储键值对。 
 一个ConcurrentHashMap包含一个Segment数组，Segment里包含一个HashEntry数组，每个HashEntry数组中是一个链表结构的元素，每个Segment守护着一个HashEntry数组里的元素，当对HashEntry数组的数据进行修改时，必须首先获得与它对应的Segment锁。每个Segment元素相当于一个小的HashMap。
 
-**HashEntry 类:**
+#### HashEntry 类
+
 HashEntry 用来封装散列映射表中的键值对。在 HashEntry 类中，key，hash 和 next 域都被声明为 final 型，value 域被声明为 volatile 型。
+
 ```java
 static final class HashEntry<K,V> {
         final int hash;
@@ -569,8 +566,10 @@ static final class HashEntry<K,V> {
             this.next = next;
         }
 ```
-**Segment 类**
+#### Segment 类
+
 关于Segment内部的实现相对HashEntry肯定是要复杂一点的，这里分两部分介绍，首先介绍它内部的成员变量。
+
 ```java
  //scanAndLockForPut中自旋循环获取锁的最大自旋次数
     static final int MAX_SCAN_RETRIES =
@@ -591,7 +590,7 @@ static final class HashEntry<K,V> {
     /负载因子
     final float loadFactor;
 ```
-### ConcurrentHashMap扩容分析
+### 扩容分析
 **Segment的rehash扩容分析**
 ```java
 /**
@@ -651,9 +650,11 @@ private void rehash(HashEntry<K,V> node) {
 ```
 ConcurrentHashMap 的扩容是仅仅和每个Segment元素中HashEntry数组的长度有关，但需要扩容时，只扩容当前Segment中HashEntry数组即可。也就是说ConcurrentHashMap中Segment[]数组的长度是在初始化的时候就确定了，后面扩容不会改变这个长度。
 
-### ConcurrentHashMap 类 
+### 构造方法 
 ConcurrentHashMap 在默认并发级别会创建包含 16 个 Segment 对象的数组。每个 Segment 的成员对象 table 包含若干个散列表的桶。每个桶是由 HashEntry 链接起来的一个链表。如果键能均匀散列，每个 Segment 大约守护整个散列表中桶总数的 1/16。
+
 成员变量
+
 ```java
 /**
  * 在构造函数未指定初始大小时，默认使用的map大小
@@ -752,12 +753,15 @@ public ConcurrentHashMap(int initialCapacity,
 }
 ```
 构造方法分析： 
+
 参数： 
+
 - initialCapacity，代表的是HashEntry[]数组的大小，也就是ConcurrentHashMap的大小。初始化默认为16.
 - loadFactor，负载因子，在判断扩容的时候用到，默认是0.75
 - concurrencyLevel，并发级别，代表Segment[]数组的大小，也就是分段锁的个数，默认是16 
 
 我们举一个例子，假如new ConcurrentHashMap(32, 0.75, 16)就是新建了一个ConcurrentHashMap，他的容量是32，分段锁的个数是16，也就是每个Segment里面HashEntry[]数组的长度是2。但是new ConcurrentHashMap()时，每个Segment里面HashEntry[]数组的长度也是2，因为ConcurrentHashMap规定了Segment数组中HashEntry数组的长度是2。 
+
 下面这段代码保证了Segment数组的大小是大于concurrencyLevel的最小2的整数次幂(每左移一次都相当于乘上2，直到值大于concurrencyLevel才停止左移)，ssize是初始化Segment数组的大小。
 
 下面这段代码保证了**Segment数组的大小是大于concurrencyLevel的最小2的整数次幂**(每左移一次都相当于乘上2，直到值大于concurrencyLevel才停止左移)，ssize是初始化Segment数组的大小。
@@ -804,8 +808,8 @@ Segment<K,V> s0 =
 
 UNSAFE类操作： 直接操作内存中的数据，这样就不会出现同步的问题，也就不会出现并发问题。
 
-### ConcurrentHashMap的操作
-**get**
+### 核心方法
+#### get方法
 ```java
 public V get(Object key) {
     Segment<K,V> s;
@@ -830,16 +834,24 @@ public V get(Object key) {
 }
 ```
 get 没有加锁,因此效率高 注意:get方法使用了getObjectVolatile方法读取segment和hashentry,保证是最新的,具有锁的语义,可见性。 
+
 分析:为什么get不加锁可以保证线程安全 
-(1) 首先获取value,我们要先定位到segment,使用了UNSAFE的getObjectVolatile具有读的volatile语义,也就表示在多线程情况下,我们依旧能获取最新的segment.
+
+1) 首先获取value,我们要先定位到segment,使用了UNSAFE的getObjectVolatile具有读的volatile语义,也就表示在多线程情况下,我们依旧能获取最新的segment.
+
 (2) 获取hashentry[],由于table是每个segment内部的成员变量,使用volatile修饰的,所以我们也能获取最新的table.
+
 (3) 然后我们获取具体的hashentry,也时使用了UNSAFE的getObjectVolatile具有读的volatile语义,然后遍历查找返回. 
+
 总结：我们发现整个get过程中使用了大量的volatile关键字,其实就是保证了可见性(加锁也可以,但是降低了性能),get只是读取操作,所以我们只需要保证读取的是最新的数据即可.
 
-**put**
+#### put方法
 1.根据key计算出hashcode。
+
 2.确定segment数组的位置：hashcode & segments.length-1
+
 3.确定HashEntry数组的位置： hashcode & HashEntry.length-1
+
 ```java
 public V put(K key, V value) {
 	Segment<K,V> s;
@@ -865,9 +877,13 @@ public V put(K key, V value) {
 }
 ```
 当执行put方法插入数据时，根据key的hash值，在Segment数组中找到相应的位置，如果相应位置的Segment还未初始化，则通过CAS进行赋值，接着执行Segment对象的put方法通过加锁机制插入数据。 
-为什么先把hash值右移segmentShift位之后才和segmentMask(也就是ssize-1)进行与操作呢？经过右移之后保留hash值的高sshift 位，让原来hash值的高位和segmentMask进行与操作。而在后面调用Segment的put方法中，还有再使用hash值计算一次在HashEntry数组中的位置，那个是int index = (tab.length - 1) & hash，也就是用的hash值低位。 至于为啥第一次使用hash的高位第二次使用低位目前不太清楚。 
+
+为什么先把hash值右移segmentShift位之后才和segmentMask(也就是ssize-1)进行与操作呢？
+
+经过右移之后保留hash值的高sshift 位，让原来hash值的高位和segmentMask进行与操作。而在后面调用Segment的put方法中，还有再使用hash值计算一次在HashEntry数组中的位置，那个是int index = (tab.length - 1) & hash，也就是用的hash值低位。 至于为啥第一次使用hash的高位第二次使用低位目前不太清楚。 
 sshift 等于把ssize从1变成大于等于concurrencyLevel的2次幂需要左移的次数。segmentShift = 32 - sshift；例如ssize最终是16，那么sshift 就等于4(2的4次方是16)，segmentShift就是28。ssize最终是32，那么sshift 就等于5，segmentShift就是27。
 hash >>> segmentShift 就是hash右移segmentShift位，也就是取高sshift 位。
+
 ```java
 int j = (hash >>> segmentShift) & segmentMask;
 ```
@@ -991,7 +1007,9 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
 }
 ```
 总结：首先是尝试获取segment的锁，获取到向下执行，获取不到就通过自旋操作去获取锁（下面说自旋操作scanAndLockForPut(key, hash, value)）。拿到锁之后，找到k所在的HashEntry数组的下标，然后获取头节点。向下遍历头结点，查找到就更新（默认），没查找到就新建一个HashEntry，通过头插法放入HashEntry数组，最后更新HashEntry。 
+
 put方法首先要获取segment的锁，获取失败就去通过自旋的方式再次尝试获取锁scanAndLockForPut(key, hash, value)：
+
 ```java
 private HashEntry<K,V> scanAndLockForPut(K key, int hash, V value) {
 	//获取k所在的segment中的HashEntry的头节点(segment中放得是HashEntry数组,HashEntry又是个链表结构)
@@ -1023,15 +1041,22 @@ private HashEntry<K,V> scanAndLockForPut(K key, int hash, V value) {
 }
 ```
 其中的核心思想就是通过MAX_SCAN_RETRIES控制自旋次数，防止无限制的重复自旋浪费资源。这个方法很显然见名知意，它的作用就是遍历获取锁然后进行数据插入，Segment中还有一个和这个方法十分类似的scanAndLock方法，它的实现思想和这个方法基本一致，不过这里的scanAndLockForPut主要是用在数据插入中，而scanAndLock则主要用在remove和replace方法中。 
+
 场景：线程A和线程B同时执行相同Segment对象的put方法 
+
 1、线程A执行tryLock()方法成功获取锁，则把HashEntry对象插入到相应的位置； 
+
 2、线程B获取锁失败，则执行scanAndLockForPut()方法，在scanAndLockForPut方法中，会通过重复执行tryLock()方法尝试获取锁，在多处理器环境下，重复次数为64，单处理器重复次数为1，当执行tryLock()方法的次数超过上限时，则执行lock()方法挂起线程B； 
+
 3、当线程A执行完插入操作时，会通过unlock()方法释放锁，接着唤醒线程B继续执行；
 
-**size方法**
+#### size方法
 先采用不加锁的方式，连续计算元素的个数，最多计算3次：
+
 1、如果前后两次计算结果相同，则说明计算出来的元素个数是准确的；
+
 2、如果前后两次计算结果都不同，则给每个Segment进行加锁，再计算一次元素的个数；
+
 ```java
 public int size() {
 	// Try a few times to get accurate count. On failure due to
@@ -1087,11 +1112,16 @@ public int size() {
 JDK 的**CopyOnWriteArrayList**和**CopyOnWriteArraySet** 容器正是采用了 COW 思想，它是如何工作的呢？简单来说，就是平时查询的时候，都不需要加锁，随便访问，只有在更新的时候，才会从原来的数据复制一个副本出来，然后修改这个副本，最后把原数据替换成当前的副本。修改操作的同时，读操作不会被阻塞，而是继续读取旧的数据。这点要跟读写锁区分一下。
 
 **优点和缺点**
+
 **优点**
+
 对于一些读多写少的数据，写入时复制的做法就很不错，例如配置、黑名单、物流地址等变化非常少的数据，这是一种无锁的实现。可以帮我们实现程序更高的并发。
 CopyOnWriteArrayList 并发安全且性能比 Vector 好。Vector 是增删改查方法都加了synchronized 来保证同步，但是每个方法执行的时候都要去获得锁，性能就会大大下降，而 CopyOnWriteArrayList 只是在增删改上加锁，但是读不加锁，在读方面的性能就好于 Vector。
+
 **缺点**
+
 数据一致性问题：这种实现只是保证数据的最终一致性，在添加到拷贝数据而还没进行替换的时候，读到的仍然是旧数据。
+
 内存占用问题：如果对象比较大，频繁地进行替换会消耗内存，从而引发 Java 的 GC 问题，这个时候，我们应该考虑其他的容器，例如 ConcurrentHashMap。
 
 ## 2.2 CopyOnWrite源码
@@ -1158,7 +1188,7 @@ public class CopyOnWriteArrayList implements List<E>, RandomAccess {
   }   
 }
 ```
-下面是** CopyOnWriteArraySet** ：
+下面是**CopyOnWriteArraySet** ：
 ```java
 public class CopyOnWriteArraySet<E> extends AbstractSet<E> {
   // 内部使用CopyOnWriteArrayList实现
@@ -1177,22 +1207,29 @@ https://mp.weixin.qq.com/s/jKLPYpuV5cEQMTX-L08ZmA
 
 ## 3.1 基本概念
 **什么是队列**
+
 队列是一种特殊的线性表，特殊之处在于它只允许在表的前端（front）进行删除操作，而在表的后端（rear）进行插入操作，和栈一样，队列是一种操作受限制的线性表。进行插入操作的端称为队尾，进行删除操作的端称为队头。队列其实就是跟平时排队一样，按照顺序来，先排队的先买到东西，后排队的后买到东西，排队的第一个叫队头，最后一个叫队尾，这就是队列的先进先出，这是和栈最大的区别。
 
 **阻塞式队列**
+
 当队列为空时，消费者挂起，队列已满时，生产者挂起，这就是生产-消费者模型，堵塞其实就是将线程挂起。因为生产者的生产速度和消费者的消费速度之间的不匹配，就可以通过堵塞队列让速度快的暂时堵塞, 如生产者每秒生产两个数据，而消费者每秒消费一个数据，当队列已满时，生产者就会堵塞（挂起），等待消费者消费后，再进行唤醒。堵塞队列会通过挂起的方式来实现生产者和消费者之间的平衡，这是和普通队列最大的区别。
+
 ![img](images/blockingqueue-1.png)
 
 ## 3.2 JDK工具类
 **如何实现堵塞队列？**
+
 jdk其实已经帮我们提供了实现方案，java5增加了concurrent包，concurrent包中的BlockingQueue就是堵塞队列，我们不需要关心BlockingQueue如何实现堵塞，一切都帮我们封装好了，只需要做一个没有感情的API调用者就行。
 
 **BlockingQueue如何使用？**
+
 BlockingQueue本身只是一个接口，规定了堵塞队列的方法，主要依靠几个实现类实现。
 
 **BlockingQueue主要方法**
+
 ![img](images/blockingqueue-methods.png)
 插入数据
+
 - offer(E e)：如果队列没满，返回true，如果队列已满，返回false（不堵塞）
 - offer(E e, long timeout, TimeUnit unit)：可以设置等待时间，如果队列已满，则进行等待。超过等待时间，则返回false （3）put(E e)：无返回值，一直等待，直至队列空出位置
 
