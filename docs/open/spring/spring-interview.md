@@ -413,7 +413,7 @@ Spring容器能够自动装配bean，通过检查BeanFactory内容让Spring自�
 - 基本元数据类型：简单属性（如原数据类型，字符串和类）无法自动装配。模糊特性
 - 自动装配不如显式装配精确，如果有可能，建议使用显式装配。
 
-## 1.18 Spring循环依赖怎么解决？
+## 1.18 Spring Bean的加载过程？循环依赖怎么解决？
 https://www.zhihu.com/question/438247718
 
 三级缓存机制
@@ -441,6 +441,8 @@ B执行到第4步时从缓存中能够找到A实例，于是B实例化成功；
 为什么spring无法解决构造方法中的循环依赖？
 
 调用构造函数后是第二步创建实例就要执行的事情，第二步都通过不了，自然就无法执行第三步加入缓存中。
+
+二级缓存能否解决循环依赖？为很么引入三级缓存？
 
 ## 1.19 @Autowired注解作用？自动装配的原理过程是怎样的？
 @Autowired默认是按照类型装配注入的，默认情况下它要求依赖对象必须存在（可以设置它required属性为false）。@Autowired 注解提供了更细粒度的控制，包括在何处以及如何完成自动装配。
@@ -1804,6 +1806,28 @@ Spring Boot 有一个开发工具（DevTools）模块，它有助于提高开发
 
 ## 3.23 SpringBoot 中的starter到底是什么 ?如何手写一个starter？
 Starter 并非什么新的技术点，基本上还是基于 Spring 已有功能来实现的。
+
+Starter作用：引入相关jar；自动完成配置；starter.jar完成引入相关的jar，autoConfigure.jar完成自动配置；
+
+starter命名规范：
+
+spring提供的starter：spring-boot-starter-xxx-x.y.z.jar，spring-boot-xxx-autoconfigure-x.y.z.jar
+
+第三方提供的：xxx-spring-boot-starter-x.y.z.jar，xxx-spring-boot-autoconfigure-x.y.z.jar
+
+制作starter步骤：
+
+1 建工程；
+
+2 引入spring-boot-starter，spring-boot-autoconfigure，第三方jar；
+
+3 如需要生成配置元信息，加入spring-boot-configuration-processor依赖；
+
+4 编写自动配置类；
+
+5 配置发现配置文件：META-INF/spring.factories
+
+6 打包发布
 
 首先它提供了一个自动化配置类，一般命名为 XXXAutoConfiguration ，在这个配置类中通过条件注解来决定一个配置是否生效（条件注解就是 Spring 中原本就有的），然后它还会提供一系列的默认配置，也允许开发者根据实际情况自定义相关配置，然后通过类型安全的属性注入将这些配置属性注入进来，新注入的属性会代替掉默认属性。正因为如此，很多第三方框架，我们只需要引入依赖就可以直接使用了。当然，开发者也可以自定义 Starter
 
