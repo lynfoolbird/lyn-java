@@ -9,7 +9,7 @@ https://www.toutiao.com/a7002412183980130827/
 
 Spring：IOC原理、AOP原理、事务原理失效传播行为隔离级别@Transaction实现原理
 
-​               bean加载过程、循环依赖、注解原理及常用注解  beanfactory factorybean，aware接口
+​               bean加载过程及循环依赖、注解原理及常用注解  beanfactory factorybean，aware接口
 
 ​               如何动态添加bean、如何添加外部jar中的bean；动态代理对象添加到容器中？动态数据源
 
