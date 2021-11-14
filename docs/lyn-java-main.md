@@ -153,7 +153,7 @@ MQ可靠传输实现、高可用如何保证
 ## 4.3 搜索引擎
 Lucene：https://mp.weixin.qq.com/s/Mz5XI9leHHhfbLTfZ4wCBw
 
-Solr、elastic search
+solr、elastic search（分布式）
 
 ## 4.4 分库分表
 
