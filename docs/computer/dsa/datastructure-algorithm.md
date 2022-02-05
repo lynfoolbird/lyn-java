@@ -16,13 +16,19 @@ labuladong的算法小抄
 
 https://github.com/labuladong/fucking-algorithm
 
+编程练习
+
+牛客网：https://www.nowcoder.com/ta/huawei
+
+leetcode
+
 算法思维修炼
 
 数组类
 
 1 先排序再处理，或许题目会变得简单起来
 
-2 数组可以快速根据索引找到对应的值，当需要根据值获取索引的时候，则需要将数组转为map，key为值，value为索引
+2 数组可以快速根据索引找到对应的值，当需要根据值获取索引时，需要将数组转为map，key为值，value为索引
 
 3 有序数组可以结合二分查找优化时间复杂度
 

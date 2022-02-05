@@ -211,7 +211,7 @@ istio、service mesh
 三高：高并发、高可用、高性能 系统设计
 代理模式、观察者模式、单例、模板方法   spring mybatis与设计模式  ifelse重构思路
 
-性能调优
+性能调优  容量设计
 
 问题处理：fullgc、cpu高、内存高、oom、stackoverflow、内存泄漏、频繁gc
 
