@@ -142,7 +142,7 @@ loadFactor表示HashMap的拥挤程度，影响hash操作到同一个数组位�
 
 如果你看过 HashSet 源码的话就应该知道： HashSet 底层就是基于 HashMap 实现的。（ HashSet 的源码⾮常⾮常少，因为除了 clone() 、 writeObject() 、 readObject() 是 HashSet⾃⼰不得不实现之外，其他⽅法都是直接调⽤ HashMap 中的⽅法。
 
-# 3 HashMap 是线程安全的吗？如何规避 HashMap 的线程不安全？
+# 3 HashMap 是线程安全的吗？如何规避HashMap 的线程不安全？
 不是，在多线程环境下，1.7 会产生死循环、数据丢失、数据覆盖的问题，1.8 中会有数据覆盖的问题，以 1.8 为例，当 A 线程判断 index 位置为空后正好挂起，B 线程开始往 index 位置的写入节点数据，这时 A 线程恢复现场，执行赋值操作，就把 A 线程的数据给覆盖了；还有++size 这个地方也会造成多线程同时扩容等问题。
 
 如何规避 HashMap 的线程不安全？
