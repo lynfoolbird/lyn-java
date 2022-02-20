@@ -508,7 +508,7 @@ public class Employee {
 
 当您创建多个相同类型的 bean 并希望仅使用属性装配其中一个 bean 时，您可以使用@Qualifier 注解和 @Autowired 通过指定应该装配哪个确切的 bean 来消除歧义。
 
-## 1.25 @Autowired和@Resource和@Inject有什么区别？
+## 1.25 @Autowired和@Resource和@Inject有什么区别？ @Component 和 @Bean 的区别是什么？
 
 @Autowired可用于：构造函数、成员变量、Setter方法
 
@@ -518,7 +518,12 @@ public class Employee {
 
 @Resource默认是按照名称来装配注入的，只有当找不到与名称匹配的bean才会按照类型来装配注入。
 
-@Resource是JDK的，@Autowired是spring的
+@Resource是JDK的，@Autowired是spring的;
+ @Component 和 @Bean 的区别是什么？
+
+1. 作用对象不同：`@Component` 注解作用于类，而 `@Bean` 注解作用于方法、
+2. `@Component` 通常是通过路径扫描来自动侦测以及自动装配到 Spring 容器中(我们可以使用 `@ComponentScan` 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中)。`@Bean` 注解通常是我们在标有该注解的方法中定义产生这个 bean，`@Bean` 告诉了 Spring 这是某个类的实例，当我们需要用它的时候还给我。
+3. `@Bean` 注解比 `@Component` 注解的自定义性更强，而且很多地方我们只能通过 `@Bean` 注解来注册 bean。比如当我们引用**第三方库中的类需要装配到 Spring 容器时，只能通过 `@Bean` 来实现**。
 
 ## 1.26 什么是 Spring Data?
 Spring Data 是 Spring 的一个子项目。用于简化数据库访问，支持NoSQL 和 关系数据存储。其主要目标是使数据库的访问变得方便快捷。
@@ -1838,6 +1843,32 @@ SpringBoot 的 jar 无法被其他项目依赖，主要还是他和普通 jar �
 
 ## 3.25 如何使用SpringBoot实现全局异常处理？全局返回体？
 Spring 提供了一种使用 ControllerAdvice 处理异常的非常有用的方法。 我们通过实现一个 ControlerAdvice 类，来处理控制器类抛出的所有异常。
+
+@ControllerAdvice ：处理全局异常利器，在 Spring 3.2 中，新增了 `@ControllerAdvice`、`@RestControllerAdvice`、`@RestController` 注解，可以用于定义 `@ExceptionHandler`、`@InitBinder`、`@ModelAttribute`，并应用到所有 `@RequestMapping` 、`@PostMapping`、`@GetMapping`等这些 Controller 层的注解中。
+
+默认情况下，`@ControllerAdvice` 中的方法应用于全局所有的 Controller。而使用选择器 `annotations()`，`basePackageClasses()` 和 `basePackages()` (或其别名value())来定义更小范围的目标 Controller 子集。如果声明了多个选择器，则应用 OR 逻辑，这意味着所选的控制器应匹配至少一个选择器。请注意，选择器检查是在运行时执行的，因此添加许多选择器可能会对性能产生负面影响并增加复杂性。
+
+`@ControllerAdvice` 我们最常使用的是结合 `@ExceptionHandler` 用于全局异常的处理。可以结合以下例子，我们可以捕获自定义的异常进行处理，并且可以自定义状态码返回：
+
+```java
+@ControllerAdvice("com.developlee.errorhandle")
+public class MyExceptionHandler {
+    /**
+     * 捕获CustomException
+     * @param e
+     * @return json格式类型
+     */
+    @ResponseBody
+    @ExceptionHandler({CustomException.class}) //指定拦截异常的类型
+ @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) //自定义浏览器返回状态码
+    public Map>String, Object< customExceptionHandler(CustomException e) {
+        Map<String, Object> map = new HashMap<>();
+  map.put("code", e.getCode());
+  map.put("msg", e.getMsg());
+  return map;
+    }
+}
+```
 
 ## 3.26 如何使用SpringBoot实现分页和排序？
 使用Spring Boot实现分页非常简单。使用Spring Data-JPA可以实现将可分页的 org.springframework.data.domain.Pageable传递给存储库方法。

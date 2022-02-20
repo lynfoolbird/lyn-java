@@ -4,7 +4,9 @@
 
 危机意识  不可替代性
 
-增加技能包 掌握核心科技 python与AI、go、安全、容器化k8s、docker
+增加技能包 掌握核心科技 python与AI、go、安全、容器化k8s、docker、servicemesh、istio
+
+亿级流量网站架构核心技术、大型网站性能优化、云原生、google sre、超大流量分布式系统架构、可伸缩架构、企业IT架构、人工智能
 
 
 

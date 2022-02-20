@@ -4,6 +4,8 @@ https://mp.weixin.qq.com/s/MQ_a6o1e9f2ZZSwelNt0oA
 
 项目中怎么用的，为什么这么用，使用中遇到了什么问题，怎么解决的
 
+https://mp.weixin.qq.com/s/zXf4YiOpFwYOrseWW5GWOA
+
 **重点**
 
 1 redis线程模型、存储模型 sortedSet 跳表，存入100和存入helloworld区别
