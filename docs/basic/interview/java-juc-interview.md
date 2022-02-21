@@ -20,6 +20,8 @@ https://blog.csdn.net/cmyperson/article/details/79610870
 
 在⾯试中被问到并发知识的时候，⼤多都会被问到“请你说⼀下⾃⼰对于 AQS 原理的理解”。下⾯给⼤家⼀个示例供⼤家参加，⾯试不是背题，⼤家⼀定要加⼊⾃⼰的思想，即使加⼊不了⾃⼰的思想也要保证⾃⼰能够通俗的讲出来⽽不是背出来。 
 
+[Java并发史上最全面试题](https://www.zhihu.com/question/511409941/answer/2309629045?utm_source=wechat_session&utm_medium=social&utm_oi=814962150182379520&utm_content=group3_Answer&utm_campaign=shareopn)
+
 # 1 进程和线程区别？为什么需要多线程？
 
 进程是具有一定独立功能的程序关于某个数据集合上的一次运行活动，是操作系统进行资源分配和调度的一个独立单位；

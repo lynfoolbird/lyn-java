@@ -1,6 +1,9 @@
-hash算法
+从简单hash到hash slot
 
+https://www.jianshu.com/p/528ce5cd7e8f
+https://blog.csdn.net/qq_33945246/article/details/105113417
 
+# hash算法
 
 hash冲突
 
@@ -10,9 +13,7 @@ hash冲突
 
 再hash法
 
+# 一致性hash
 
-
-一致性hash
-
-hash slot
+# hash slot
 

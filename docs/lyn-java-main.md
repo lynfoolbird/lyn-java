@@ -84,6 +84,8 @@ beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanf
 
 静态代理、动态代理 JDK cglib 区别 应用场景 aop  spring中使用
 
+https://www.jianshu.com/p/9ea61d204559
+
 ## 2.2 mybatis
 mybatis/mybatis plus jdbc orm 
 
