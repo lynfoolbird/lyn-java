@@ -557,3 +557,6 @@ Arthas支持JDK 6+，支持Linux/Mac/Windows，采用命令行交互模式，同
 [JVM 史上最最最完整深入解析](https://mp.weixin.qq.com/s/4oXju-Snbozg4bgOYlihcw)
 
 [这些不可不知的JVM知识，我都用思维导图整理好了](https://mp.weixin.qq.com/s/oyxKUxdJRLOjdM8a6fCQYA)
+
+[JVM 面试题第二版，据说看完要一小时](https://zhuanlan.zhihu.com/p/446467369)
+

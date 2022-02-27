@@ -670,7 +670,7 @@ java.lang.InterruptedException: sleep interrupted 异常。
 
 ## 21.9 手写线程池？
 
-
+https://zhuanlan.zhihu.com/p/467110862
 
 # 22 单例模式？为何DCL中需要volatile？
 

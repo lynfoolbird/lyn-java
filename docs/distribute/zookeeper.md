@@ -6,7 +6,7 @@
 
 作用：基于zk可以实现分布式统一配置中心，服务注册中心、分布式锁、分布式栅栏、分布式countdownlatch等功能的实现。
 
-
+https://zhuanlan.zhihu.com/p/466890533
 
 基本概念
 
