@@ -8,6 +8,8 @@
 
 SPI技术：jdk spi、spring spi、dubbo spi
 
+字节码技术 javaassist
+
 
 # 动态代理
 

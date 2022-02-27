@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.algorithm;
+package com.lynjava.ddd.test.algorithm.leecode;
 
 import java.util.Arrays;
 import java.util.HashMap;
