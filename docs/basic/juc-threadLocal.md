@@ -107,6 +107,13 @@ ThreadLocalMap(ThreadLocal<?> firstKey, Object firstValue) {
 ```
 从构造方法的注释中可以了解到，该构造方法是**懒加载**的，只有当我们创建一个Entry对象并需要放入到Entry数组的时候才会去初始化Entry数组。分析到这里，也许我们都有一个疑问，平常使用ThreadLocal功能都是借助ThreadLocal对象来操作的，比如set、get、remove等，使用上都屏蔽了ThreadLocalMap的API，那么到底是如何做到的呢？我们一起继续看下面的代码。
 
+> 所以，怎么回答ThreadLocal原理？要答出这几个点： 
+
+- Thread类有一个类型为ThreadLocal.ThreadLocalMap的实例变量threadLocals，每个线程都有一个属于自己的ThreadLocalMap。
+- ThreadLocalMap内部维护着Entry数组，每个Entry代表一个完整的对象，key是ThreadLocal的弱引用，value是ThreadLocal的泛型值。
+- 每个线程在往ThreadLocal里设置值的时候，都是往自己的ThreadLocalMap里存，读也是以某个ThreadLocal作为引用，在自己的map里找对应的key，从而实现了线程隔离。
+- ThreadLocal本身不存储值，它只是作为一个key来让线程往ThreadLocalMap里存取值。
+
 ## 3.2 理解ThreadLocal类set方法
 试想我们一个请求对应一个线程，我们可能需要在请求到达拦截器之后，可能需要校验当前请求的用户信息，那么校验通过的用户信息通常都放入到ThreadLocalMap中，以方便在后续的方法中直接从ThreadLocalMap中获取,但是我们并没有直接操作ThreadLocalMap来存取数据，而是通过一个静态的ThreadLocal变量来操作，我们从上面的图可以看出，ThreadLocalMap中存储的键其实就是ThreadLocal的弱引用所关联的对象，那么键是如何操作类似HashMap的值的呢？我们一起来分析一下set方法：
 ```java
@@ -134,7 +141,7 @@ void createMap(Thread t, T firstValue) {
     t.threadLocals = new ThreadLocalMap(this, firstValue);
 }
 ```
-上面的set方法是ThreadLocal的set方法，就是为了将指定的值存入到指定线程的threadLocals成员变量所指向的ThreadLocalMap对象中，那么具体是如何存取的，其实调用的还是ThreadLocalMap的set方法，源码分析如下所示：
+上面的set方法是ThreadLocal的set方法，就是为了将指定的值存入到指定线程的threadLocals成员变量所指向的ThreadLocalMap对象中，那么具体是如何存取的，其实调用的还是ThreadLocalMap的set方法，源码分析如下：
 ```java
 private void set(ThreadLocal<?> key, Object value) {
 
@@ -190,10 +197,42 @@ private static int nextIndex(int i, int len) {
 
 **ThreadLocalMap 采用开放地址法原因**
 
-1. ThreadLocal 中看到一个属性 HASH_INCREMENT = 0x61c88647 ，0x61c88647 是一个神奇的数字，让哈希码能均匀的分布在2的N次方的数组里, 即 Entry[] table，关于这个神奇的数字google 有很多解析，这里就不重复说了
+1. ThreadLocal 中看到一个属性 HASH_INCREMENT = 0x61c88647 ，0x61c88647 是一个神奇的数字，让哈希码能均匀的分布在2的N次方的数组里, 即 Entry[] table，关于这个神奇的数字google 有很多解析，这里就不重复说了。
+```java
+private static final int HASH_INCREMENT = 0x61c88647;    
+private static int nextHashCode() {
+    return nextHashCode.getAndAdd(HASH_INCREMENT);
+}
+```
+
 2. ThreadLocal 往往存放的数据量不会特别大（而且key 是弱引用又会被垃圾回收，及时让数据量更小），这个时候开放地址法简单的结构会显得更省空间，同时数组的查询效率也是非常高，加上第一点的保障，冲突概率也低
 
+**扩容**
+
+在ThreadLocalMap.set()方法的最后，如果执行完启发式清理工作后，未清理到任何数据，且当前散列数组中`Entry`的数量已经达到了列表的扩容阈值`(len*2/3)`，就开始执行`rehash()`逻辑：
+
+```java
+if (!cleanSomeSlots(i, sz) && sz >= threshold)
+    rehash();
+```
+
+再着看rehash()具体实现：这里会先去清理过期的Entry，然后还要根据条件判断`size >= threshold - threshold / 4` 也就是`size >= threshold* 3/4`来决定是否需要扩容。
+
+```java
+private void rehash() {
+    //清理过期Entry
+    expungeStaleEntries();
+    //扩容
+    if (size >= threshold - threshold / 4)
+        resize();
+}
+```
+
+接着看看具体的`resize()`方法，扩容后的`newTab`的大小为老数组的两倍，然后遍历老的table数组，散列方法重新计算位置，开放地址解决冲突，然后放到新的`newTab`，遍历完成之后，`oldTab`中所有的`entry`数据都已经放入到`newTab`中了，然后table引用指向`newTab`。
+
+
 ## 3.3 理解ThreadLocal类get方法
+
 在实际的开发中，我们往往需要在代码中调用ThreadLocal对象的get方法来获取存储在ThreadLocalMap中的数据，具体的源码如下所示：
 ```java
 public T get() {
@@ -280,34 +319,72 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 
 我们从ThreadLocal的内部静态类Entry的代码设计可知，ThreadLocal的引用k通过构造方法传递给了Entry类的父类WeakReference的构造方法，从这个层面来说，可以理解ThreadLocalMap中的键是ThreadLocal的弱引用。当一个线程调用ThreadLocal的set方法设置变量的时候，当前线程的ThreadLocalMap就会存放一个记录，这个记录的键为ThreadLocal的弱引用，value就是通过set设置的值，这个value值被强引用。如果当前线程一直存在且没有调用该ThreadLocal的remove方法，如果这个时候别的地方还有对ThreadLocal的引用，那么当前线程中的ThreadLocalMap中会存在对ThreadLocal变量的引用和value对象的引用，是不会释放的，就会造成内存泄漏。考虑这个ThreadLocal变量没有其他强依赖，如果当前线程还存在，由于线程的ThreadLocalMap里面的key是弱引用，所以当前线程的ThreadLocalMap里面的ThreadLocal变量的弱引用在垃圾回收的时候就被回收，但是对应的value还是存在的这就可能造成内存泄漏（因为这个时候ThreadLocalMap会存在key为null但是value不为null的entry项）。
 
-总结：
+总结：ThreadLocalMap中的Entry的key使用的是ThreadLocal对象的弱引用，在没有其他地方对ThreadLocal依赖，ThreadLocalMap中的ThreadLocal对象就会被回收掉，但是对应的值不会被回收，这个时候Map中就可能存在key为null但是值不为null的项，所以在使用ThreadLocal的时候要养成及时remove的习惯。
 
-ThreadLocalMap中的Entry的key使用的是ThreadLocal对象的弱引用，在没有其他地方对ThreadLocal依赖，ThreadLocalMap中的ThreadLocal对象就会被回收掉，但是对应的值不会被回收，这个时候Map中就可能存在key为null但是值不为null的项，所以在使用ThreadLocal的时候要养成及时remove的习惯。
+> 连环炮：那为什么key还要设计成弱引用？ 
+
+key设计成弱引用同样是为了防止内存泄漏。假如key被设计成强引用，如果ThreadLocal Reference被销毁，此时它指向ThreadLoca的强引用就没有了，但是此时key还强引用指向ThreadLoca，就会导致ThreadLocal不能被回收，这时候就发生了内存泄漏的问题。
 
 **ThreadLocal会发生内存泄漏吗？**
 
 会，仔细看下ThreadLocal内存结构就会发现，Entry数组对象通过ThreadLocalMap最终被Thread持有，并且是强引用。也就是说Entry数组对象的生命周期和当前线程一样。即使ThreadLocal对象被回收了，Entry数组对象也不一定被回收，这样就有可能发生内存泄漏。ThreadLocal在设计的时候就提供了一些补救措施：Entry的key是弱引用的ThreadLocal对象，很容易被回收，导致key为null（但是value不为null）。所以在调用get()、set(T)、remove()等方法的时候，会自动清理key为null的Entity。remove()方法就是用来清理无用对象，防止内存泄漏的。所以每次用完ThreadLocal后需要手动remove()。
 
-有些文章认为是弱引用导致了内存泄漏，其实是不对的。假设把弱引用变成强引用，这样无用的对象key和value都不为null，反而不利于GC，只能通过remove()方法手动清理，或者等待线程结束生命周期。也就是说ThreadLocalMap的生命周期由持有它的线程来决定，线程如果不进入terminated状态，ThreadLocalMap就不会被GC回收，这才是ThreadLocal内存泄露的原因。
+有些文章认为是弱引用导致了内存泄漏，其实是不对的。假设把弱引用变成强引用，这样无用的对象key和value都不为null，反而不利于GC，只能通过remove()方法手动清理，或者等待线程结束生命周期。也就是说**ThreadLocalMap的生命周期由持有它的线程来决定，线程如果不进入terminated状态，ThreadLocalMap就不会被GC回收，这才是ThreadLocal内存泄露的原因。**
 
 ## 4.2 与线程池
-与线程池配合使用：由于线程复用，存在数据覆盖问题
+与线程池配合使用：由于线程复用，存在数据覆盖问题，使用前set初始化
 
 **ThreadLocal 内存溢出问题**
 
 通过上面的分析，我们知道expungeStaleEntry() 方法是帮助垃圾回收的，根据源码，我们可以发现 get 和set 方法都可能触发清理方法expungeStaleEntry()，所以正常情况下是不会有内存溢出的 但是如果我们没有调用get 和set 的时候就会可能面临着内存溢出，养成好习惯不再使用的时候调用remove(),加快垃圾回收，避免内存溢出。退一步说，就算我们没有调用get 和set 和remove 方法,线程结束的时候，也就没有强引用再指向ThreadLocal 中的ThreadLocalMap了，这样ThreadLocalMap 和里面的元素也会被回收掉，但是有一种危险是，如果线程是线程池的， 在线程执行完代码的时候并没有结束，只是归还给线程池，这个时候ThreadLocalMap 和里面的元素是不会回收掉的。
 
 ## 4.3 InheritableThreadLocal
-子线程父线程
+父线程能用ThreadLocal来给子线程传值吗？毫无疑问，不能。那该怎么办？`InheritableThreadLocal`。
 
-ThreadLocal和synchronized比较，其实它们的实现思想不一样。
+使用起来很简单，在主线程的InheritableThreadLocal实例设置值，在子线程中就可以拿到了。
 
-1、Synchronized用于线程间的数据共享，而ThreadLocal则用于线程间的数据隔离。
+```java
+public class InheritableThreadLocalTest {    
+    public static void main(String[] args) {
+        final ThreadLocal threadLocal = new InheritableThreadLocal();
+        // 主线程
+        threadLocal.set("不擅技术");
+        //子线程
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                System.out.println("鄙人三某 ，" + threadLocal.get());
+            }
+        };
+        t.start();
+    }
+}
+```
 
-2、Synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问，所以变量只需要存一份，算是一种时间换空间的思想。而ThreadLocal为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，这样就隔离了多个线程对数据的数据共享，多个线程互不影响，算是一种空间换时间的思想。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。
+原理很简单，在Thread类里还有另外一个变量：
+
+```text
+ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
+```
+
+在Thread.init的时候，如果父线程的`inheritableThreadLocals`不为空，就把它赋给当前线程（子线程）的`inheritableThreadLocals`。
+
+```java
+if (inheritThreadLocals && parent.inheritableThreadLocals != null)
+this.inheritableThreadLocals =ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);
+```
 
 ## 4.4 为什么用弱引用？
 试问一个问题：如果应用程序觉得ThreadLocal对象的使命完成，将threadLocal ref 设置为null，如果Entry中引用ThreadLocald对象的引用类型设置为强引用的话，会发生什么问题？
 
 答案是：ThreadLocal对象会无法被垃圾回收器回收，因为从thread对象出发，有强引用指向threadlocal obj。此时会违背用户的初衷，造成所谓的内存泄露。由于ThreadLocalMap中的key是指向ThreadLocal，故从设计角度来看，设计为弱引用，将不会干扰用户的释放ThreadLocal意图。
+
+## 4.5 ThreadLocal和synchronized比较
+
+其实它们的实现思想不一样。
+
+1、Synchronized用于线程间的数据共享，而ThreadLocal则用于线程间的数据隔离。
+
+2、Synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问，所以变量只需要存一份，算是一种时间换空间的思想。而ThreadLocal为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，这样就隔离了多个线程对数据的数据共享，多个线程互不影响，算是一种空间换时间的思想。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。
 

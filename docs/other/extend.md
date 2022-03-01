@@ -8,6 +8,8 @@
 
 SPI技术：jdk spi、spring spi、dubbo spi
 
+https://www.zhihu.com/question/485969873/answer/2337075116
+
 字节码技术 javaassist
 
 
