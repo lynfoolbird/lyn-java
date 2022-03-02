@@ -1872,7 +1872,71 @@ public class MyExceptionHandler {
 }
 ```
 
+
+
+```java
+@RestControllerAdvice
+@Slf4j
+@ConditionalOnClass({SQLException.class, MybatisPlusException.class,
+        MyBatisSystemException.class, org.apache.ibatis.exceptions.PersistenceException.class,
+        BadSqlGrammarException.class, DuplicateKeyException.class})
+public class GlobalExceptionDbHandler {
+    @Autowired
+    private ServiceCodeProperties serviceCodeProperties;
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public AjaxResult handleException(Exception e) {
+        String servicePrifix = serviceCodeProperties.getPrifix();
+        String moudleCode = "001";
+        String code = "0001";
+        String errorCode = servicePrifix + moudleCode + code;
+        String msg = e.getMessage();
+        if(StringUtils.isEmpty(msg)){
+            msg = "服务端异常";
+        }
+        log.error(msg, e);
+        return AjaxResult.error(msg, HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+    
+    /**
+     *参数验证失败
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public AjaxResult handleException(ConstraintViolationException e)
+    {
+        log.error("参数验证失败", e);
+        return AjaxResult.error("参数验证失败", HttpStatus.BAD_REQUEST.value());
+    }
+    // 业务异常
+    @ExceptionHandler(BizException.class)
+    public AjaxResult handleException(BizException e)
+    {
+        return AjaxResult.error(e.getMessage(), e.getErrorCode());
+    }
+    /**
+     * 数据库异常
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({SQLException.class, MybatisPlusException.class,
+            MyBatisSystemException.class, org.apache.ibatis.exceptions.PersistenceException.class,
+            BadSqlGrammarException.class
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public AjaxResult dbException(Exception e) {
+        String msg = ExceptionUtil.getExceptionMessage(e);
+        log.error(msg, e);
+        return AjaxResult.error(msg,HttpStatus.BAD_REQUEST.value());
+    }
+}
+```
+
 ## 3.26 如何使用SpringBoot实现分页和排序？
+
 使用Spring Boot实现分页非常简单。使用Spring Data-JPA可以实现将可分页的 org.springframework.data.domain.Pageable传递给存储库方法。
 ```java
 public Page find(Integer page, Integer size) {
@@ -1901,11 +1965,19 @@ public Page find(Integer page, Integer size) {
 
 使用Quartz，则按照Quartz的方式，定义Job和Trigger即可。
 
-## 3.29 常⽤的 Bean 映射⼯具有哪些？Spring Boot 如何做请求参数校验？
+## 3.29 常⽤的Bean映射⼯具有哪些？Spring Boot 如何做请求参数校验？
 
-dozer、mapstruct
+mapstruct、dozer、JSON序列化反序列化
+[12种 vo2dto 方法大比拼](https://zhuanlan.zhihu.com/p/420054993)
 
-javax-valadition、jsonschema、写代码
+驼峰、下划线 转换工具
+
+javax-validator + Hibernate Validator、jsonschema、写代码+全局异常处理+AOP 自定义异常类 异常码
+
+[SpringBoot中处理校验逻辑的两种方式](https://zhuanlan.zhihu.com/p/470209366)
 
 ## 3.30  开发 RESTful Web 服务常⽤的注解有哪些？
 
+## 3.31 项目中如何进行日志处理？链路追踪？
+ELK 日志切面 
+https://zhuanlan.zhihu.com/p/446975740
