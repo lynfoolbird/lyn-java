@@ -197,7 +197,16 @@ public class DeadLockDemo {
 ```
 线程 A 通过 synchronized (resource1) 获得 resource1 的监视器锁，然后通过Thread.sleep(1000); 让线程 A 休眠 1s 为的是让线程 B 得到执⾏然后获取到 resource2 的监视器锁。线程 A 和线程 B 休眠结束了都开始企图请求获取对⽅的资源，然后这两个线程就会陷⼊互相等待的状态，这也就产⽣了死锁。上⾯的例⼦符合产⽣死锁的四个必要条件。 
 
-如何避免死锁？
+**如何检测死锁？**
+
+可以使用jdk自带的命令行工具排查：
+
+1. 使用jps查找运行的Java进程：jps -l
+2. 使用jstack查看线程堆栈信息：jstack -l  进程id
+
+基本就可以看到死锁的信息。还可以利用图形化工具，比如JConsole。出现线程死锁以后，点击JConsole线程面板的`检测到死锁`按钮，将会看到线程的死锁信息。
+
+**如何避免死锁？**
 
 1. 破坏互斥条件 ：这个条件没有法破坏，因为我们⽤锁本来就是想让他们互斥的（临界资源需要互斥访问）。
 2. 破坏请求与保持条件 ：⼀次性申请所有的资源。
@@ -247,9 +256,55 @@ JMM定义了线程和主内存之间的抽象关系：线程之间的共享变�
 - 可见性：Java是利用`volatile`关键字来保证可见性的，另外，`final`和`synchronized`也能保证可见性。
 - 有序性：`synchronized`或者`volatile`都可以保证多线程之间操作的有序性。
 
+## 15.3 那说说什么是指令重排？
+
+在执行程序时，为了提高性能，编译器和处理器常常会对指令做重排序。重排序分3种类型。
+1. 编译器优化的重排序。编译器在不改变单线程程序语义的前提下，可以重新安排语句的执行顺序。
+2. 指令级并行的重排序。现代处理器采用了指令级并行技术（Instruction-Level Parallelism，ILP）来将多条指令重叠执行。如果不存在数据依赖性，处理器可以改变语句对应 机器指令的执行顺序。
+3. 内存系统的重排序。由于处理器使用缓存和读/写缓冲区，这使得加载和存储操作看上去可能是在乱序执行。
+
+## 15.4 指令重排有限制吗？happens-before了解吗？
+
+指令重排也是有一些限制的，有两个规则`happens-before`和`as-if-serial`来约束。
+
+happens-before的定义：
+
+- 如果一个操作happens-before另一个操作，那么第一个操作的执行结果将对第二个操作可见，而且第一个操作的执行顺序排在第二个操作之前。
+- 两个操作之间存在happens-before关系，并不意味着Java平台的具体实现必须要按照 happens-before关系指定的顺序来执行。如果重排序之后的执行结果，与按happens-before关系来执行的结果一致，那么这种重排序并不非法
+
+happens-before原则（先行发生原则）：
+
+- 程序次序规则：一个线程内，按照代码顺序，书写在前面的操作先行发生于书写在后面的操作
+- 锁定规则：一个unLock操作先行发生于后面对同一个锁额lock操作
+- volatile变量规则：对一个变量的写操作先行发生于后面对这个变量的读操作
+- 传递规则：如果操作A先行发生于操作B，而操作B又先行发生于操作C，则可以得出操作A先行发生于操作C
+- 线程启动规则：Thread对象的start()方法先行发生于此线程的每个一个动作
+- 线程中断规则：对线程interrupt()方法的调用先行发生于被中断线程的代码检测到中断事件的发生
+- 线程终结规则：线程中所有的操作都先行发生于线程的终止检测，我们可以通过Thread.join()方法结束、Thread.isAlive()的返回值手段检测到线程已经终止执行
+- 对象终结规则：一个对象的初始化完成先行发生于他的finalize()方法的开始
+
+## 15.5 as-if-serial又是什么？单线程的程序一定是顺序的吗？
+
+as-if-serial语义的意思是：不管怎么重排序（编译器和处理器为了提高并行度），**单线程程序的执行结果不能被改变**。编译器、runtime和处理器都必须遵守as-if-serial语义。
+
+为了遵守as-if-serial语义，编译器和处理器不会对存在数据依赖关系的操作做重排序，因为这种重排序会改变执行结果。但是，如果操作之间不存在数据依赖关系，这些操作就可能被编译器和处理器重排序。为了具体说明，请看下面计算圆面积的代码示例。
+
+```java
+double pi = 3.14;   // A
+double r = 1.0;   // B 
+double area = pi * r * r;   // C
+```
+
+A和C之间存在数据依赖关系，同时B和C之间也存在数据依赖关系。因此在最终执行的指令序列中，C不能被重排序到A和B的前面（C排到A和B的前面，程序的结果将会被改变）。但A和B之间没有数据依赖关系，编译器和处理器可以重排序A和B之间的执行顺序。
+
+单线程程序是按程序的“顺序”来执行的。as- if-serial语义使单线程情况下，我们不需要担心重排序的问题，可见性的问题。
+
 # 16 掌握volatile
 
+https://zhuanlan.zhihu.com/p/466843124
+
 ## 16.1 volatile关键字的作用？
+
 volatile关键字的作用主要有两个：
 - 多线程主要围绕可见性和原子性两个特性而展开，使用volatile关键字修饰的变量，保证了其在多线程之间的可见性。
 - 为了获取更好的性能JVM可能会对指令进行重排序，多线程下可能会出现一些意想不到的问题。使用volatile则会对禁止语义重排序，当然这也一定程度上降低了代码执行效率。
@@ -286,9 +341,68 @@ AtomicInteger类提供的atomic方法可以让这种操作具有原子性如getA
 
 ## 16.7 volatile原理
 
+volatile主要两个特性，可见性和有序性。
 
+- 可见性是使用lock前缀实现，lock前缀可实现嗅探机制，每个处理器都会有一个嗅探机制，去看自己的工作内存中的数值与主内存中那个的是否一致，不一致，会将自己的工作内存中的数值设置成无效，同时会从主内存中读取数值更新到自己的工作内存中。
+- 有序性是通过内存屏障，禁止指令重排，内存屏障还可以强制刷出各种CPU的缓存数据保证可见性
+
+关于原子性，对任意单个volatile变量的读写具有原子性，但volatile++复合操作是不具有原子性的。
+
+为了实现volatile的内存语义，编译器在生成字节码时，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序。
+
+1. 在每个volatile写操作的前面插入一个`StoreStore`屏障
+2. 在每个volatile写操作的后面插入一个`StoreLoad`屏障
+3. 在每个volatile读操作的后面插入一个`LoadLoad`屏障
+4. 在每个volatile读操作的后面插入一个`LoadStore`屏障
+
+
+## 16.8 volatile和CAS底层实现都用CPU的lock指令，他们有什么不同？
+
+首先lock只是前缀，lock后面一定有跟命令，具体看后面的命令
+
+volatile没有保证原子性，volatile的实现需要内存屏障，由于lock前缀的指令具有内存屏障的效果，这里的lock addl $0x0,(%rsp)是用来作内存屏障使用的。
+storeload屏障，完全由下面这些指令实现：__asm__ volatile ("lock; addl $0,0(%%rsp)" : : : "cc", "memory");
+
+lock指令的作用是：在执行lock后面指令时，会设置处理器的LOCK#信号（这个信号会锁定总线，阻止其它CPU通过总线访问内存，直到这些指令执行结束），这条指令的执行变成原子操作，之前的读写请求都不能越过lock指令进行重排，相当于一个内存屏障。
+
+CAS保证原子性，CAS的实现用了lock cmpxchg指令。cmpxchg指令涉及一次内存读和一次内存写，需要lock前缀保证中间不会有其它cpu写这段内存。
+lock只是前缀。cas 指定了lock后面的指令必须是交换，volatile lock后面的指令要看编译时的实际情况。CAS给cmpxchg指令加lock前缀，是为了cmpxchg指令在多核处理器情况能保证原子性。
+
+## 16.9 单例模式？为何DCL中需要volatile？
+
+懒汉式、恶汉式、枚举式、内部类、synchronized、DCL
+
+```java
+public class Singleton {
+    private volatile static Singleton uniqueInstance;
+    private Singleton() {
+    }
+    public static Singleton getUniqueInstance() {
+        // 先判断对象是否已经实例过，没有实例化过才进⼊加锁代码
+        if (uniqueInstance == null) {
+            //类对象加锁
+            synchronized (Singleton.class) {
+                if (uniqueInstance == null) { // 必要，防止其他线程获得锁后再创建新实例
+                    uniqueInstance = new Singleton();
+                }
+            }
+        }
+        return uniqueInstance;
+    }
+}
+```
+
+另外，需要注意 uniqueInstance 采⽤ volatile 关键字修饰也是很有必要。uniqueInstance = new Singleton(); 这
+段代码其实是分为三步执⾏：
+
+1. 为 uniqueInstance 分配内存空间
+2. 初始化 uniqueInstance
+3. 将 uniqueInstance 指向分配的内存地址
+
+但是由于 JVM 具有指令重排的特性，执⾏顺序有可能变成 1->3->2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致⼀个线程获得还没有初始化的实例。例如，线程 T1 执⾏了 1 和 3，此时 T2 调⽤ getUniqueInstance () 后发现 uniqueInstance 不为空，因此返回uniqueInstance ，但此时 uniqueInstance 还未被初始化。 使⽤ volatile 可以禁⽌ JVM 的指令重排，保证在多线程环境下也能正常运⾏。
 
 # 17 掌握CAS
+
 ## 17.1 介绍下CAS原理及问题及解决方案？
 
 ## 17.2 介绍下juc包中的原子类？乐观锁？
@@ -691,38 +805,10 @@ java.lang.InterruptedException: sleep interrupted 异常。
 
 https://zhuanlan.zhihu.com/p/467110862
 
-# 22 单例模式？为何DCL中需要volatile？
+# 22 并发工具类
+countdownlatch、cyclicbarrier
 
-懒汉式、恶汉式、枚举式、内部类、synchronized、DCL
 
-```java
-public class Singleton {
-    private volatile static Singleton uniqueInstance;
-    private Singleton() {
-    }
-    public static Singleton getUniqueInstance() {
-        // 先判断对象是否已经实例过，没有实例化过才进⼊加锁代码
-        if (uniqueInstance == null) {
-            //类对象加锁
-            synchronized (Singleton.class) {
-                if (uniqueInstance == null) { // 必要，防止其他线程获得锁后再创建新实例
-                    uniqueInstance = new Singleton();
-                }
-            }
-        }
-        return uniqueInstance;
-    }
-}
-```
-
-另外，需要注意 uniqueInstance 采⽤ volatile 关键字修饰也是很有必要。uniqueInstance = new Singleton(); 这
-段代码其实是分为三步执⾏：
-
-1. 为 uniqueInstance 分配内存空间
-2. 初始化 uniqueInstance
-3. 将 uniqueInstance 指向分配的内存地址
-
-但是由于 JVM 具有指令重排的特性，执⾏顺序有可能变成 1->3->2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致⼀个线程获得还没有初始化的实例。例如，线程 T1 执⾏了 1 和 3，此时 T2 调⽤ getUniqueInstance () 后发现 uniqueInstance 不为空，因此返回uniqueInstance ，但此时 uniqueInstance 还未被初始化。 使⽤ volatile 可以禁⽌ JVM 的指令重排，保证在多线程环境下也能正常运⾏。
 
 # 23 多线程中忙循环是什么？
 
