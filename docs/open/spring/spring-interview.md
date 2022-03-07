@@ -253,9 +253,73 @@ BeanFactory和ApplicationContext都支持BeanPostProcessor、BeanFactoryPostProc
 
 **BeanFactory和FactoryBean的区别**
 
-BeanFactory是Spring容器中的一个很重要的类，它对于Bean的创建有一个统一的流程；
+BeanFactory是Spring容器中的一个很重要的类，它对于Bean的创建有一个统一的流程；BeanFactory是IOC容器的核心接口，它的职责包括：实例化、定位、配置应用程序中的对象及建立这些对象间的依赖。BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，其中XmlBeanFactory就是常用的一个，该实现将以XML方式描述组成应用的对象及对象间的依赖关系。XmlBeanFactory类将持有此XML配置元数据，并用它来构建一个完全可配置的系统或应用。   
 
 FactoryBean是一个工厂Bean，可以生成某一个类型Bean实例，它最大的一个作用是：可以让我们自定义Bean的创建过程。
+
+BeanFactory是接口，提供了IOC容器最基本的形式，给具体的IOC容器的实现提供了规范，FactoryBean也是接口，为IOC容器中Bean的实现提供了更加灵活的方式，FactoryBean在IOC容器的基础上给Bean的实现加上了一个简单工厂模式和装饰模式我们可以在getObject()方法中灵活配置。一般情况下，Spring通过反射机制利用<bean>的class属性指定实现类实例化Bean，在某些情况下，实例化Bean过程比较复杂，如果按照传统的方式，则需要在<bean>中提供大量的配置信息。配置方式的灵活性是受限的，这时采用编码的方式可能会得到一个简单的方案。Spring为此提供了一个org.springframework.bean.factory.FactoryBean的工厂类接口，用户可以通过实现该接口定制实例化Bean的逻辑。FactoryBean接口对于Spring框架来说占用重要的地位，Spring自身就提供了70多个FactoryBean的实现。它们隐藏了实例化一些复杂Bean的细节，给上层应用带来了便利。从Spring3.0开始，FactoryBean开始支持泛型，即接口声明改为FactoryBean<T>的形式。以Bean结尾，表示它是一个Bean，不同于普通Bean的是：它是实现了FactoryBean<T>接口的Bean，根据该Bean的ID从BeanFactory中获取的实际上是FactoryBean的getObject()返回的对象，而不是FactoryBean本身，如果要获取FactoryBean对象，请在id前面加一个&符号来获取。
+
+区别：BeanFactory是个Factory，也就是IOC容器或对象工厂，FactoryBean是个Bean。在Spring中，**所有的Bean都是由BeanFactory(也就是IOC容器)来进行管理的**。但对FactoryBean而言，**这个Bean不是简单的Bean，而是一个能生产或者修饰对象生成的工厂Bean,它的实现与设计模式中的工厂模式和修饰器模式类似** 
+
+```java
+/**
+ * my factory bean<p>
+ * 代理一个类，拦截该类的所有方法，在方法的调用前后进行日志的输出 *
+ */
+public class MyFactoryBean implements FactoryBean<Object>, InitializingBean, DisposableBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(MyFactoryBean.class);    
+    private String interfaceName;    
+    private Object target;    
+    private Object proxyObj;    
+    @Override
+    public void destroy() throws Exception {
+        logger.debug("destroy......");
+    }
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        proxyObj = Proxy.newProxyInstance(
+                this.getClass().getClassLoader(), 
+                new Class[] { Class.forName(interfaceName) }, 
+                new InvocationHandler() {                    
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                logger.debug("invoke method......" + method.getName());
+                logger.debug("invoke method before......" + System.currentTimeMillis());
+                Object result = method.invoke(target, args);
+                logger.debug("invoke method after......" + System.currentTimeMillis());
+                return result;            }            
+        });
+        logger.debug("afterPropertiesSet......");
+    }
+
+    @Override
+    public Object getObject() throws Exception {
+        logger.debug("getObject......");
+        return proxyObj;
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return proxyObj == null ? Object.class : proxyObj.getClass();
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+    // get set
+}
+
+@Configuration
+public class MainConfig2 {
+    //方法名为默认id
+    @Bean
+    public Object getMyFactoryBean() {
+        return new MyFactoryBean();
+    }
+}
+```
 
 ## 1.10 ApplicationContext通常的实现是什么？
 - FileSystemXmlApplicationContext ：
