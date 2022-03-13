@@ -388,3 +388,8 @@ this.inheritableThreadLocals =ThreadLocal.createInheritedMap(parent.inheritableT
 
 2、Synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问，所以变量只需要存一份，算是一种时间换空间的思想。而ThreadLocal为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，这样就隔离了多个线程对数据的数据共享，多个线程互不影响，算是一种空间换时间的思想。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。
 
+# 5 其他ThreadLocal实现
+
+**Netty 的 FastThreadLocal**：对 JDK 中 ThreadLocal 进行优化，由于 ThreadLocal 底层存储数据是一个 ThreadLocalMap 结构，是一个数组结构，通过 threadLocalHashCode 查找在数组中的元素 Entry, 当 hash 冲突时，继续向前检测查找，所以当 Hash 冲突时，检索的效率就会降低。而 FastThreadLocal 则正是处理了这个问题，使其时间复杂度一直为 O(1)。 
+
+**TransmittableThreadLocal：TransmittableThreadLocal** 是 Alibaba 开源的、用于解决 **“在使用线程池等会缓存线程的组件情况下传递 ThreadLocal”** 问题的 InheritableThreadLocal 扩展。JDK 的 InheritableThreadLocal 类可以完成父线程到子线程的值传递。但对于使用线程池等会池化复用线程的组件的情况，线程由线程池创建好，并且线程是池化起来反复使用的；这时父子线程关系的 ThreadLocal 值传递已经没有意义，应用需要的实际上是把 **任务提交给线程池时的 ThreadLocal 值传递**到 **任务执行时**。原理是使用 TtlRunnable/Ttlcallable 包装了 Runnable/Callable 类。

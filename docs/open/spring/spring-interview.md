@@ -363,33 +363,158 @@ IoC 在 Spring 里，只需要低级容器就可以实现，2 个步骤：
 
 至于高级容器 ApplicationContext，他包含了低级容器的功能，当他执行 refresh 模板方法的时候，将刷新整个容器的 Bean。同时其作为高级容器，包含了太多的功能。他支持不同信息源头，支持 BeanFactory 工具类，支持层级容器，支持访问文件资源，支持事件发布通知，支持接口回调等等。
 
-## 1.13 什么是 Spring bean？bean的实例化过程？
+## 1.13 什么是 Spring Bean？Bean的实例化过程？
 https://www.cnblogs.com/wyq178/p/11415877.html
 
-https://blog.csdn.net/caoyuanyenang/article/details/110505166
+https://zhuanlan.zhihu.com/p/445023217
 
 Bean由Spring IoC 容器实例化，配置，装配和管理。Bean 是基于用户提供给容器的配置元数据创建。
 
-**bean的实例化过程**
+Bean的一生从总体上来说可以分为两个阶段：
 
-1. 执行实例化前操作
+- 容器启动阶段
+- Bean实例化阶段
 
-2. 创建Bean实例
+容器的启动阶段做了很多的预热工作，为后面Bean的实例化做好了充分的准备，我们首先看一下容器的启动阶段都做了哪些预热工作。
 
-3. 将Bean缓存起来
+**容器启动阶段**
 
-4. 给Bean填充属性值
+ 1、配置元信息
 
-5. 初始化Bean
-   (1) 执行BeanPostProcessor-postProcessBeforeInitialization
-   
-   (2) 执行InitializingBean->afterPropertiesSet
-   
-   (3) 执行initMethod
-   
-   (4) 执行BeanPostProcessor-postProcessAfterInitialization
+Spring创建对象所需要的必要信息称为配置元信息。(xml/注解/Java Config)
+
+```xml
+<bean id="role" class="com.wbg.springxmlbean.entity.Role">
+    <!-- property元素是定义类的属性，name属性定义的是属性名称 value是值    相当于：
+    Role role=new Role();
+    role.setId(1);
+    role.setRoleName("高级工程师");
+    role.setNote("重要人员");-->
+    <property name="id" value="1"/>
+    <property name="roleName" value="高级工程师"/>
+    <property name="note" value="重要人员"/>
+</bean>
+```
+
+2、BeanDefination
+
+Spring选择在内存中表示这些配置元信息的方式就是BeanDefination，配置的元信息被加载到内存之后是以BeanDefination的形存在的。
+
+3、BeanDefinationReader
+
+BeanDefinationReader的作用就是加载配置元信息，并将其转化为内存形式的BeanDefination。不同的BeanDefinationReader拥有各自的本领。如果我们要读取xml配置元信息，那么可以使用XmlBeanDefinationReader。如果我们要读取properties配置文件，那么可以使用PropertiesBeanDefinitionReader加载。而如果我们要读取注解配置元信息，那么可以使用 AnnotatedBeanDefinitionReader加载。也可以自定义BeanDefinationReader来自己控制配置元信息的加载。
+
+4、BeanDefinationRegistry
+
+Spring通过BeanDefinationReader将配置元信息加载到内存生成相应的BeanDefination之后，就将其注册到BeanDefinationRegistry中，BeanDefinationRegistry就是一个存放BeanDefination的大篮子，它也是一种键值对的形式，通过特定的Bean定义的id，映射到相应的BeanDefination。
+
+5、BeanFactoryPostProcessor
+
+BeanFactoryPostProcessor是容器启动阶段Spring提供的一个扩展点，主要负责对注册到BeanDefinationRegistry中的一个个的BeanDefination进行一定程度上的修改与替换。例如我们的配置元信息中有些可能会修改的配置信息散落到各处，不够灵活，修改相应配置的时候比较麻烦，这时我们可以使用占位符的方式来配置。例如配置Jdbc的DataSource连接的时候可以这样配置:
+
+```xml
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
+    <property name="maxIdle" value="${jdbc.maxIdle}"></property>  
+    <property name="maxActive" value="${jdbc.maxActive}"></property>  
+    <property name="maxWait" value="${jdbc.maxWait}"></property>  
+    <property name="minIdle" value="${jdbc.minIdle}"></property>  
+    <property name="driverClassName"  value="${jdbc.driverClassName}"> </property>  
+    <property name="url" value="${jdbc.url}"></property>
+    <property name="username" value="${jdbc.username}"></property>  
+    <property name="password" value="${jdbc.password}"></property>  
+</bean>
+```
+
+BeanFactoryPostProcessor就会对注册到BeanDefinationRegistry中的BeanDefination做最后的修改，替换`$`占位符为配置文件中的真实的数据。
+
+至此，整个容器启动阶段就算完成了，容器的启动阶段的最终产物就是注册到BeanDefinationRegistry中的一个个BeanDefination了，这就是Spring为Bean实例化所做的预热的工作。让我们再通过一张图的形式回顾一下容器启动阶段都是搞了什么事吧。
+
+![img](images/spring-bean-instance-1.jpg)
+
+**Bean实例化阶段**
+
+需要指出，容器启动阶段与Bean实例化阶段存在多少时间差，Spring把这个决定权交给了程序员。如果我们选择懒加载的方式，那么直到我们伸手向Spring要依赖对象实例之前，其都是以BeanDefinationRegistry中的一个个的BeanDefination的形式存在，也就是Spring只有在我们需要依赖对象的时候才开启相应对象的实例化阶段。而如果我们不是选择懒加载的方式，容器启动阶段完成之后，将立即启动Bean实例化阶段，通过隐式的调用所有依赖对象的getBean方法来实例化所有配置的Bean并保存起来。
+
+接下来我们就聊一聊Bean实例化过程的那些事儿
+
+1、对象创建策略
+
+对象的创建采用了策略模式，借助我们前面BeanDefinationRegistry中的BeanDefination,我们可以使用反射的方式创建对象，也可以使用CGlib字节码生成创建对象。
+
+2、BeanWrapper——对象的外衣
+
+Spring中的Bean并不是以一个个的本来模样存在的，由于Spring IOC容器中要管理多种类型的对象，因此为了统一对不同类型对象的访问，Spring给所有创建的Bean实例穿上了一层外套，这个外套就是BeanWrapper。
+
+BeanWrapper实际上是对反射相关API的简单封装，使得上层使用反射完成相关的业务逻辑大大的简化，我们要获取某个对象的属性，调用某个对象的方法，现在不需要在写繁杂的反射API了以及处理一堆麻烦的异常，直接通过BeanWrapper就可以完成相关操作，简直不要太爽了。
+
+3、设置对象属性
+
+上一步包裹在BeanWrapper中的对象还是一个少不经事的孩子，需要为其设置属性以及依赖对象。
+
+对于基本类型的属性，如果配置元信息中有配置，那么将直接使用配置元信息中的设置值赋值即可，即使基本类型的属性没有设置值，那么得益于JVM对象实例化过程，属性依然可以被赋予默认的初始化零值。
+
+对于引用类型的属性，Spring会将所有已经创建好的对象放入一个Map结构中，此时Spring会检查所依赖的对象是否已经被纳入容器的管理范围之内，也就是Map中是否已经有对应对象的实例了。如果有，那么直接注入，如果没有,那么Spring会暂时放下该对象的实例化过程，转而先去实例化依赖对象，再回过头来完成该对象的实例化过程。**这里有一个Spring中的经典问题，那就是Spring是如何解决循环依赖的？**
+
+4、检查Aware相关接口
+
+我们知道，如果想要依赖Spring中的相关对象，使用Spring的相关API,那么可以实现相应的Aware接口，Spring IOC容器就会为我们自动注入相关依赖对象实例。
+
+Spring IOC容器大体可以分为两种，BeanFactory提供IOC思想所设想所有的功能，同时也融入AOP等相关功能模块，可以说BeanFactory是Spring提供的一个基本的IOC容器。ApplicationContext构建于BeanFactory之上，同时提供了诸如容器内的事件发布、统一的资源加载策略、国际化的支持等功能，是Spring提供的更为高级的IOC容器。
+
+对于BeanFactory来说，这一步的实现是先检查相关的Aware接口，然后去Spring的对象池(也就是容器)中去查找相关的实例(例如对于ApplicationContextAware接口，就去找ApplicationContext实例)，也就是说我们必须要在配置文件中或者使用注解的方式，将相关实例注册容器中，BeanFactory才可以为我们自动注入。
+
+而对于ApplicationContext，由于其本身继承了一系列的相关接口，所以当检测到Aware相关接口，需要相关依赖对象的时候，ApplicationContext完全可以将自身注入到其中，ApplicationContext实现这一步是通过下面要讲到的东东——BeanPostProcessor。
+
+5、BeanPostProcessor前置处理
+
+BeanFactoryPostProcessor关注对象被创建之前那些配置的修修改改，缝缝补补，而BeanPostProcessor阶段关注对象已经被创建之后 的功能增强，替换等操作。
+
+BeanPostProcessor与BeanFactoryPostProcessor都是Spring在Bean生产过程中强有力的扩展点。Spring中著名的AOP，其实就是依赖BeanPostProcessor对Bean对象功能增强的。
+
+BeanPostProcessor前置处理就是在要生产的Bean实例放到容器之前，允许我们程序员对Bean实例进行一定程度的修改，替换等操作。
+
+前面讲到的ApplicationContext对于Aware接口的检查与自动注入就是通过BeanPostProcessor实现的，在这一步Spring将检查Bean中是否实现了相关的Aware接口，如果是的话，那么就将其自身注入Bean中即可。Spring中AOP就是在这一步实现的偷梁换柱，产生对于原生对象的代理对象，然后将对源对象上的方法调用，转而使用代理对象的相同方法调用实现的。
+
+6、自定义初始化逻辑
+
+在所有的准备工作完成之后，如果我们的Bean还有一定的初始化逻辑，那么Spring将允许我们通过两种方式配置我们的初始化逻辑：
+
+- InitializingBean
+- 配置init-method参数
+
+一般通过配置init-method方法比较灵活。
+
+7、BeanPostProcess后置处理
+
+与前置处理类似，这里是在Bean自定义逻辑也执行完成之后，Spring又留给我们的最后一个扩展点。我们可以在这里在做一些我们想要的扩展。
+
+8、自定义销毁逻辑
+
+这一步对应自定义初始化逻辑，同样有两种方式：
+
+- 实现DisposableBean接口
+- 配置destory-method参数。
+
+这里一个比较典型的应用就是配置dataSource的时候destory-method为数据库连接的close()方法。
+
+9、使用
+
+经过了以上道道工序，我们终于可以享受Spring为我们带来的便捷了，这个时候我们像对待平常的对象一样对待Spring为我们产生的Bean实例，如果你觉得还不错的话，动手试一下吧！
+
+10、调用回调销毁接口
+
+Spring的Bean在为我们服务完之后，马上就要消亡了(通常是在容器关闭的时候)，别忘了我们的自定义销毁逻辑，这时候Spring将以回调的方式调用我们自定义的销毁逻辑，然后Bean就这样走完了光荣的一生！
+
+我们再通过一张图来一起看一看Bean实例化阶段的执行顺序是如何的？
+
+![img](images/spring-bean-instance-2.jpg)
+
+需要指出，容器启动阶段与Bean实例化阶段之间的桥梁就是我们可以选择自定义配置的延迟加载策略，如果我们配置了Bean的延迟加载策略，那么只有我们在真实的使用依赖对象的时候，Spring才会开始Bean的实例化阶段。
+
+而如果我们没有开启Bean的延迟加载，那么在容器启动阶段之后，就会紧接着进入Bean实例化阶段，通过隐式的调用getBean方法，来实例化相关Bean。
 
 ## 1.14 Spring 提供了哪些配置方式？
+
 - 基于xml配置：bean 所需的依赖项和服务在 XML 格式的配置文件中指定 。 
 ```xml
 <bean id="studentbean" class="org.edureka.firstSpring.StudentBean"> 
@@ -478,39 +603,40 @@ Spring容器能够自动装配bean，通过检查BeanFactory内容让Spring自�
 - 自动装配不如显式装配精确，如果有可能，建议使用显式装配。
 
 ## 1.18 Spring Bean的加载过程？循环依赖怎么解决？
-https://www.zhihu.com/question/438247718
+https://www.zhihu.com/question/438247718/answer/1908173247
 
-三级缓存机制
+Spring的bean加载顺序，默认情况下是按照文件完整路径递归查找的，按照路径+文件名排序，排在前面的先加载。
 
-Bean实例化的过程：执行实例化前操作，创建Bean实例，将Bean缓存起来，给Bean填充属性值，初始化Bean
+![img](images/spring-bean-load-1.jpg)
 
-(1) 执行BeanPostProcessor-postProcessBeforeInitialization
+Spring 提供了除了构造函数注入和原型注入外的，setter循环依赖注入解决方案。三级缓存机制，即三个Map，将对象创建过程分成实例化、初始化两阶段。
 
-(2) 执行InitializingBean->afterPropertiesSet
+singletonObjects：一级缓存，实例化并且初始化完成的bean
 
-(3) 执行initMethod
+earlySingletonObjects：二级缓存，实例化完成，但没有进行依赖注入，由三级缓存放进来
 
-(4) 执行BeanPostProcessor-postProcessAfterInitialization
+singletonFactories：三级缓存，value是对象工厂ObjectFactory，以便于后面扩展有机会创建代理对象
 
-例如：A与B属性循环依赖。
-
-A执行第二，三步，调用构造函数并将实例加入缓存；
-
-A执行第四步填充属性时找不到B实例，于是先去执行B的实例化；
-
-B执行到第4步时从缓存中能够找到A实例，于是B实例化成功；
-
-接着再执行A的实例化。
-
-为什么spring无法解决构造方法中的循环依赖？
-
-调用构造函数后是第二步创建实例就要执行的事情，第二步都通过不了，自然就无法执行第三步加入缓存中。
-
-二级缓存能否解决循环依赖？为什么引入三级缓存？
+![img](images/spring-cyclic-dependency-2.jpg)
 
 ![img](images/spring-cyclic-dependency.jpg)
 
+**连环炮**
+
+> 为什么spring无法解决构造方法中的循环依赖以及原型模式的循环依赖？
+
+调用构造函数后是第二步创建实例就要执行的事情，第二步都通过不了，自然就无法执行第三步加入缓存中。
+
+> 二级缓存能否解决循环依赖？为什么引入三级缓存？
+
+第三级缓存key是beanName，value是ObjectFactory。对象是单例的，有可能A对象依赖的B对象是有AOP的(代理对象)，假如没有第三级缓存，只有第二级缓存(value存对象)，如果有AOP的情况下那么在存入第二级缓存之前都需要先去做AOP代理，这是不合适的，所以三级缓存的value是ObjectFactory，可以从里面拿到代理对象。二级缓存存在的必要就是为了性能，从三级缓存的工厂里创建对象再放到二级缓存就不用每次从工厂里拿了。
+
+> 出现循环依赖如何解决？
+
+尽量避免出现循环依赖，出现时一般可以通过@Lazy注解延迟加载，使用@DependsOn注解指定加载先后顺序，或者修改文件名称改变循环依赖类的加载顺序。
+
 ## 1.19 @Autowired注解作用？自动装配的原理过程是怎样的？
+
 @Autowired默认是按照类型装配注入的，默认情况下它要求依赖对象必须存在（可以设置它required属性为false）。@Autowired 注解提供了更细粒度的控制，包括在何处以及如何完成自动装配。
 
 使用@Autowired注解来自动装配指定的bean。在使用@Autowired注解之前需要在Spring配置文件进行配置，<context:annotation-config />。在启动spring IoC时，容器自动装载了一个AutowiredAnnotationBeanPostProcessor后置处理器，当容器扫描到@Autowied、@Resource或@Inject时，就会在IoC容器自动查找需要的bean，并装配给该对象的属性。在使用@Autowired时，首先在容器中查询对应类型的bean：
