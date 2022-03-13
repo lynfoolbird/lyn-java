@@ -1753,6 +1753,8 @@ Spring JavaConfig 是 Spring 社区的产品，它提供了配置 Spring IoC 容
 JavaConfig 提供了一种类型安全的方法来配置 Spring容器。由于 Java 5.0 对泛型的支持，现在可以按类型而不是按名称检索 bean，不需要任何强制转换或基于字符串的查找。
 
 ## 3.6 SpringBoot自动配置原理是什么？
+https://zhuanlan.zhihu.com/p/359797989
+
 SpringBoot启动会加载大量的自动配置类
 我们看我们需要的功能有没有在SpringBoot默认写好的自动配置类当中；
 我们再来看这个自动配置类中到底配置了哪些组件；（只要我们要用的组件存在在其中，我们就不需要再手动配置了）
