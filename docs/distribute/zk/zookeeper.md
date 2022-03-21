@@ -2,6 +2,8 @@
 
 https://zhuanlan.zhihu.com/p/466890533
 
+https://www.cnblogs.com/lbys/p/14012394.html
+
 # 基本概念
 
 Apache ZooKeeper是一种用于分布式应用程序的高性能协调服务。提供一种集中式信息存储服务。
