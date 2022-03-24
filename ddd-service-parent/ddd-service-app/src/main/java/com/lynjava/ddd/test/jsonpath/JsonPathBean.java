@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.jayway.jsonpath.*;
 import net.minidev.json.JSONArray;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class JsonPathBean {
     private String path;
 
@@ -28,6 +31,13 @@ public class JsonPathBean {
         books.add(book2);
         store.put("books", books);
         System.out.println(json.toJSONString());
+        List<String> filers = Arrays.asList("author=='guojingming'");
+        String path = new JsonPathBuilder().appendHierarchy("store")
+                .appendHierarchy("books")
+                .appendFilter(filers)
+                .build();
+        String ss = new JsonPathBean(path, "READ", null).modifyJson(json.toJSONString());
+        System.out.println(ss);
         JsonPathBean bean1 = new JsonPathBean("$.store.books[*].author", "REPLACE", "liuliu");
         System.out.println(bean1.modifyJson(json.toJSONString()));
         JsonPathBean bean2 = new JsonPathBean("$.store.books[?(@.price>9)].author", "PUT", "chenzhongshi");
@@ -63,6 +73,8 @@ public class JsonPathBean {
             ReadContext rdc = JsonPath.parse(oriJson);
             Object obj = rdc.read(this.path);
             return null == obj ? "" : JSON.toJSONString(obj);
+        } else if (this.operateType =="DEL") {
+            dc.delete(this.path);
         }
         return dc.jsonString();
     }
@@ -90,4 +102,32 @@ public class JsonPathBean {
     public void setValue(Object value) {
         this.value = value;
     }
+}
+
+class JsonPathBuilder {
+    private StringBuilder path = new StringBuilder("$");
+
+    public JsonPathBuilder appendHierarchy(String hierarchy) {
+        this.path.append("." + hierarchy);
+        return this;
+    }
+
+    public JsonPathBuilder appendFilter(List<String> filters) {
+        String childPathStr = "";
+        String reg = "(@.KEYKEY OPOP VALUEVALUE)";
+        for (int i=0; i<filters.size(); i++) {
+            childPathStr += reg.replace("KEYKEY OPOP VALUEVALUE", filters.get(i));
+            if (i<filters.size()-1) {
+                childPathStr = childPathStr + "&&";
+            }
+        }
+        this.path.append("[?(DDDDD)]".replaceAll("DDDDD", childPathStr));
+        return this;
+    }
+
+    public String build() {
+        return this.path.toString();
+    }
+
+
 }
