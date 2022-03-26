@@ -6,6 +6,9 @@ import org.springframework.beans.BeanUtils;
 
 import javax.inject.Named;
 
+/**
+ * xxFactory类：DO与PO相互转换
+ */
 @Named
 public class ClusterFactory {
 

@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * 集群聚合根
+ */
 @Data
 @Builder
 @AllArgsConstructor

@@ -10,6 +10,10 @@ import com.lynjava.ddd.domain.external.servicemarket.converter.ServiceMarketConv
 import javax.inject.Inject;
 import javax.inject.Named;
 
+
+/**
+ * 集群子域-领域服务
+ */
 @Named
 public class ClusterDomainService {
 

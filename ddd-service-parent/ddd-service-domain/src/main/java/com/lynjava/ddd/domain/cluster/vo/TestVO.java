@@ -3,6 +3,9 @@ package com.lynjava.ddd.domain.cluster.vo;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * 值对象
+ */
 @Data
 @Builder
 public class TestVO {
