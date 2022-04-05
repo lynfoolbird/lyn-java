@@ -1,12 +1,14 @@
-类加载 ClassLoader
+反射 类加载 ClassLoader、Class、Constructor、Method、Field
 
-反射 Class、Constructor、Method、Field
+泛型
 
 注解原理
 
-动态代理技术：静态代理、动态代理 jdk、cglib 比较 性能; 应用AOP
+动态代理：静态代理、动态代理 jdk、cglib 比较 性能; 应用AOP
 
-SPI技术：jdk spi、spring spi、dubbo spi
+SPI：jdk spi、spring spi、dubbo spi
+
+Spring扩展
 
 https://www.zhihu.com/question/485969873/answer/2337075116
 
@@ -180,4 +182,82 @@ dubbo里面提供了大量的类似上面的扩展点，就是说，你如果要
 
 
 ## SPI打破双亲委派模型
+
+
+
+# Spring扩展
+
+FactoryBean、外部对象加入容器、动态添加bean
+
+BeanPostProcessor、BeanFactoryPostProcessor、Aware接口
+
+https://my.oschina.net/wang5v/blog/3019778
+
+mybatis dao接口原理
+
+https://www.iteye.com/blog/wx1568534408-2458821
+
+自动配置、starter
+
+
+
+```java
+/**  
+ * my factory bean<p>  
+ * 代理一个类，拦截该类的所有方法，在方法的调用前后进行日志的输出  
+ *  
+ */  
+public class MyFactoryBean implements FactoryBean<Object>, InitializingBean, DisposableBean {  
+  
+    private static final Logger logger = LoggerFactory.getLogger(MyFactoryBean.class);   
+    private String interfaceName;   
+    private Object target;   
+    private Object proxyObj;   
+    @Override  
+    public void destroy() throws Exception {  
+        logger.debug("destroy......");  
+    }  
+    @Override  
+    public void afterPropertiesSet() throws Exception {  
+        proxyObj = Proxy.newProxyInstance(  
+                this.getClass().getClassLoader(),   
+                new Class[] { Class.forName(interfaceName) },   
+                new InvocationHandler() {   
+            @Override  
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {  
+                logger.debug("invoke method......" + method.getName());  
+                logger.debug("invoke method before......" + System.currentTimeMillis());  
+                Object result = method.invoke(target, args);  
+                logger.debug("invoke method after......" + System.currentTimeMillis());  
+                return result; }   
+        });  
+        logger.debug("afterPropertiesSet......");  
+    }  
+  
+    @Override  
+    public Object getObject() throws Exception {  
+        logger.debug("getObject......");  
+        return proxyObj;  
+    }  
+  
+    @Override  
+    public Class<?> getObjectType() {  
+        return proxyObj == null ? Object.class : proxyObj.getClass();  
+    }  
+  
+    @Override  
+    public boolean isSingleton() {  
+        return true;  
+    }  
+  
+    // getter、setter
+}
+```
+
+```xml
+<bean id="fbHelloWorldService" class="com.ebao.xxx.MyFactoryBean">  
+   <property name="interfaceName" value="com.ebao.xxx.HelloWorldService" />  
+   <property name="target" ref="helloWorldService" />  
+</bean>
+```
 

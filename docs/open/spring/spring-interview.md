@@ -253,6 +253,8 @@ BeanFactory和ApplicationContext都支持BeanPostProcessor、BeanFactoryPostProc
 
 **BeanFactory和FactoryBean的区别**
 
+https://segmentfault.com/a/1190000022365382
+
 BeanFactory是Spring容器中的一个很重要的类，它对于Bean的创建有一个统一的流程；BeanFactory是IOC容器的核心接口，它的职责包括：实例化、定位、配置应用程序中的对象及建立这些对象间的依赖。BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，其中XmlBeanFactory就是常用的一个，该实现将以XML方式描述组成应用的对象及对象间的依赖关系。XmlBeanFactory类将持有此XML配置元数据，并用它来构建一个完全可配置的系统或应用。   
 
 FactoryBean是一个工厂Bean，可以生成某一个类型Bean实例，它最大的一个作用是：可以让我们自定义Bean的创建过程。
