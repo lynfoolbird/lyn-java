@@ -15,6 +15,11 @@ https://www.zhihu.com/question/485969873/answer/2337075116
 字节码技术 javaassist
 
 
+
+# 注解反射
+
+
+
 # 动态代理
 
 ## JDK动态代理
@@ -101,7 +106,7 @@ public class Client {
 
 ## Cglib动态代理
 
-# SPI技术
+# SPI
 SPI，简单来说，就是service provider interface，说白了是什么意思呢，比如你有个接口，现在这个接口有3个实现类，那么在系统运行的时候对这个接口到底选择哪个实现类呢？这就需要spi了，需要根据指定的配置或者是默认的配置，去找到对应的实现类加载进来，然后用这个实现类的实例对象。
 
 接口A -> 实现A1，实现A2，实现A3
@@ -187,6 +192,12 @@ dubbo里面提供了大量的类似上面的扩展点，就是说，你如果要
 
 # Spring扩展
 
+在Spring中用**BeanDefinition**对象来描述需要实例化的对象，包含了这个bean的名称，class，是否是抽象，是否为单例等信息，然后通过**preInstantiateSingletons**实例化到ioc容器中。我们要使用的对象的时候，就从ioc容器中去获取相应的对象即可。
+
+在Spring Bean的实例化过程中，Spring设计了很多拦截点，可以在动态的改变实例化对象的相关信息。达到在ioc容器中的对象和最开始注册到BeanDefinition中的信息不同。
+
+[Springboot启动扩展点超详细教程小结](http://www.zhano.cn/index.php/Java/5791.html)
+
 FactoryBean、外部对象加入容器、动态添加bean
 
 BeanPostProcessor、BeanFactoryPostProcessor、Aware接口
@@ -199,13 +210,22 @@ https://www.iteye.com/blog/wx1568534408-2458821
 
 自动配置、starter
 
+Spring注解大全
 
+@Import
+
+https://baijiahao.baidu.com/s?id=1693401682875623144&wfr=spider&for=pc
+
+## FactoryBean
+
+FactoryBean是一种特殊的Bean，允许用户自定义Bean的创建过程。不同于普通Bean的是：它是实现了FactoryBean<T>接口的Bean。
+特殊性质：
+根据该Bean的ID从BeanFactory中获取的实际上是FactoryBean的getObject()返回的对象，而不是FactoryBean本身，如果要获取FactoryBean对象，请在id前面加一个&符号来获取。
 
 ```java
 /**  
- * my factory bean<p>  
- * 代理一个类，拦截该类的所有方法，在方法的调用前后进行日志的输出  
- *  
+ * MyFactoryBean
+ * 代理一个类，拦截该类的所有方法，在方法的调用前后进行日志的输出 
  */  
 public class MyFactoryBean implements FactoryBean<Object>, InitializingBean, DisposableBean {  
   
@@ -248,8 +268,7 @@ public class MyFactoryBean implements FactoryBean<Object>, InitializingBean, Dis
     @Override  
     public boolean isSingleton() {  
         return true;  
-    }  
-  
+    }    
     // getter、setter
 }
 ```
@@ -260,4 +279,178 @@ public class MyFactoryBean implements FactoryBean<Object>, InitializingBean, Dis
    <property name="target" ref="helloWorldService" />  
 </bean>
 ```
+
+## BeanFactoryPostProcessor
+
+BeanFactoryPostProcessor可以在对象实例化到ioc容器之前对原有的beanDefinition的一些属性进行设置更新。
+
+```java
+@Component("testBean")
+public class TestBean {}
+
+public class TestBean1 {}
+
+@Component
+public class MyFactoryPostProcessor implements BeanFactoryPostProcessor {
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        //获取testBean的beanDefinition
+        GenericBeanDefinition beanDefinition = (GenericBeanDefinition)beanFactory.getBeanDefinition("testBean");
+        //更改class为TestBean1
+        beanDefinition.setBeanClass(TestBean1.class);
+    }
+}
+```
+
+## ImportBeanDefinitionRegistrar
+
+ImportBeanDefinitionRegistrar可以动态将自己的对象注册到BeanDefinition，然后会spring的bean实例化流程，生成实例对象到ioc容器。
+
+简单模拟Mybaitis中的动态代理Mapper接口执行sql
+
+```java
+public interface MyDao {
+    @Select("SELECT * FROM T1")
+    void query();
+}
+
+public class MyFactoryBean implements FactoryBean {
+    private Class classzz;
+    public MyFactoryBean(Class classzz){
+        this.classzz = classzz;
+    }
+   @Override
+    public Object getObject() throws Exception {
+        //利用动态代理生成实例对象
+        Object instance = Proxy.newProxyInstance(MyFactoryBean.class.getClassLoader(), new Class[]{classzz.class}, new InvocationHandler(){
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                String value = method.getDeclaredAnnotation(Select.class).value();
+                System.out.println(value);
+                System.out.println(”执行业务逻辑“);
+                return null;
+            }
+        });
+        return instance;
+    }
+    @Override
+    public Class<?> getObjectType() {
+        return this.classzz;
+    }
+}
+
+public class MyImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
+        //这里将数组写死了。我们可以定义一个包，扫描包下的所有接口class，这里就不做实现了，这里为了演示效果，多定义了一个接口MyDao1，跟MyDao定义相同的，代码就不贴出来了。
+        Class[] classes = {MyDao.class,MyDao1.class};
+        for (Class aClass : classes) {
+            BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MyFactoryBean.class);
+            GenericBeanDefinition beanDefinition = (GenericBeanDefinition)builder.getBeanDefinition();
+            //调用刚刚定义的MyFactoryBean有参构造函数
+            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(aClass.getTypeName());
+            beanDefinitionRegistry.registerBeanDefinition(aClass.getName(),beanDefinition);
+        }
+    }
+}
+// 自定义@Select注解，这个注解就是用在Dao接口方法定义上的,value为sql语句
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Select {
+    String value() default "";
+}
+// 自定义注解@MyScan，并通过@Import导入MyImportBeanDefinitionRegistrar。这样就会被spring扫描到
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+@Documented
+@Import({MyImportBeanDefinitionRegistrar.class})
+public @interface MyScan {
+}
+```
+
+有没有感觉到有点类似mybatis了，接口Mapper，没有任何实现，但是可以直接@Autowired进行调用。不过，我们自己定义的@MyScan注解，它的是@MapperScan注解，后面参数为Mapper的包路径，我们这里就没有实现类，因为我们在MyImportBeanDefinitionRegistrar中定义数组来模拟包路径扫描class了。
+
+最后一步，在项目启动类加上@MyScan并编写测试。调用Mydao，到这里就将动态代理的类交由ioc管理了。
+
+```
+MyDao myDao = SpringContextUtils.getBean(MyDao.class);
+myDao.execute();  //打印出”执行业务逻辑“
+```
+
+## BeanPostProcessor
+
+注意：TestBeanPostProcessor也需要是Bean加入到容器中；容器加载每个bean时均会执行其中方法。
+
+```java
+@Component
+public class TestBeanPostProcessor implements BeanPostProcessor {
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("lyn post before:" + beanName);
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println("lyn post after:" + beanName);
+        return bean;
+    }
+}
+```
+
+## InitializingBean、DisposableBean
+
+@PostConstruct、@PreDestroy
+
+## Aware接口
+
+BeanNameAware、BeanFactoryAware、ApplicationContextAware等
+
+## 容器事件
+
+ContextRefreshEvent、
+
+## 项目启动后执行逻辑
+
+三种方式：CommandLineRunner、ApplicationRunner、ApplicationListener
+
+```java
+@Component
+@Order(1)
+public class TestCommandLineRunner implements CommandLineRunner {
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println("TestCommandLineRunner run args:" + args);
+        System.out.println("TestCommandLineRunner run execute...");
+    }
+    @PostConstruct
+    public void init() {
+        System.out.println("TestCommandLineRunner init execute...");
+    }
+    @PreDestroy
+    public void destry() {
+        System.out.println("TestCommandLineRunner destroy execute...");
+    }
+}
+
+@Component
+public class TestApplicationRunner implements ApplicationRunner {
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        System.out.println("TestApplicationRunner run args:" + args);
+        System.out.println("TestApplicationRunner run execute...");
+    }
+}
+
+@Component
+public class TestApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        System.out.println("TestApplicationListener onApplicationEvent execute...");
+    }
+}
+```
+
+
 
