@@ -28,20 +28,61 @@
         </dependency>
         <!-- 项目内模块依赖 end -->
 
-
-
     </dependencies>
 
+    <!--根据profile指定不同的依赖 -->
+    <!--应用：工程依赖接口，不同实现封装到不同jar中，通过profile分别依赖 -->
+    <profiles>
+       <profile>
+          <id>blue</id>
+          <properties>
+            <!--传递给脚本的参数值-->
+            <activeProfile>blue</activeProfile>
+          </properties>
+          <activation>
+              <!-- 默认激活-->
+            <activeByDefault>true</activeByDefault>
+          </activation>
+           <dependencies>
+               <dependency>
+                   <groupId>com.thoughtworks.xstream</groupId>
+                   <artifactId>xstream</artifactId>
+                   <version>1.4.18</version>
+               </dependency>
+           </dependencies>
+       </profile>
+        <profile>
+           <id>red</id>
+           <properties>
+              <activeProfile>red</activeProfile>
+           </properties>
+           <dependencies>
+               <dependency>
+                   <groupId>com.thoughtworks.xstream</groupId>
+                   <artifactId>xstream</artifactId>
+                   <version>1.4.17</version>
+               </dependency>
+           </dependencies>
+        </profile>
+    </profiles>
+
     <build>
-<!--        <finalName>demo-service-provider</finalName>-->
+        <finalName>demo-service-provider-${activeProfile}-${version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.yml</include>
-                    <include>config/*.xml</include>
-                </includes>
+<!--                <includes>-->
+<!--                    <include>**/*.properties</include>-->
+<!--                    <include>**/*.yml</include>-->
+<!--                    <include>config/*.xml</include>-->
+<!--                </includes>-->
+                <excludes>
+                    <exclude>blue/*</exclude>
+                    <exclude>red/*</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/${activeProfile}</directory>
             </resource>
         </resources>
         <plugins>
