@@ -14,6 +14,10 @@
 
 [3W字详解java集合](https://mp.weixin.qq.com/s/WoVpnE8edJtv4lhFiB3yhw)
 
+[Java集合连环三十问](https://mp.weixin.qq.com/s/SHkQ7LEOT0itt4bXMoDBPw)
+
+[HashMap追魂二十三问 ](https://mp.weixin.qq.com/s?__biz=MzkwODE5ODM0Ng==&mid=2247488709&idx=1&sn=73cc244a517fee842836aaa0cb65633f&scene=21#wechat_redirect)
+
 # 1 HashMap
 
 [HashMap源码深度解析](https://www.ixigua.com/6827809139582829060)

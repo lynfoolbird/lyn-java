@@ -12,6 +12,10 @@
 
 
 
+session、cookie、token、jwt、单点登录、用户管理（用户/角色/权限）、spring security、shiro、oauth2.0
+
+
+
 github：735835816@qq.com   lynfoolbird/三南@生
 
 https://github.com/xingshaocheng/architect-awesome   architect-awesome  
