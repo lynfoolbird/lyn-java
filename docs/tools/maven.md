@@ -39,6 +39,29 @@ https://mp.weixin.qq.com/s/Q8QykLRI1Z2Sb4SBRdETLw
         </profile>
     </profiles>
 ```
+```
+mvn clean package -Pred
+```
+
+## 打指定包中类到jar
+
+```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <includes>
+                        <include>com/lynjava/ddd/api/cluster/**/*.class</include>         
+                       <include>com/lynjava/ddd/api/${activeProfile}/**/*.class</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
 
 ## 本地安装jar
 

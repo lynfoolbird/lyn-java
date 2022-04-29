@@ -12,5 +12,39 @@
 
     <artifactId>ddd-service-api</artifactId>
 
+    <profiles>
+        <profile>
+            <id>blue</id>
+            <properties>
+                <activeProfile>blue</activeProfile>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>red</id>
+            <properties>
+                <activeProfile>red</activeProfile>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <includes>
+                        <include>com/lynjava/ddd/api/cluster/**/*.class</include>
+                        <include>com/lynjava/ddd/api/shared/**/*.class</include>
+                        <include>com/lynjava/ddd/api/${activeProfile}/**/*.class</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>
