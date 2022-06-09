@@ -92,6 +92,8 @@ beans：加载过程、循环依赖 懒加载 注解原理及常用注解  beanf
 
 https://www.jianshu.com/p/9ea61d204559
 
+Profile用途：配置区分环境、按环境加载不同bean；注解@Profile、xml配置
+
 ## 2.2 mybatis
 mybatis/mybatis plus jdbc orm 
 

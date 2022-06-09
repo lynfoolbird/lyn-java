@@ -5,6 +5,7 @@ import com.lynjava.ddd.app.cluster.assmbler.ClusterAssmbler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
+import com.lynjava.ddd.domain.external.iam.IamExternalService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,7 +22,11 @@ public class ClusterAppService {
     @Inject
     private ClusterDomainService clusterDomainService;
 
+    @Inject
+    private IamExternalService iamExternalService;
+
     public ClusterOutputDto getCluster() {
+        iamExternalService.printIam();
         return clusterAssmbler.toOutputDto(clusterDomainService.getCluster());
     }
 
