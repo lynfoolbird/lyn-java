@@ -1,4 +1,4 @@
-package com.lynjava.ddd.domain.config;
+package com.lynjava.ddd.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

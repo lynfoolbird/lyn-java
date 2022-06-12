@@ -26,6 +26,6 @@ mybatis-plus
 ### 查看端口占用进程
 netstat -ano|findstr 8080
 tasklist pid
-taskkill /F
+taskkill /F /pid 123456
 
 ## linux
