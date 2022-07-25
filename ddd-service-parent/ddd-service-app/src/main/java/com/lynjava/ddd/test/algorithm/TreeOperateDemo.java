@@ -1,11 +1,31 @@
 package com.lynjava.ddd.test.algorithm;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class TreeOperateDemo {
+
+    // 将tree转成list
+    public static void treeBean2list(TreeDataNode root,List<TreeDataNode> list, TreeDataNode parent){
+        if (root == null) {
+            return ;
+        }
+        root.setParentNode(parent);
+        list.add(root);
+        if (CollectionUtils.isEmpty(root.getChilds())){
+            return;
+        }
+        for (TreeDataNode sub:root.getChilds()){
+            treeBean2list(sub, list, root);
+        }
+    }
 
 
     // 求树中节点个数
@@ -225,68 +245,63 @@ public class TreeOperateDemo {
         System.out.println("\n构建的树比较测试:");
         System.out.println(equals(t,root));
     }
-}
 
-class TreeNode<T> {
-    private T value;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TreeNode<T> {
+        private T value;
 
-    private TreeNode<T> leftChild;
+        private TreeNode<T> leftChild;
 
-    private TreeNode<T> rightChild;
+        private TreeNode<T> rightChild;
 
-    public TreeNode(){
-    }
-    public TreeNode(T value) {
-        this.value = value;
-    }
-
-    public void addLeft(T value) {
-        TreeNode<T> left = new TreeNode<>(value);
-        this.leftChild = left;
-    }
-    public void addRight(T value) {
-        TreeNode<T> right = new TreeNode<>(value);
-        this.rightChild = right;
-    }
-    @Override
-    public boolean equals(Object obj) {
-        if(!(obj instanceof TreeNode)){
-            return false;
+        public TreeNode(T value) {
+            this.value = value;
         }
-        return this.value.equals(((TreeNode<?>)obj).value);
+
+        public void addLeft(T value) {
+            TreeNode<T> left = new TreeNode<>(value);
+            this.leftChild = left;
+        }
+        public void addRight(T value) {
+            TreeNode<T> right = new TreeNode<>(value);
+            this.rightChild = right;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if(!(obj instanceof TreeNode)){
+                return false;
+            }
+            return this.value.equals(((TreeNode<?>)obj).value);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.value.hashCode();
+        }
     }
 
-    @Override
-    public int hashCode() {
-        return this.value.hashCode();
-    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TreeDataNode {
+        private String id;
+        private String code;
+        private String type;
+        private List<TreeDataNode> childs;
+        private TreeDataNode parentNode;
 
-    @Override
-    public String toString(){
-        return this.value==null?"":this.value.toString();
-    }
-
-    public T getValue() {
-        return value;
-    }
-
-    public void setValue(T value) {
-        this.value = value;
-    }
-
-    public TreeNode<T> getLeftChild() {
-        return leftChild;
-    }
-
-    public void setLeftChild(TreeNode<T> leftChild) {
-        this.leftChild = leftChild;
-    }
-
-    public TreeNode<T> getRightChild() {
-        return rightChild;
-    }
-
-    public void setRightChild(TreeNode<T> rightChild) {
-        this.rightChild = rightChild;
+        // 复写tostring方法：注意去除parentNode循环依赖
+        @Override
+        public String toString() {
+            return "TreeNode{" +
+                    "id='" + id + '\'' +
+                    ", code='" + code + '\'' +
+                    ", type='" + type + '\'' +
+                    ", childs=" + childs +
+                    '}';
+        }
     }
 }
+

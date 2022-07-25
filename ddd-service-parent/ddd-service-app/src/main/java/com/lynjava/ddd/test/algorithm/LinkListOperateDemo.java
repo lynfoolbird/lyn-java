@@ -1,5 +1,9 @@
 package com.lynjava.ddd.test.algorithm;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Objects;
 
 public class LinkListOperateDemo {
@@ -77,31 +81,14 @@ public class LinkListOperateDemo {
         }
         System.out.println();
     }
-}
 
-
-class Node {
-    private Integer value;
-    private Node next;
-
-    public Node(Integer value, Node next) {
-        this.value = value;
-        this.next = next;
-    }
-
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
-    }
-
-    public Node getNext() {
-        return next;
-    }
-
-    public void setNext(Node next) {
-        this.next = next;
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Node {
+        private Integer value;
+        private Node next;
     }
 }
+
+
