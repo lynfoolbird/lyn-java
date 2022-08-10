@@ -35,15 +35,16 @@ public class DispatchController {
         // 执行方法
         return ReflectionUtils.invokeMethod(method, bean, params);
     }
+
+    @Data
+    public static class DispatchInfoDto {
+        // 请求目标beanid
+        private String componentName;
+        // 请求目标方法名
+        private String methodName;
+        // 请求目标方法参数
+        private Object[] params;
+
+    }
 }
 
-@Data
-class DispatchInfoDto {
-    // 请求目标beanid
-    private String componentName;
-    // 请求目标方法名
-    private String methodName;
-    // 请求目标方法参数
-    private Object[] params;
-
-}

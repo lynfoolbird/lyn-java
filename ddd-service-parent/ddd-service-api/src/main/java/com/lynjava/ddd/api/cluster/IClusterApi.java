@@ -4,6 +4,7 @@ package com.lynjava.ddd.api.cluster;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.api.shared.Result;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -27,8 +28,8 @@ public interface IClusterApi {
     Object createCluster(ClusterInputDto clusterInputDto);
 
     @PATCH
-    @Path("/{id}")
-    Object updateCluster(@PathParam("id") String clusterId, ClusterInputDto clusterInputDto);
+    @Path("/{id}/type/{type}")
+    Object updateCluster(@PathParam("id") String clusterId, @PathParam("type") String type,  @RequestBody String  body);
 
     @PUT
     @Path("/{id}")

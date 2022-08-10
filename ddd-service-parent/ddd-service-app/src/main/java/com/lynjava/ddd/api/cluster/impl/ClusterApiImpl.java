@@ -36,8 +36,8 @@ public class ClusterApiImpl implements IClusterApi {
     }
 
     @Override
-    public Object updateCluster(String clusterId, ClusterInputDto clusterInputDto) {
-        return null;
+    public Object updateCluster(String clusterId, String type, String body) {
+        return clusterAppService.updateCluster(clusterId, type, body);
     }
 
     @Override

@@ -1,8 +1,22 @@
 package com.lynjava.ddd.test.basic;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 public class JoinTest {
-    private static volatile int i=1;
+    private static volatile int i = 1;
+
+    private static final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+
+
     public static void main(String[] args) throws Exception {
+//        for (int i=0; i<10; i++) {
+            ses.scheduleAtFixedRate(() ->{
+                System.out.println(Thread.currentThread().getName() + " begion");
+            }, 0, 10, TimeUnit.SECONDS);
+//        }
 //        Thread before = null;
 //        for (int i=1; i<101; i++) {
 //            String threadName = "Thread-"+i;
@@ -28,9 +42,9 @@ public class JoinTest {
 //        };
 //        new Thread(runnable, "odd").start();
 //        new Thread(runnable, "even").start();
-        Object monitor = new Object();
-        new Thread(new OddEven(true, monitor)).start();
-        new Thread(new OddEven(false, monitor)).start();
+//        Object monitor = new Object();
+//        new Thread(new OddEven(true, monitor)).start();
+//        new Thread(new OddEven(false, monitor)).start();
     }
 }
 
