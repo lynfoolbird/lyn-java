@@ -6,7 +6,12 @@ https://www.toutiao.com/a6750511984854172173/?channel=&source=search_tab
 
 https://blog.csdn.net/u010445301/article/details/111322569
 
+[ThreadLocal的八个关键知识点](https://zhuanlan.zhihu.com/p/548757072)
+
+`ThreadLocal`，即线程本地变量。如果你创建了一个`ThreadLocal`变量，那么访问这个变量的每个线程都会有这个变量的一个本地拷贝，多个线程操作这个变量的时候，实际是在操作自己本地内存里面的变量，从而起到**线程隔离**的作用，避免了并发场景下的线程安全问题。
+
 # 1 问题场景
+
 假如语文老师有一本书，但是班上有30名学生，老师将这本书送给学生们去阅读，30名学生都想阅读这本书。为保证每个学生都能阅读到书籍，那么基本可以有两种方案，一是按照某种排序（例如姓名首字母排序），让每个学生依次阅读。二是让30名学生同时争抢，谁抢到谁就去阅读，读完放回原处，剩下的29名学生再次争抢。显然第一种方案，基本表现为串行阅读，时间成本较大，第二种方案为多个学生争抢，容易发生安全问题（学生发生冲突或者书籍在争抢过程中被毁坏）。
 
 为了解决这两个问题，那么有没有更加好的方案呢？当然有，老师可以将书籍复印30本，每个学生都发一本，这样既大大提高了阅读效率，节约了阅读时间，还能保证每个学生都能有自己的书籍，这样就不会发生争抢，避免了安全问题。
@@ -70,7 +75,7 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
     /** The value associated with this ThreadLocal. */
     Object value;
     Entry(ThreadLocal<?> k, Object v) {
-        super(k);
+        super(k);	
         value = v;
     }
 }
@@ -299,7 +304,10 @@ private void remove(ThreadLocal<?> key) {
 # 4 ThreadLocal常见问题
 
 ## 4.1 内存泄漏
-这里所说的ThreadLocal的内存泄露问题，其实都是从ThreadLocalMap中的一段代码说起的，这段代码就是Entry的构造方法：
+**内存泄漏原因**：`ThreadLocalMap`使用`ThreadLocal`的**弱引用**作为`key`，当`ThreadLocal`变量被手动设置为`null`，即一个`ThreadLocal`没有外部强引用来引用它，当系统GC时，`ThreadLocal`一定会被回收。这样的话，`ThreadLocalMap`中就会出现`key`为`null`的`Entry`，就没有办法访问这些`key`为`null`的`Entry`的`value`，如果当前线程再迟迟不结束的话(比如线程池核心线程)，这些`key`为`null`的`Entry`的`value`就会一直存在一条强引用链：Thread变量 -> Thread对象 -> ThreaLocalMap -> Entry -> value -> Object 永远无法回收，造成内存泄漏。
+
+ThreadLocal内存泄露问题，其实都是从ThreadLocalMap中的一段代码说起的，这段代码就是Entry的构造方法：
+
 ```java
 static class Entry extends WeakReference<ThreadLocal<?>> {
     /** The value associated with this ThreadLocal. */
@@ -324,6 +332,40 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 > 连环炮：那为什么key还要设计成弱引用？ 
 
 key设计成弱引用同样是为了防止内存泄漏。假如key被设计成强引用，如果ThreadLocal Reference被销毁，此时它指向ThreadLoca的强引用就没有了，但是此时key还强引用指向ThreadLoca，就会导致ThreadLocal不能被回收，这时候就发生了内存泄漏的问题。
+
+- 如果`Key`使用强引用：当`ThreadLocal`的对象被回收了，但是`ThreadLocalMap`还持有`ThreadLocal`的强引用的话，如果没有手动删除，ThreadLocal就不会被回收，会出现Entry的内存泄漏问题。
+- 如果`Key`使用弱引用：当`ThreadLocal`的对象被回收了，因为`ThreadLocalMap`持有ThreadLocal的弱引用，即使没有手动删除，ThreadLocal也会被回收。`value`则在下一次`ThreadLocalMap`调用`set,get，remove`的时候会被清除。
+
+因此可以发现，使用弱引用作为`Entry`的`Key`，可以多一层保障：弱引用`ThreadLocal`不会轻易内存泄漏，对应的`value`在下一次`ThreadLocalMap`调用`set,get,remove`的时候会被清除。
+
+> key是弱引用，GC回收会影响ThreadLocal的正常工作吗？
+
+`ThreadLocal`的`key`既然是**弱引用**.会不会GC贸然把`key`回收掉，进而影响`ThreadLocal`的正常使用？
+
+- **弱引用**:具有弱引用的对象拥有更短暂的生命周期。如果一个对象只有弱引用存在了，则下次GC**将会回收掉该对象**（不管当前内存空间足够与否）
+
+其实不会的，因为有`ThreadLocal变量`引用着它，是不会被GC回收的，除非手动把`ThreadLocal变量设置为null`，我们可以跑个demo来验证一下：
+
+```java
+public class WeakReferenceTest {
+    public static void main(String[] args) {
+        Object object = new Object();
+        WeakReference<Object> testWeakReference = new WeakReference<>(object);
+        System.out.println("GC回收之前，弱引用："+testWeakReference.get());
+        //触发系统垃圾回收
+        System.gc();
+        System.out.println("GC回收之后，弱引用："+testWeakReference.get());
+        //手动设置为object对象为null
+        object=null;
+        System.gc();
+        System.out.println("对象object设置为null，GC回收之后，弱引用："+testWeakReference.get());
+    }
+}
+运行结果：
+GC回收之前，弱引用：java.lang.Object@7b23ec81
+GC回收之后，弱引用：java.lang.Object@7b23ec81
+对象object设置为null，GC回收之后，弱引用：null
+```
 
 **ThreadLocal会发生内存泄漏吗？**
 
@@ -387,6 +429,10 @@ this.inheritableThreadLocals =ThreadLocal.createInheritedMap(parent.inheritableT
 1、Synchronized用于线程间的数据共享，而ThreadLocal则用于线程间的数据隔离。
 
 2、Synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问，所以变量只需要存一份，算是一种时间换空间的思想。而ThreadLocal为每一个线程都提供了变量的副本，使得每个线程在某一时间访问到的并不是同一个对象，这样就隔离了多个线程对数据的数据共享，多个线程互不影响，算是一种空间换时间的思想。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。
+
+## 4.6 为什么不直接用线程id作为ThreadLocalMap的key？
+
+一个使用类，有两个共享变量，也就是说用了两个`ThreadLocal`成员变量的话。如果用线程`id`作为`ThreadLocalMap`的`key`，怎么区分哪个`ThreadLocal`成员变量呢？因此还是需要使用`ThreadLocal`作为`Key`来使用。每个`ThreadLocal`对象，都可以由`threadLocalHashCode`属性**唯一区分**的，每一个ThreadLocal对象都可以由这个对象的名字唯一区分。
 
 # 5 其他ThreadLocal实现
 

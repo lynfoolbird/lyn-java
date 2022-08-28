@@ -22,6 +22,8 @@ ClassLoader、Class、Constructor、Field、Method、ReflectionUtils
 
 spring boot注解：条件注解、复合注解
 
+泛型
+
 # 动态代理
 
 ## JDK动态代理
