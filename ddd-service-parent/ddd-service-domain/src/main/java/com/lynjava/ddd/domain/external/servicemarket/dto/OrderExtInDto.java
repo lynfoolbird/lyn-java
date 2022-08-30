@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class OrderInputDto {
+public class OrderExtInDto {
     private String orderId;
 
     private String orderName;

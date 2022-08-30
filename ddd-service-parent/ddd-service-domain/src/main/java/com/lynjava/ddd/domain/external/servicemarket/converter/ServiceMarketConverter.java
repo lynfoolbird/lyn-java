@@ -1,7 +1,7 @@
 package com.lynjava.ddd.domain.external.servicemarket.converter;
 
 import com.lynjava.ddd.domain.cluster.ClusterAR;
-import com.lynjava.ddd.domain.external.servicemarket.dto.OrderInputDto;
+import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtInDto;
 
 import javax.inject.Named;
 
@@ -11,12 +11,12 @@ import javax.inject.Named;
 @Named
 public class ServiceMarketConverter {
 
-    public OrderInputDto toInputDto(ClusterAR clusterAR) {
-        OrderInputDto orderInputDto = OrderInputDto.builder()
+    public OrderExtInDto toInputDto(ClusterAR clusterAR) {
+        OrderExtInDto orderExtInDto = OrderExtInDto.builder()
                 .orderId("one" + clusterAR.getId())
                 .orderName("produce")
                 .quantity(100)
                 .build();
-        return orderInputDto;
+        return orderExtInDto;
     }
 }

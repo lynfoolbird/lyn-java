@@ -51,7 +51,7 @@ JDK1.6、JDK1.7、JDK1.8 JVM 内存模型主要有以下差异：
 ## 2.3 本地方法栈
 本地方法栈（Native Method Stacks）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native） 方法服务。
 
-Hot-Spot虚拟机直接把本地方法栈和虚拟机栈合二为一。与虚拟机栈一样，本地方法栈也会在栈深度溢出或者栈扩展失败时分别抛出StackOverflowError和OutOfMemoryError异常。
+HotSpot虚拟机直接把本地方法栈和虚拟机栈合二为一。与虚拟机栈一样，本地方法栈也会在栈深度溢出或者栈扩展失败时分别抛出StackOverflowError和OutOfMemoryError异常。
 
 ## 2.4 Java堆
 

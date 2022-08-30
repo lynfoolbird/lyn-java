@@ -38,6 +38,7 @@
                 <configuration>
                     <includes>
                         <include>com/lynjava/ddd/api/cluster/**/*.class</include>
+                        <include>com/lynjava/ddd/api/router/**/*.class</include>
                         <include>com/lynjava/ddd/api/shared/**/*.class</include>
                         <include>com/lynjava/ddd/api/${activeProfile}/**/*.class</include>
                     </includes>

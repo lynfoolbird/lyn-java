@@ -15,6 +15,7 @@
         <jaxrs:serviceBeans>
             <!-- 相当于打包发布服务 -->
             <ref bean="clusterApiImpl" />
+            <ref bean="routerApiImpl" />
         </jaxrs:serviceBeans>
         <!-- 提供一个json转化，没有这个不能自动返回json -->
         <jaxrs:providers>
