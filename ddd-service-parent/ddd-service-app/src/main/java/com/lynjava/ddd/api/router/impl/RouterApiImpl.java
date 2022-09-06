@@ -1,7 +1,7 @@
 package com.lynjava.ddd.api.router.impl;
 
 import com.lynjava.ddd.api.router.IRouterApi;
-import com.lynjava.ddd.app.router.service.RouterAppService;
+import com.lynjava.ddd.app.router.appservice.RouterAppService;
 
 import javax.inject.Inject;
 import javax.inject.Named;

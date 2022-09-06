@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.redis;//package com.lyn.mvnprj.service.redis;
+package com.lynjava.ddd.test.redis;//package com.lyn.mvnprj.appservice.redis;
 ///*
 //import com.google.common.base.Objects;
 //import com.google.common.collect.Sets;

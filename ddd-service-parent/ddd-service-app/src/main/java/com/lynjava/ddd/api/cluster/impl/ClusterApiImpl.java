@@ -3,7 +3,7 @@ package com.lynjava.ddd.api.cluster.impl;
 import com.lynjava.ddd.api.cluster.IClusterApi;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
-import com.lynjava.ddd.app.cluster.service.ClusterAppService;
+import com.lynjava.ddd.app.cluster.appservice.ClusterAppService;
 import com.lynjava.ddd.api.shared.Result;
 import org.springframework.beans.factory.annotation.Value;
 

@@ -1,10 +1,10 @@
-package com.lynjava.ddd.app.cluster.service;
+package com.lynjava.ddd.app.cluster.appservice;
 
 
 import com.lynjava.ddd.app.cluster.assmbler.ClusterAssmbler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
-import com.lynjava.ddd.app.cluster.service.partial.IClusterPartialService;
+import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
 import com.lynjava.ddd.domain.external.iam.IamExternalService;
 import org.springframework.beans.factory.annotation.Autowired;

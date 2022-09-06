@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.cluster.service.partial;
+package com.lynjava.ddd.app.cluster.appservice.partial;
 
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
 

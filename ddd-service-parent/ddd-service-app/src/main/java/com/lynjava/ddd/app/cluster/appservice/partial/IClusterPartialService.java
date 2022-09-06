@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.cluster.service.partial;
+package com.lynjava.ddd.app.cluster.appservice.partial;
 
 public interface IClusterPartialService {
     Object process(String body);

@@ -35,7 +35,7 @@
     </bean>
     <tx:advice id="advice" transaction-manager="transactionManager">
         <tx:attributes>
-            <tx:method name="*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="*" propagation="REQUIRED" rollback-for="Exception" timeout="120"/>
         </tx:attributes>
     </tx:advice>
     <aop:config>
@@ -51,6 +51,31 @@
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.lynjava.ddd.persistence.**.dao"/>
+    </bean>
+
+    <bean id="mybatisPlusInterceptor" class="com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor">
+        <property name="interceptors">
+            <list>
+                <ref bean="paginationInnerInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="paginationInnerInterceptor"
+          class="com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor">
+        <constructor-arg name="dbType" value="mysql"/>
+    </bean>
+
+    <bean id="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+        <property name="dbConfig" ref="dbConfig"/>
+    </bean>
+
+    <bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+        <property name="keyGenerators">
+            <list>
+                <bean class="com.baomidou.mybatisplus.extension.incrementer.H2KeyGenerator"/>
+            </list>
+        </property>
     </bean>
 
 

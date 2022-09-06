@@ -39,7 +39,7 @@ public class LynApplicationContext {
         String dotScanPath = scanPath.replace(".", "//");
 
         //找到扫描路径下所有文件
-        //注意：这里不能用 CustomizeApplicationContext.class.getResource("com/java/service")
+        //注意：这里不能用 CustomizeApplicationContext.class.getResource("com/java/appservice")
         //原因是我们需要获取的是工程所在的路径
         ClassLoader classLoader = LynApplicationContext.class.getClassLoader();
         URL resource = classLoader.getResource(dotScanPath);

@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.router.service;
+package com.lynjava.ddd.app.router.appservice;
 
 import com.lynjava.ddd.app.router.assembler.RouterAssmbler;
 

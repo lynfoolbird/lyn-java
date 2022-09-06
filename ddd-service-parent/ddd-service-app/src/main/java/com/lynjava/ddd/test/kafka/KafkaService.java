@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.kafka;//package com.lyn.mvnprj.service.kafka;
+package com.lynjava.ddd.test.kafka;//package com.lyn.mvnprj.appservice.kafka;
 //
 //import com.alibaba.fastjson.JSON;
 //import com.lyn.consts.KafkaTopicConst;

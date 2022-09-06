@@ -24,7 +24,7 @@ public class MainOperateService {
     public void doOperate(String strategy) {
         IOperateService operateService = operateMap.get(strategy);
         if (null == operateService) {
-            System.out.println("no service");
+            System.out.println("no appservice");
             return;
         }
         operateService.doSomething();
