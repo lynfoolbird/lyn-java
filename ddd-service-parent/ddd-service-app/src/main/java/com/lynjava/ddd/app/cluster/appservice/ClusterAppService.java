@@ -1,7 +1,7 @@
 package com.lynjava.ddd.app.cluster.appservice;
 
 
-import com.lynjava.ddd.app.cluster.assmbler.ClusterAssmbler;
+import com.lynjava.ddd.app.cluster.assmbler.ClusterAssembler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
@@ -20,7 +20,7 @@ import javax.inject.Named;
 public class ClusterAppService {
 
     @Inject
-    private ClusterAssmbler clusterAssmbler;
+    private ClusterAssembler clusterAssembler;
 
     @Inject
     private ClusterDomainService clusterDomainService;
@@ -33,12 +33,12 @@ public class ClusterAppService {
 
     public ClusterOutputDto getCluster() {
         iamExternalService.printIam();
-        return clusterAssmbler.toOutputDto(clusterDomainService.getCluster());
+        return clusterAssembler.toOutputDto(clusterDomainService.getCluster());
     }
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
-        return clusterDomainService.createCluster(clusterAssmbler.toDO(clusterInputDto));
+        return clusterDomainService.createCluster(clusterAssembler.toDO(clusterInputDto));
     }
 
     public Object updateCluster(String id, String type, String body) {

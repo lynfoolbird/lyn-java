@@ -16,7 +16,7 @@ public class Result<T> {
 
     private T data;
 
-//    private boolean success;
+    private boolean success;
 
     private final static Integer CODE_SUCCESS = 200;
     private final static Integer COD_FAILURE = 500;
