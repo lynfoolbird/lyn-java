@@ -1,12 +1,15 @@
 package com.lynjava.ddd.test.java;
 
+import com.alibaba.fastjson.TypeReference;
 import com.lynjava.ddd.test.java.model.SentinelCluster;
 import com.lynjava.ddd.test.java.model.SentinelHost;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 
 public class FunctionalInterfaceDemo {
     public static void main(String[] args) {
+        TypeReference typeReference = new TypeReference<Map<String, Object>>(){};
         String prefix = "_clu_";
         print(((sentinelCluster, sentinelHost) ->
              sentinelCluster.getId() + prefix + sentinelHost.getHostName()

@@ -24,6 +24,8 @@ spring boot注解：条件注解、复合注解
 
 泛型
 
+[学会反射后我被录取了](https://www.cnblogs.com/cxuanBlog/p/13551797.html)
+
 # 动态代理
 
 ## JDK动态代理
