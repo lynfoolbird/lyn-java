@@ -10,6 +10,8 @@ abc三列建立组合索引，a单独再建索引，查询a=?会选择哪个索�
 
 [MySQL面试经典100题收藏版](https://www.cnblogs.com/setalone/p/14851000.html)
 
+[八股文MySQL连环六十六问](https://mp.weixin.qq.com/s/-3C_shq3few06p8VzVOHkg)
+
 # 1 什么是MySQL?
 
 MySQL 是⼀种关系型数据库，在Java企业级开发中⾮常常⽤，因为 MySQL 是开源免费的，并且⽅便扩展。阿⾥巴巴数据库系统也⼤量⽤到了 MySQL，因此它的稳定性是有保障的。 MySQL是开放源代码的，因此任何⼈都可以在 GPL的许可下下载并根据个性化的需要对其进⾏修改。 MySQL的默认端⼝号是3306。 

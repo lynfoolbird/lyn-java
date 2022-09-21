@@ -6,6 +6,8 @@ https://mp.weixin.qq.com/s/MQ_a6o1e9f2ZZSwelNt0oA
 
 https://mp.weixin.qq.com/s/zXf4YiOpFwYOrseWW5GWOA
 
+[八股文Redis连环五十二问](https://mp.weixin.qq.com/s/mwKFBT0FTCyXrdnSH35Prg)
+
 **重点**
 
 1 redis线程模型、存储模型 sortedSet 跳表，存入100和存入helloworld区别

@@ -174,7 +174,7 @@ Protobuf是跨语言的。
 
 注册中心
 
-## 客户端RPC调用方式
+## RPC调用方式
 
  RPC 框架一般会提供四种调用方式，分别为**同步 Sync** 、**异步 Future** 、**回调 Callback** 和**单向 Oneway** 。
 
