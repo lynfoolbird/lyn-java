@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.requestmerge;
+package com.lynjava.ddd.test.request;
 
 import java.util.*;
 import java.util.concurrent.*;

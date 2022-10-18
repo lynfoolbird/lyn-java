@@ -10,7 +10,7 @@ mybatis-plus
 
 ## idea
 
-依赖jar
+依赖jar、插件：lombok、mybatis、arthas
 
 # test
 
