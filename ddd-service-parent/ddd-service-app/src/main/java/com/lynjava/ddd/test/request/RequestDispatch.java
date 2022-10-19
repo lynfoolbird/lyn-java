@@ -11,6 +11,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ *  hash取模分发；内存队列，线程消费
+ *
+ */
 public class RequestDispatch {
     private static Map<String, ConcurrentLinkedQueue<DataDto>> map = new ConcurrentHashMap<>();
 
