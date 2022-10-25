@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,5 +46,17 @@ public class ThreadPoolConfig {
                 buildCommonThreadFactory(),
                 RejectPolicy.CALLER_RUNS.getValue()); // 用调用者线程执行
         return executorService;
+    }
+
+    @Bean("asyncTaskExector")
+    public ThreadPoolTaskExecutor asyncTaskExector() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(corePoolSize);
+        threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);
+        threadPoolTaskExecutor.setKeepAliveSeconds(60);
+        threadPoolTaskExecutor.setQueueCapacity(blockQueueSize);
+        threadPoolTaskExecutor.setThreadNamePrefix("asyncTask-");
+        threadPoolTaskExecutor.setRejectedExecutionHandler(RejectPolicy.CALLER_RUNS.getValue());
+        return threadPoolTaskExecutor;
     }
 }
