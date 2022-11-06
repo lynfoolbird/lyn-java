@@ -4,7 +4,7 @@ import com.lynjava.ddd.common.model.BaseEntity;
 import lombok.Data;
 
 /**
- * 集群实例实体
+ * 聚合内实体：实例
  */
 @Data
 public class InstanceEntity extends BaseEntity {

@@ -7,10 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 集群聚合根
+ * 聚合根：集群
+ * 封装行为、充血模型
  */
 @Data
 @Builder
@@ -23,5 +26,15 @@ public class ClusterAR extends BaseEntity {
     private String category;
 
     private List<InstanceEntity> instances;
+
+    public void check() {
+
+    }
+
+    public Map<String, Object> buildRedisValue() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        return map;
+    }
 
 }

@@ -7,7 +7,7 @@ public enum UserRoleEnum {
     PARENT(1, "家长"){
         @Override
         public Object transData(Object srcData) {
-            System.out.println("parent.value = "+this.getValue());
+            System.out.println("parent.code = "+this.getCode());
             return "parent:" + srcData;
         }
     },
@@ -18,16 +18,16 @@ public enum UserRoleEnum {
         }
     };
 
-    private int value;
+    private int code;
     private String desc;
 
-    UserRoleEnum(int value, String desc){
-        this.value = value;
+    UserRoleEnum(int code, String desc){
+        this.code = code;
         this.desc = desc;
     }
     public Object transTemplate(Object srcData){
-        System.out.println("do common trans. value=" + this.value);
-        System.out.println("do custom trans. value=" + this.value);
+        System.out.println("do common trans. code=" + this.code);
+        System.out.println("do custom trans. code=" + this.code);
         return transData(srcData);
     }
     public abstract Object transData(Object srcData);
@@ -37,15 +37,15 @@ public enum UserRoleEnum {
             return null;
         }
         for (UserRoleEnum userIdentityEnum : UserRoleEnum.values()){
-            if (value.equals(userIdentityEnum.getValue())){
+            if (value.equals(userIdentityEnum.getCode())){
                 return userIdentityEnum;
             }
         }
         return null;
     }
 
-    public int getValue() {
-        return value;
+    public int getCode() {
+        return code;
     }
 
     public String getDesc() {
