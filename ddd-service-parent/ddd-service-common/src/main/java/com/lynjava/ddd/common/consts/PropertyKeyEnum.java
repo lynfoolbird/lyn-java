@@ -3,7 +3,7 @@ package com.lynjava.ddd.common.consts;
 /**
  * 配置项key
  * 若放在一个类中过多，则可公共、子域拆分
- * 格式：子域.*
+ * 格式：子域.功能点.*
  */
 public enum PropertyKeyEnum {
     /**
@@ -24,6 +24,16 @@ public enum PropertyKeyEnum {
 
     public String getValue() {
         return value;
+    }
+
+    /**
+     * 拼接key
+     *
+     * @param params
+     * @return
+     */
+    public String getPropertyKey(Object... params) {
+        return String.format(this.value, params);
     }
 }
 
