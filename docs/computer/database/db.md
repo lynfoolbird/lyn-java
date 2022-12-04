@@ -17,6 +17,8 @@ sql脚本
 
 命名规范 domain.ec2.gateway   子域/聚合 作前缀
 
+企业多租(多db/schema/表字段区分)
+
 alb_properties_t 企业多租配置表设计
 id property  value group分组 type(平台、租户) enterprise_id description is_deleted created_by created_date last_updated_by last_updated_date
 

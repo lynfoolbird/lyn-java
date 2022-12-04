@@ -25,7 +25,11 @@ mybatis-plus
 
 ### 查看端口占用进程
 netstat -ano|findstr 8080
+
 tasklist pid
+
 taskkill /F /pid 123456
+
+jinfo pid 查看进程运行时JVM参数
 
 ## linux

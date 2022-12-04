@@ -995,7 +995,7 @@ public class ServiceA {
  } 
 ```
 
-方法三：通过AopContent类
+方法三：通过AopContext类
 
 ```java
 @Servcie 
