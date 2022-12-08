@@ -1,4 +1,4 @@
-package com.lynjava.ddd.external.common.config;
+package com.lynjava.ddd.external.servicemarket.config;
 
 import lombok.Getter;
 import lombok.Setter;
