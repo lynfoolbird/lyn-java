@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.router.assembler;
+package com.lynjava.ddd.api.router.assembler;
 
 import javax.inject.Named;
 

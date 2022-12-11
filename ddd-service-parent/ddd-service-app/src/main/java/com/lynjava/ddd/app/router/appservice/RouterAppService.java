@@ -1,6 +1,6 @@
 package com.lynjava.ddd.app.router.appservice;
 
-import com.lynjava.ddd.app.router.assembler.RouterAssmbler;
+import com.lynjava.ddd.api.router.assembler.RouterAssmbler;
 
 import javax.inject.Inject;
 import javax.inject.Named;

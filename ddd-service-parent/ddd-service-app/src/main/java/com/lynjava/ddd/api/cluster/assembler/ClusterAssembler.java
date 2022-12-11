@@ -1,4 +1,4 @@
-package com.lynjava.ddd.app.cluster.assmbler;
+package com.lynjava.ddd.api.cluster.assembler;
 
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;

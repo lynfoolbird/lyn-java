@@ -6,4 +6,7 @@ import java.io.Serializable;
 
 @Data
 public class BaseDto implements Serializable {
+    private String id;
+
+    private String appId;
 }

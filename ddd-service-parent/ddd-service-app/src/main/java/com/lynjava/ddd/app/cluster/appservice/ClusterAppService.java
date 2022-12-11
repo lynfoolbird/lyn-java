@@ -1,7 +1,7 @@
 package com.lynjava.ddd.app.cluster.appservice;
 
 
-import com.lynjava.ddd.app.cluster.assmbler.ClusterAssembler;
+import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
