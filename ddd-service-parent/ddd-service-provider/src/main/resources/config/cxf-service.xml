@@ -6,8 +6,6 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-
-
     <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
 
     <!-- 配置需要暴露的Restful Service -->
@@ -21,6 +19,9 @@
         <jaxrs:providers>
             <ref bean="jacksonJsonProvider" />
         </jaxrs:providers>
+        <jaxrs:inInterceptors>
+            <ref bean="testCxfInterceptor"/>
+        </jaxrs:inInterceptors>
     </jaxrs:server>
 
 </beans>
