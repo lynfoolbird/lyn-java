@@ -1,9 +1,12 @@
-package com.lynjava.ddd.components;
+package com.lynjava.ddd.scheduler;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * 启动后执行逻辑01
+ */
 @Component
 public class TestApplicationRunner implements ApplicationRunner {
 

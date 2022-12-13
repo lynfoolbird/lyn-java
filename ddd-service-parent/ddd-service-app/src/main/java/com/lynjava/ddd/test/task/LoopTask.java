@@ -1,10 +1,13 @@
-package com.lynjava.ddd.test.request;
+package com.lynjava.ddd.test.task;
 
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 永动任务
+ */
 public class LoopTask {
     private List<ChildTask> childTasks;
     public void initLoopTask() {

@@ -1,4 +1,4 @@
-package com.lynjava.ddd.components;
+package com.lynjava.ddd.test.spring;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.stereotype.Component;

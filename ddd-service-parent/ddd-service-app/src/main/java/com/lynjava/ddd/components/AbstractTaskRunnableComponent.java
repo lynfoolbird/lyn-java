@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.component;//package com.lyn.mvnprj.component;
+package com.lynjava.ddd.components;//package com.lyn.mvnprj.component;
 //
 //import com.lyn.appservice.redis.RedisClusterService;
 //import org.apache.commons.lang3.StringUtils;

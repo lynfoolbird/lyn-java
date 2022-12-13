@@ -1,6 +1,7 @@
-package com.lynjava.ddd.test.request;
+package com.lynjava.ddd.test.task;
 
 import com.google.common.collect.Lists;
+import com.lynjava.ddd.test.task.TaskProcessUtil;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 

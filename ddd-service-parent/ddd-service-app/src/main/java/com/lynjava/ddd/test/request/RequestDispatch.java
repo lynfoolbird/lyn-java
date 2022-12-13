@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * 请求分发，多线程处理
  *  hash取模分发；内存队列，线程消费
  *
  */

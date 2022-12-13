@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 /**
  * 请求合并
  */
-public class RequestMergeDemo {
+public class RequestMerge {
     // 周期处理请求线程池
     private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     // 请求任务队列，周期批量处理请求
@@ -60,31 +60,34 @@ public class RequestMergeDemo {
         //如果这时候没完成赋值,那么就会阻塞,直到能够拿到值
         return future.get();
     }
-}
 
-class Request {
-    // 请求id
-    String orderId;
-    // 响应结果
-    CompletableFuture<Map<String, Object>> completableFuture;
+    public static class Request {
+        // 请求id
+        String orderId;
+        // 响应结果
+        CompletableFuture<Map<String, Object>> completableFuture;
 
-    public String getOrderId() {
-        return orderId;
-    }
-}
-
-class QueryServiceRemoteCall {
-    public Map<String, HashMap<String, Object>> queryCommodityByCodeBatch(List<String> codes) {
-        Map<String,HashMap<String, Object>> result = new HashMap();
-        for (String code : codes) {
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("commodityId", new Random().nextInt(999999999));
-            hashMap.put("code", code);
-            hashMap.put("phone", "huawei");
-            hashMap.put("isOk", "true");
-            hashMap.put("price","4000");
-            result.put(code,hashMap);
+        public String getOrderId() {
+            return orderId;
         }
-        return result;
+    }
+
+    public static class QueryServiceRemoteCall {
+        public Map<String, HashMap<String, Object>> queryCommodityByCodeBatch(List<String> codes) {
+            Map<String,HashMap<String, Object>> result = new HashMap();
+            for (String code : codes) {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("commodityId", new Random().nextInt(999999999));
+                hashMap.put("code", code);
+                hashMap.put("phone", "huawei");
+                hashMap.put("isOk", "true");
+                hashMap.put("price","4000");
+                result.put(code,hashMap);
+            }
+            return result;
+        }
     }
 }
+
+
+

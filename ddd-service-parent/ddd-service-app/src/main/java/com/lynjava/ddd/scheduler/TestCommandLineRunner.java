@@ -1,4 +1,4 @@
-package com.lynjava.ddd.components;
+package com.lynjava.ddd.scheduler;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+/**
+ * 启动后执行逻辑02
+ */
 @Component
 @Order(1)
 public class TestCommandLineRunner implements CommandLineRunner {

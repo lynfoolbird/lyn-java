@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.customize.spring;
+package com.lynjava.ddd.test.spring.custom;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
