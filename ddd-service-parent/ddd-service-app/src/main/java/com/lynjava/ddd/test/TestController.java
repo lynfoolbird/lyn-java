@@ -1,8 +1,8 @@
 package com.lynjava.ddd.test;
 
-import com.lynjava.ddd.test.dto.BaseResponse;
-import com.lynjava.ddd.test.dto.LiveResponseCode;
-import com.lynjava.ddd.test.strategy.MainOperateService;
+import com.lynjava.ddd.common.model.BaseResponse;
+import com.lynjava.ddd.common.model.LiveResponseCode;
+import com.lynjava.ddd.test.architecture.strategy.MainOperateService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

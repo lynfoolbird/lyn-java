@@ -1,8 +1,8 @@
 package com.lynjava.ddd.test;
 
 
-import com.lynjava.ddd.test.dto.BaseResponse;
-import com.lynjava.ddd.test.dto.BaseResponseCode;
+import com.lynjava.ddd.common.model.BaseResponse;
+import com.lynjava.ddd.common.model.BaseResponseCode;
 
 /**
  * Created by liyanan on 2018/6/16.

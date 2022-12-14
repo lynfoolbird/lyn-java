@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.strategy;
+package com.lynjava.ddd.test.architecture.strategy;
 
 import org.springframework.stereotype.Service;
 

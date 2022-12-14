@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.dto;
+package com.lynjava.ddd.common.model;
 
 
 public class BaseResponseCode  {

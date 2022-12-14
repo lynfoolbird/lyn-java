@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.dto;
+package com.lynjava.ddd.common.model;
 
 /**
  * Created by liyanan on 2018/6/16.

@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.factory;
+package com.lynjava.ddd.test.architecture.factory;
 
 public class ATestOperateServiceImpl implements ITestOperateService {
     @Override
