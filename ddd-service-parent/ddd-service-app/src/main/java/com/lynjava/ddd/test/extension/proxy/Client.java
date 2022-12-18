@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.proxy;
+package com.lynjava.ddd.test.extension.proxy;
 
 import java.util.Arrays;
 import java.util.List;

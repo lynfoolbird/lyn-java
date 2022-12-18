@@ -5,15 +5,13 @@ import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.test.architecture.strategy.MainOperateService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.QueryParam;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Date;
@@ -24,7 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @RestController
 @RequestMapping("/test")
-public class TestController extends BaseAdminController{
+public class TestRestController extends BaseAdminController{
 
     @Autowired
     private MainOperateService mainOperateService;
@@ -33,12 +31,13 @@ public class TestController extends BaseAdminController{
     private ExecutorService executorService;
 
     @GetMapping("/{strategy}")
-    public String doOperate(@PathVariable("strategy") String strategy) {
+    public String doOperate(@PathVariable("strategy") String strategy, @RequestParam("type") String type,
+                            @RequestHeader("changeNo") String changeNo) {
         mainOperateService.doOperate(strategy);
         return "success";
     }
 
-    @GetMapping("/test2")
+    @PatchMapping("/test2")
     public String test2() {
         Callable callable = new Callable() {
             @Override
@@ -58,11 +57,20 @@ public class TestController extends BaseAdminController{
         return msgResponse(LiveResponseCode.LIVE_ROOM_HAS_DELETED);
     }
 
-    @RequestMapping("/test4.do")
+    @PutMapping("/test4.do")
     public BaseResponse test4(){
         return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
     }
 
+    @PostMapping("/test5.do")
+    public BaseResponse test5(){
+        return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
+    }
+
+    @DeleteMapping("/test6.do")
+    public BaseResponse test6(){
+        return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
+    }
 
     @RequestMapping("/getVerifyImg.do")
     public BaseResponse getVerifyImg(HttpServletRequest request, HttpServletResponse response, HttpSession session){
