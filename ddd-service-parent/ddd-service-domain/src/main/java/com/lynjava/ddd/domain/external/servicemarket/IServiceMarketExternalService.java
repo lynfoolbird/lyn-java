@@ -1,6 +1,6 @@
 package com.lynjava.ddd.domain.external.servicemarket;
 
-import com.lynjava.ddd.common.model.DataBaseOutputDto;
+import com.lynjava.ddd.common.model.ResponseDataWrapper;
 import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtInDto;
 import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtOutDto;
 
@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface IServiceMarketExternalService {
 
-    DataBaseOutputDto<List<OrderExtOutDto>> createOrder(OrderExtInDto orderExtInDto);
+    ResponseDataWrapper<List<OrderExtOutDto>> createOrder(OrderExtInDto orderExtInDto);
 }

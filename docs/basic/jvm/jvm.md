@@ -418,6 +418,19 @@ Tomact是web容器，可能需要部署多个应用程序。不同的应用程�
 
 为了实现隔离性，优先加载 Web 应用自己定义的类，所以没有遵照双亲委派的约定，每一个应用自己的类加载器——WebAppClassLoader负责加载本身的目录下的class文件，加载不到时再交给CommonClassLoader加载，这和双亲委派刚好相反。
 
+### 5.2.4 相同类的加载顺序
+
+**（0）同一个ClassLoader实例加载的类不能重复，后面加载的类文件不会生效**
+
+**（1）在web-inf/classes中的类优先于jar包中的加载，此时web-inf/classes中的类生效**
+
+**（2）不同的jar包都有相同类，则为先加载的jar中的类生效。不同jar加载顺序依赖java -classpath参数指定的顺序。若未指定顺序，则依赖文件系统，可能随机，可能是英文字典顺序。**
+
+如何查询已运行的程序加载的类：
+ 启动时可以添加java -verbose:class参数打印加载类信息；在线可使用arthas，attach到运行的程序进行在线调试。
+
+[关于Java加载类顺序的问题](https://blog.csdn.net/tangtao_xp/article/details/117407607)
+
 # 6 JVM故障处理
 FullGC
 STW
