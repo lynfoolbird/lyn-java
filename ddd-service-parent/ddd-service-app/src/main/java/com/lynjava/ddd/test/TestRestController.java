@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.QueryParam;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Date;
@@ -34,10 +33,11 @@ public class TestRestController extends BaseAdminController{
     public String doOperate(@PathVariable("strategy") String strategy, @RequestParam("type") String type,
                             @RequestHeader("changeNo") String changeNo) {
         mainOperateService.doOperate(strategy);
+        mainOperateService.doOperate2(type);
         return "success";
     }
 
-    @PatchMapping("/test2")
+    @PatchMapping("/test2.do")
     public String test2() {
         Callable callable = new Callable() {
             @Override

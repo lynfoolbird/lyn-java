@@ -2,14 +2,14 @@ package com.lynjava.ddd.test.architecture.strategy;
 
 import org.springframework.stereotype.Service;
 
-@Service("OPR-StrategyB")
+@Service("StrategyB")
 public class StrategyBoperateServiceImpl implements IOperateService {
 
     public String getOperateType() {
-        return "StrategyA";
+        return "StrategyB";
     }
 
     public void doSomething() {
-        System.out.println("execute StrategyA operate");
+        System.out.println("execute StrategyB operate");
     }
 }

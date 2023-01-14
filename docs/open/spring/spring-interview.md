@@ -1521,7 +1521,7 @@ WebApplicationContext 继承了ApplicationContext 并增加了一些WEB应用必
 
 @ResponseBody：注解实现将conreoller方法返回对象转化为json对象响应给客户。
 
-## 2.8 Sping MVC中的控制器注解是什么 ？@Controller注解的作用？@RestController？区别？
+## 2.8 Spring MVC中的控制器注解是什么 ？@Controller注解的作用？@RestController？区别？
 一般用@Controller注解; 也可以使用@RestController，
 
 @RestController注解相当于@ResponseBody ＋ @Controller区别是什么？
