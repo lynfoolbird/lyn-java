@@ -27,6 +27,26 @@ public class TreeOperateDemo {
         }
     }
 
+    // 将list转成tree
+    public static void list2tree(List<TreeDataNode> list) {
+        List<TreeDataNode> resList = new ArrayList<TreeDataNode>();
+        for (TreeDataNode t1:list){
+            boolean isRoot = true;
+            for (TreeDataNode t2:list){
+                if (t1.getParentNode()!=null && t1.getParentNode().getId().equals(t2.getId())){
+                    isRoot = false;
+                    if (t2.getChilds()==null){
+                        t2.setChilds(new ArrayList<TreeDataNode>());
+                    }
+                    t2.getChilds().add(t1);
+                    break;
+                }
+            }
+            if (isRoot){
+                resList.add(t1);
+            }
+        }
+    }
 
     // 求树中节点个数
     public static <T> int getTreeNum(TreeNode<T> root) {
