@@ -36,7 +36,7 @@ public class TreeOperateDemo {
                 if (t1.getParentNode()!=null && t1.getParentNode().getId().equals(t2.getId())){
                     isRoot = false;
                     if (t2.getChilds()==null){
-                        t2.setChilds(new ArrayList<TreeDataNode>());
+                        t2.setChilds(new ArrayList<>());
                     }
                     t2.getChilds().add(t1);
                     break;
@@ -230,6 +230,25 @@ public class TreeOperateDemo {
     }
 
     public static void main(String[] args) {
+        TreeDataNode rot = new TreeDataNode();
+        rot.setId("0");
+        rot.setChilds(new ArrayList<>());
+        TreeDataNode node1 = new TreeDataNode();
+        node1.setId("1");
+        node1.setChilds(new ArrayList<>());
+        rot.getChilds().add(node1);
+        TreeDataNode node2 = new TreeDataNode();
+        node2.setId("2");
+        node1.getChilds().add(node2);
+        TreeDataNode node3 = new TreeDataNode();
+        node3.setId("3");
+        rot.getChilds().add(node3);
+        List listTree01 = new ArrayList();
+        rot.toListTree(listTree01);
+        List listTree02 = new ArrayList();
+        rot.toListTree(listTree02, new ArrayList<>());
+        System.out.println("==================");
+
         TreeNode<Integer> t = new TreeNode<Integer>(1);
         t.addLeft(2);
         t.addRight(3);
@@ -321,6 +340,31 @@ public class TreeOperateDemo {
                     ", type='" + type + '\'' +
                     ", childs=" + childs +
                     '}';
+        }
+
+        // 将树转换成list形式
+        public void toListTree(List<TreeDataNode> list) {
+            list.add(this);
+            if (CollectionUtils.isEmpty(this.childs)) {
+                return;
+            }
+            this.childs.forEach(treeDataNode -> treeDataNode.toListTree(list));
+        }
+
+        // 获取树的所有路径
+        public void toListTree(List<List<TreeDataNode>> list, List<TreeDataNode> t) {
+            t.add(this);
+            if (CollectionUtils.isEmpty(this.childs)) {
+                return;
+            }
+            for (TreeDataNode treeDataNode : this.childs) {
+                List<TreeDataNode> tmp = new ArrayList<>();
+                tmp.addAll(t);
+                treeDataNode.toListTree(list, tmp);
+                if (CollectionUtils.isEmpty(treeDataNode.getChilds())) {
+                    list.add(tmp);
+                }
+            }
         }
     }
 }
