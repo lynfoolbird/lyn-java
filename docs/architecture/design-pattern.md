@@ -4,11 +4,23 @@ https://blog.csdn.net/weixin_43122090/article/details/105462226
 
 [设计模式常见面试题汇总](https://www.cnblogs.com/dailyprogrammer/articles/12272717.html)
 
+常用设计模式
+
+Spring中设计模式
+
+jdk中设计模式
+
+如何用自己的语言表达出来
+
 # 设计原则
+
+OOP  AOP
 
 SOLIDCD
 
 单一职责原则、开闭原则、里式替换原则（基类能出现的地方均可替换成子类）、接口隔离原则、依赖倒置原则、合成复用原则（优先使用组合聚合关系其次才考虑继承关系）、迪米特法则（降低类间依赖、最少知识）
+
+高内聚低耦合
 
 # 设计模式
 
@@ -22,7 +34,7 @@ SOLIDCD
 
 ```java
 // 恶汉式
-public class Singleton{
+public class Singleton {
     // 类加载时就初始化
     private static final Singleton instance = new Singleton();    
     private Singleton(){} // 构造器私有

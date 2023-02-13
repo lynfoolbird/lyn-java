@@ -28,12 +28,12 @@ public class TreeOperateDemo {
     }
 
     // 将list转成tree
-    public static void list2tree(List<TreeDataNode> list) {
-        List<TreeDataNode> resList = new ArrayList<TreeDataNode>();
+    public static List<TreeDataNode> list2tree(List<TreeDataNode> list) {
+        List<TreeDataNode> resList = new ArrayList<>();
         for (TreeDataNode t1:list){
             boolean isRoot = true;
             for (TreeDataNode t2:list){
-                if (t1.getParentNode()!=null && t1.getParentNode().getId().equals(t2.getId())){
+                if (t1.getParentNode()!=null && t1.getParentNode().getId().equals(t2.getId())) {
                     isRoot = false;
                     if (t2.getChilds()==null){
                         t2.setChilds(new ArrayList<>());
@@ -42,10 +42,11 @@ public class TreeOperateDemo {
                     break;
                 }
             }
-            if (isRoot){
+            if (isRoot) {
                 resList.add(t1);
             }
         }
+        return resList;
     }
 
     // 求树中节点个数
@@ -361,9 +362,9 @@ public class TreeOperateDemo {
                 List<TreeDataNode> tmp = new ArrayList<>();
                 tmp.addAll(t);
                 treeDataNode.toListTree(list, tmp);
-                if (CollectionUtils.isEmpty(treeDataNode.getChilds())) {
-                    list.add(tmp);
-                }
+//                if (CollectionUtils.isEmpty(treeDataNode.getChilds())) {
+//                    list.add(tmp);
+//                }
             }
         }
     }

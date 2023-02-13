@@ -23,6 +23,12 @@ join (
   having count(a.id)<=1
   order by a.name,a.age,a.create_date desc
 ) t2 on t1.name=t2.name and t1.age=t2.age
+
+select 
+   t.* 
+from 
+(select * from table_name order by last_updated_date desc limit 100000000) t 
+group by t.enterprise_id, t.app_id, t.source_id
 ```
 ## 去重取一
 场景描述：同一group下host和port应唯一，即不能存在group host port相同的记录，删除重复记录只保存一条的sql 

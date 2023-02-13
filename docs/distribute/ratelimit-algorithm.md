@@ -2,6 +2,13 @@
 
 [主流的四种限流策略，我都可以通过redis实现](https://www.toutiao.com/i6967956383346180616/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1630012397&app=news_article&utm_source=weixin&utm_medium=toutiao_android&use_new_style=1&req_id=20210827051317010212042056262CFAD2&share_token=fe2d1fba-6c01-47bb-8a71-4356848d391a&group_id=6967956383346180616)
 
+限流算法(固定窗口计数器、滑动窗口、令牌桶、漏桶算法)；
+实践: 接入层限流（nginx）、应用层限流（单机限流/分布式限流）；
+工具：guava ratelimit、hystrix、阿里sentinel 原理；
+自定义注解+AOP、自定义注解+拦截器+Redis+Lua；
+
+https://mp.weixin.qq.com/s/wndNVpM9oJRXJJ-YKtgivQ
+
 # 01 固定窗口
 
 固定窗口又称固定窗口（又称计数器算法，Fixed Window）限流算法，是最简单的限流算法，通过在单位时间内维护的计数器来控制该时间单位内的最大访问量。
