@@ -18,7 +18,7 @@ public class SearchAndSort {
     }
 
     // 二分查找，适用顺序存储，有序
-    /*
+    /**
      * 循环实现二分算法
      */
     public static int binarySearch_1(int key, int[] array) {
@@ -43,7 +43,7 @@ public class SearchAndSort {
         return -1;
     }
 
-    /*
+    /**
      * 递归实现二分算法
      */
     public static int binarySearch_2(int key,int[] array,int low,int high){

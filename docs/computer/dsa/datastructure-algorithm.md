@@ -1,26 +1,64 @@
 贪心、分治、动态规划、穷举
 
-排序算法、查找算法、二分查找算法
+排序算法、查找算法、二分查找
 
-跳表 红黑树 B树 B+树
+跳表 红黑树  B树  B+树
 
-hash、一致性hash、LRU、LFU算法、漏桶、令牌桶
+hash、一致性hash、
+
+缓存淘汰算法：LRU、LFU
+
+限流算法：漏桶、令牌桶
 
 bitmap  bloom过滤器
+
+
 
 大厂面试编程题套路
 
 https://learning.snssdk.com/feoffline/toutiao_wallet_bundles/toutiao_learning_wap/online/article.html?item_id=6954744518226739493&app_name=news_article
 
-labuladong的算法小抄
+labuladong的算法小抄  https://github.com/labuladong/fucking-algorithm
 
-https://github.com/labuladong/fucking-algorithm
+大师级算法宝典 pdf  剑指offer
+
+OD算法培训
 
 编程练习
 
 牛客网：https://www.nowcoder.com/ta/huawei
 
 leetcode
+
+
+
+前缀和  差分
+
+单调栈  单调队列  
+
+双指针、快慢指针、头尾指针
+
+滑动窗口 hash表
+
+链表
+
+二叉树 字典树
+
+BFS DFS
+
+贪心 回溯 动态规划
+
+查找 二分查找
+
+排序
+
+堆
+
+图
+
+
+
+
 
 算法思维修炼
 

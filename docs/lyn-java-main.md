@@ -251,6 +251,8 @@ idea
 
 mybatis-plus
 
+工具类库：jdk、spring、guava、hutool、apache-commons...
+
 # 8 项目经验
 
 项目架构、数据流、技术栈、遇到的难题及解决方案、项目潜在瓶颈、

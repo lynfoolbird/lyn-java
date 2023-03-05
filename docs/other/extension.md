@@ -12,9 +12,9 @@ Spring扩展
 
 https://www.zhihu.com/question/485969873/answer/2337075116
 
-字节码技术 javaassist
+字节码技术 javaassist、asm
 
-
+JAVA动态追踪：类加载 btrace Arthas gperftool 享学课堂 mark老师
 
 # 注解反射
 

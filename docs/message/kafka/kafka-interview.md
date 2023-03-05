@@ -307,6 +307,27 @@ PID：每个新的 Producer 在初始化的时候会被分配一个唯一的 PID
 # 15 kafka的事务
 Kafka的事务不同于Rocketmq，Rocketmq是保障本地事务(比如数据库)与mq消息发送的事务一致性，Kafka的事务主要是保障一次发送多条消息的事务一致性(要么同时成功要么同时失败)，一般在kafka的流式计算场景用得多一点，比如，kafka需要对一个topic里的消息做不同的流式计算处理，处理完分别发到不同的topic里，这些topic分别被不同的下游系统消费(比如hbase，redis，es等)，这种我们肯定希望系统发送到多个topic的数据保持事务一致性。Kafka要实现类似Rocketmq的分布式事务需要额外开发功能。
 
+RocketMQ事务消息：
+
+半消息：是指暂时还不能被 Consumer 消费的消息， Producer 成功发送到 Broker 端的消息，但是此消息被标记
+为 “暂不可投递” 状态，只有等 Producer 端执行完本地事务后经过二次确认之后， Consumer 才能消费此条消
+息。
+依赖半消息，可以实现分布式消息事务，其中的关键在于二次确认以及消息回查：
+
+![img](images/rocketmq-transaction.png) 
+
+1、 Producer 向 broker 发送半消息
+2、 Producer 端收到响应，消息发送成功，此时消息是半消息，标记为 “不可投递” 状态， Consumer 消费不
+了。
+3、 Producer 端执行本地事务。
+4、正常情况本地事务执行完成， Producer 向 Broker 发送 Commit/Rollback，如果是 Commit， Broker 端
+将半消息标记为正常消息， Consumer 可以消费，如果是 Rollback， Broker 丢弃此消息。
+5、异常情况， Broker 端迟迟等不不到二次确认。在⼀一定时间后，会查询所有的半消息，然后到 Producer 端查
+询半消息的执行情况。
+6、 Producer 端查询本地事务的状态
+7、根据事务的状态提交 commit/rollback 到 broker 端。（5， 6， 7 是消息回查）
+8、消费者段消费到消息之后，执行本地事务。 
+
 # 16 如何保证MQ的高可用？
 
 有水平的面试官，问的是MQ的高可用性怎么保证？这样就是你用过哪个MQ，你就说说你对那个MQ的高可用性的理解。**连环炮**：kafka的leader选举机制是怎样的？

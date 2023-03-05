@@ -4,13 +4,21 @@ https://blog.csdn.net/weixin_43122090/article/details/105462226
 
 [设计模式常见面试题汇总](https://www.cnblogs.com/dailyprogrammer/articles/12272717.html)
 
+面试资料：csdn 115085887  设计模式速成版 ，csdn 120454098
+
+书籍：设计模式之禅
+
 常用设计模式
 
 Spring中设计模式
 
-jdk中设计模式
+jdk中设计模式：如IO流中使用的装饰者模式
+
+代理模式与装饰者模式区别、工厂模式区别
 
 如何用自己的语言表达出来
+
+
 
 # 设计原则
 

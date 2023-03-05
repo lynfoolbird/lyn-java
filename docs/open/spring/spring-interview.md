@@ -15,7 +15,7 @@ Spring：IOC原理、AOP原理、事务原理失效传播行为隔离级别@Tran
 
 ​               设计模式、源码
 
-SpringMVC：实现原理、手写
+SpringMVC：实现原理、手写 。
 
 SpringBoot：自动配置、starter及手写、启动过程、配置加载
 
@@ -1137,7 +1137,6 @@ public class UserService {
  
 @Service 
 public class RoleService { 
- 
     @Transactional(propagation = Propagation.NESTED) 
     public void doOtherThing() { 
         System.out.println("保存role表数据"); 
@@ -1164,7 +1163,6 @@ public class UserService {
  
     @Transactional 
     public void add(UserModel userModel) throws Exception { 
- 
         userMapper.insertUser(userModel); 
         try { 
             roleService.doOtherThing(); 

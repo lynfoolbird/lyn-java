@@ -124,7 +124,9 @@ sleep()方法（休眠）是线程类（Thread）的静态方法，调用此方�
 
 wait()是Object类的方法，调用对象的wait()方法导致当前线程放弃对象的锁（线程暂停执行），进入对象的等待池（wait pool），只有调用对象的notify()方法（或notifyAll()方法）时才能唤醒等待池中的线程进入等锁池（lock pool），如果线程重新获得对象的锁就可以进入就绪状态。
 
-wait()需要在同步块内调用。
+wait()需要在同步块内调用，而 sleep 可以在任何地方使用。sleep 必须捕获异常，而 wait  不需要捕获异常。
+在 sleep 的过程中过程中有可能被其他对象调用它的 interrupt() ,产生 InterruptedException 异常，如果你的程序不捕获这个异常，线程就会异常终止，进入 TERMINATED 状态，如果你的程序捕获了这个异常，那么程序就会继续执行catch语句块(可能还有 finally 语句块)以及以后的代码。注意 sleep() 方法是一个静态方法，也就是说他只对当前对象有效，通过 t.sleep() 让t对象进入 sleep ，这样的做法是错误的，它只会是使当前线程被 sleep 而不是 t 线程
+wait 属于 Object 的成员方法，一旦一个对象调用了wait方法，必须要采用 notify() 和 notifyAll() 方法唤醒该进程;如果线程拥有某个或某些对象的同步锁，那么在调用了 wait() 后，这个线程就会释放它持有的所有同步资源，而不限于这个被调用了 wait() 方法的对象。 wait() 方法也同样会在 wait 的过程中有可能被其他对象调用 interrupt() 方法而产生 。 
 
 # 10 sleep方法和yield方法比较
 
