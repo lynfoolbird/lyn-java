@@ -1,5 +1,7 @@
 package com.lynjava.ddd.test;
 
+import com.lynjava.ddd.common.utils.DddApp;
+import com.lynjava.ddd.test.constant.DispatchEnum;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -7,6 +9,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * 请求分发接口
@@ -18,9 +21,9 @@ public class DispatchController {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @PostMapping("/")
+    @PostMapping("/demo1")
     public Object dispatch(@RequestBody DispatchInfoDto dto) {
-        Object bean = applicationContext.getBean(dto.getComponentName());
+        Object bean = DddApp.getContext().getBean(dto.getComponentName());
         Class<? extends Object>[] paramClass = null;
         Object[] params = dto.getParams();
         if (params != null) {
@@ -32,8 +35,20 @@ public class DispatchController {
         }
         // 找到方法
         Method method = ReflectionUtils.findMethod(bean.getClass(), dto.getMethodName(), paramClass);
+        if (Objects.isNull(method)) {
+            return "Not found target method.";
+        }
         // 执行方法
         return ReflectionUtils.invokeMethod(method, bean, params);
+    }
+
+    @PostMapping("/demo2")
+    public Object dispatch2(@RequestBody DispatchInfoDto dto) {
+        DispatchEnum dispatchEnum = DispatchEnum.getByCompMethod(dto.getComponentName(), dto.getMethodName());
+         if (Objects.isNull(dispatchEnum)) {
+             return "Not found target method.";
+         }
+        return dispatchEnum.invoke(dto.getParams());
     }
 
     @Data

@@ -2,6 +2,7 @@ package com.lynjava.ddd.test;
 
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
+import com.lynjava.ddd.common.utils.DddApp;
 import com.lynjava.ddd.test.architecture.strategy.MainOperateService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +35,17 @@ public class TestRestController extends BaseAdminController{
                             @RequestHeader("changeNo") String changeNo) {
         mainOperateService.doOperate(strategy);
         mainOperateService.doOperate2(type);
+        MainOperateService service = DddApp.getContext().getBean(MainOperateService.class);
+        service.doOperate(strategy);
         return "success";
     }
 
     @PatchMapping("/test2.do")
     public String test2() {
-        Callable callable = new Callable() {
-            @Override
-            public Object call() throws Exception {
-                System.out.println(Thread.currentThread().getName());
-                Thread.sleep(2000L);
-                return null;
-            }
+        Callable callable = () -> {
+            System.out.println(Thread.currentThread().getName());
+            Thread.sleep(2000L);
+            return null;
         };
         executorService.submit(callable);
         System.out.println(((ThreadPoolExecutor)executorService).getActiveCount());
