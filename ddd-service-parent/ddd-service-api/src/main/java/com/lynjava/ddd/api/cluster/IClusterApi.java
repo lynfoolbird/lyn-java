@@ -4,11 +4,13 @@ package com.lynjava.ddd.api.cluster;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.api.shared.Result;
+
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * 接口层
@@ -21,21 +23,27 @@ public interface IClusterApi {
 
     @GET
     @Path("/{id}")
-    Result<ClusterOutputDto> getCluster(@PathParam("id") String id, @QueryParam("type") String type);
+    Result<ClusterOutputDto> getCluster(@PathParam("id") String id);
 
+    @GET
+    @Path("/")
+    Result<List<ClusterOutputDto>> listByPage(@QueryParam("curPage") Integer curPage,
+                                              @QueryParam("pageSize") Integer pageSize,
+                                              @QueryParam("type") String type);
     @POST
-    @Path("")
-    Object createCluster(ClusterInputDto clusterInputDto);
-
-    @PATCH
-    @Path("/{id}/type/{type}")
-    Object updateCluster(@PathParam("id") String clusterId, @PathParam("type") String type,  @RequestBody String  body);
+    @Path("/")
+    Result createCluster(ClusterInputDto clusterInputDto);
 
     @PUT
     @Path("/{id}")
-    Object patchCluster(@PathParam("id") String clusterId, ClusterInputDto clusterInputDto);
+    Result updateCluster(@PathParam("id") String clusterId, ClusterInputDto inputDto);
+
+    @PATCH
+    @Path("/{id}/type/{type}")
+    Result patchCluster(@PathParam("id") String clusterId, @PathParam("type") String type,
+                        @RequestBody String patchObject);
 
     @DELETE
     @Path("/{id}")
-    Object deleteCluster(@PathParam("id") String clusterId);
+    Result deleteCluster(@PathParam("id") String clusterId);
 }

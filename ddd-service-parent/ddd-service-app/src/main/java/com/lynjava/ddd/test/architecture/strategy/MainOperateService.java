@@ -13,11 +13,14 @@ public class MainOperateService {
 
     private Map<String, IOperateService> operateMap = new HashMap<String,IOperateService>();
 
+    /**
+     * 依赖注入：setter注入map
+     */
     @Autowired
     private Map<String, IOperateService> oprMap;
 
     /**
-     * 利用依赖注入
+     * 依赖注入：构造器注入list
      * @param operateServices
      */
     public MainOperateService(List<IOperateService> operateServices){

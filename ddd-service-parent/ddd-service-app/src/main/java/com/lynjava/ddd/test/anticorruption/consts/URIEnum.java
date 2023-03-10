@@ -5,6 +5,9 @@ import com.lynjava.ddd.test.anticorruption.beans.IConvertBean;
 import com.lynjava.ddd.test.anticorruption.beans.SyncStaticRouterConvertBean;
 
 public enum URIEnum {
+    /**
+     *
+     */
     ALB_SYNC_STATIC_ROUTER("/alb_service/rules/{ruleId}/syncStaticRouter", RestMethodTypeEnum.POST, SyncStaticRouterConvertBean.class);
 
 
