@@ -5,16 +5,20 @@ import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
+import com.lynjava.ddd.common.consts.CommonConstants;
 import com.lynjava.ddd.common.exception.AppException;
 import com.lynjava.ddd.common.utils.DddApp;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
 import com.lynjava.ddd.domain.external.iam.IamExternalService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,9 @@ import java.util.Objects;
  */
 @Named
 public class ClusterAppService {
+    @Value("${cluster.iam.enable:Y}")
+    private String clusterIamEnable;
+
     @Inject
     private ClusterAssembler clusterAssembler;
 
@@ -62,6 +69,9 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
+        if (Objects.equals(CommonConstants.SWITCH_ON, clusterIamEnable)) {
+            iamExternalService.printIam();
+        }
         return clusterDomainService.createCluster(clusterAssembler.toDO(clusterInputDto));
     }
 

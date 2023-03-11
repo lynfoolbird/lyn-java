@@ -6,8 +6,6 @@ import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.ClusterAppService;
 import com.lynjava.ddd.api.shared.Result;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
@@ -17,17 +15,12 @@ import java.util.List;
  */
 @Named
 public class ClusterApiImpl implements IClusterApi {
-
-    @Value("${demokey:demovalue}")
-    private String demokey;
-
     @Inject
     private ClusterAppService clusterAppService;
 
     @Override
     public Result<ClusterOutputDto> getCluster(String id) {
         ClusterOutputDto outputDto = clusterAppService.getCluster();
-        outputDto.setId(demokey);
         return Result.success(outputDto);
     }
 

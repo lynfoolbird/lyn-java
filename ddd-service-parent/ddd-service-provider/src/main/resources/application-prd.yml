@@ -6,5 +6,3 @@ thread-pool:
   maxPoolSize: 20
   keepAliveTime: 100
   blockQueueSize: 10
-
-demokey: demovalueprd

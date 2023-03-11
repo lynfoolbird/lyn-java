@@ -12,3 +12,8 @@ thread-pool:
   maxPoolSize: 20
   keepAliveTime: 100
   blockQueueSize: 10
+
+# 子域.功能
+cluster:
+  iam:
+    enable: Y
