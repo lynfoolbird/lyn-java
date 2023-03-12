@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.java;
+package com.lynjava.ddd.test.java.juc;
 
 import java.util.concurrent.atomic.AtomicReference;
 

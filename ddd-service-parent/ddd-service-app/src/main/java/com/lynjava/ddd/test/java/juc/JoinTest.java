@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.java.basic;
+package com.lynjava.ddd.test.java.juc;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

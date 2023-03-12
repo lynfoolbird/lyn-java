@@ -1,13 +1,15 @@
-package com.lynjava.ddd.test.java;
+package com.lynjava.ddd.test.java.jdk;
 
 import com.alibaba.fastjson.TypeReference;
-import com.lynjava.ddd.test.java.model.SentinelCluster;
-import com.lynjava.ddd.test.java.model.SentinelHost;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Map;
 import java.util.function.BiFunction;
 
-public class FunctionalInterfaceDemo {
+public class Jdk8FunctionalInterfaceDemo {
     public static void main(String[] args) {
         TypeReference typeReference = new TypeReference<Map<String, Object>>(){};
         String prefix = "_clu_";
@@ -34,9 +36,29 @@ public class FunctionalInterfaceDemo {
         SentinelHost sh = new SentinelHost("host04", 8001, "01");
         System.out.println(fIdemo.process(sh));
     }
+
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SentinelCluster {
+        private String id;
+        private String name;
+    }
+
+    @Data
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SentinelHost {
+        private String hostName;
+        private Integer port;
+        private String sentinelClusterId;
+    }
+
+    @FunctionalInterface
+    public static interface FIdemo {
+        SentinelCluster process(SentinelHost sentinelHost);
+    }
 }
 
-@FunctionalInterface
-interface FIdemo {
-    SentinelCluster process(SentinelHost sentinelHost);
-}
