@@ -3,7 +3,7 @@ package com.lynjava.ddd.test;
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.common.utils.DddApp;
-import com.lynjava.ddd.test.architecture.strategy.MainOperateService;
+import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +52,7 @@ public class TestRestController extends BaseAdminController{
         return "kkkk";
     }
 
-    @RequestMapping("/test3.do")
+    @RequestMapping(value = {"/test3.do"}, method = RequestMethod.GET)
     public BaseResponse test3(){
         return msgResponse(LiveResponseCode.LIVE_ROOM_HAS_DELETED);
     }

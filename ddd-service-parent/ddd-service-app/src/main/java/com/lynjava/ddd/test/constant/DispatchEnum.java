@@ -3,6 +3,8 @@ package com.lynjava.ddd.test.constant;
 import com.lynjava.ddd.common.utils.DddApp;
 import com.lynjava.ddd.test.service.ITestService;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -25,6 +27,14 @@ public enum DispatchEnum {
     private String componentName;
     private String methodName;
 
+    private static final Map<String, DispatchEnum> CACHE = new HashMap<>();
+    static {
+        for (DispatchEnum dispatchEnum : DispatchEnum.values()) {
+            String key = dispatchEnum.componentName + ":" + dispatchEnum.getMethodName();
+            CACHE.put(key, dispatchEnum);
+        }
+    }
+
     DispatchEnum(String componentName, String methodName){
         this.componentName = componentName;
         this.methodName = methodName;
@@ -46,6 +56,18 @@ public enum DispatchEnum {
             }
         }
         return null;
+    }
+
+    /**
+     * getByCompMethod
+     *
+     * @param componentName
+     * @param methodName
+     * @return
+     */
+    public static DispatchEnum getByCompMethod2(String componentName, String methodName){
+        String key = componentName + ":" + methodName;
+        return CACHE.get(key);
     }
 
     public String getComponentName() {

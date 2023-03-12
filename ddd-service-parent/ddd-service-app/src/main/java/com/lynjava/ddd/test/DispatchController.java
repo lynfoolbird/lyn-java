@@ -3,8 +3,7 @@ package com.lynjava.ddd.test;
 import com.lynjava.ddd.common.utils.DddApp;
 import com.lynjava.ddd.test.constant.DispatchEnum;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +16,6 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/dispatch")
 public class DispatchController {
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
     @PostMapping("/demo1")
     public Object dispatch(@RequestBody DispatchInfoDto dto) {
         Object bean = DddApp.getContext().getBean(dto.getComponentName());
@@ -59,7 +54,6 @@ public class DispatchController {
         private String methodName;
         // 请求目标方法参数
         private Object[] params;
-
     }
 }
 
