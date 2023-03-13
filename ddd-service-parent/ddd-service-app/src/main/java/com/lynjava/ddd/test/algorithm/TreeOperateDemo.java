@@ -1,164 +1,126 @@
 package com.lynjava.ddd.test.algorithm;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.util.CollectionUtils;
+import com.lynjava.ddd.test.algorithm.model.BTreeNode;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * 树的基本操作
+ */
 public class TreeOperateDemo {
-
-    // 将tree转成list
-    public static void treeBean2list(TreeDataNode root,List<TreeDataNode> list, TreeDataNode parent){
-        if (root == null) {
-            return ;
-        }
-        root.setParentNode(parent);
-        list.add(root);
-        if (CollectionUtils.isEmpty(root.getChilds())){
-            return;
-        }
-        for (TreeDataNode sub:root.getChilds()){
-            treeBean2list(sub, list, root);
-        }
-    }
-
-    // 将list转成tree
-    public static List<TreeDataNode> list2tree(List<TreeDataNode> list) {
-        List<TreeDataNode> resList = new ArrayList<>();
-        for (TreeDataNode t1:list){
-            boolean isRoot = true;
-            for (TreeDataNode t2:list){
-                if (t1.getParentNode()!=null && t1.getParentNode().getId().equals(t2.getId())) {
-                    isRoot = false;
-                    if (t2.getChilds()==null){
-                        t2.setChilds(new ArrayList<>());
-                    }
-                    t2.getChilds().add(t1);
-                    break;
-                }
-            }
-            if (isRoot) {
-                resList.add(t1);
-            }
-        }
-        return resList;
-    }
-
     // 求树中节点个数
-    public static <T> int getTreeNum(TreeNode<T> root) {
+    public static <T> int getTreeNum(BTreeNode<T> root) {
         if (root == null) {
             return 0;
         }
-        return getTreeNum(root.getLeftChild()) + getTreeNum(root.getRightChild()) + 1;
+        return getTreeNum(root.getLeft()) + getTreeNum(root.getRight()) + 1;
     }
     // 求第k层节点个数
-    public static <T> int getNumForKlevel(TreeNode<T> root, int k) {
+    public static <T> int getNumForKlevel(BTreeNode<T> root, int k) {
         if (root == null || k < 1) {
             return 0;
         }
         if (k == 1) {
             return 1;
         }
-        int leftNum = getNumForKlevel(root.getLeftChild(), k - 1);
-        int rightNum = getNumForKlevel(root.getRightChild(), k - 1);
+        int leftNum = getNumForKlevel(root.getLeft(), k - 1);
+        int rightNum = getNumForKlevel(root.getRight(), k - 1);
         return leftNum + rightNum;
     }
     // 求叶子节点个数
-    public static <T> int getLeafNum(TreeNode<T> root) {
+    public static <T> int getLeafNum(BTreeNode<T> root) {
         if (root == null) {
             return 0;
         }
-        if (root.getLeftChild() == null && root.getRightChild() == null) {
+        if (root.getLeft() == null && root.getRight() == null) {
             return 1;
         }
-        int leftNum = getLeafNum(root.getLeftChild());
-        int rightNum = getLeafNum(root.getRightChild());
+        int leftNum = getLeafNum(root.getLeft());
+        int rightNum = getLeafNum(root.getRight());
         return leftNum + rightNum;
     }
     // 判断是否树的节点
-    public static <T> boolean nodeIsChild(TreeNode<T> root, TreeNode<T> node) {
+    public static <T> boolean nodeIsChild(BTreeNode<T> root, BTreeNode<T> node) {
         if (root == null || node == null) {
             return false;
         }
         if (root == node) {
             return true;
         }
-        boolean isFind = nodeIsChild(root.getLeftChild(), node);
+        boolean isFind = nodeIsChild(root.getLeft(), node);
         if (!isFind) {
-            isFind = nodeIsChild(root.getRightChild(), node);
+            isFind = nodeIsChild(root.getRight(), node);
         }
         return isFind;
     }
     // 求树的深度
-    public static <T> int getTreeDepth(TreeNode<T> root) {
+    public static <T> int getTreeDepth(BTreeNode<T> root) {
         if (root == null) {
             return 0;
         }
-        int leftDepth = getTreeDepth(root.getLeftChild()) + 1;
-        int rightDepth = getTreeDepth(root.getRightChild()) + 1;
+        int leftDepth = getTreeDepth(root.getLeft()) + 1;
+        int rightDepth = getTreeDepth(root.getRight()) + 1;
         return Math.max(leftDepth, rightDepth);
     }
     // 先序遍历
-    public static <T> void preOrderTravel(TreeNode<T> root) {
+    public static <T> void preOrderTravel(BTreeNode<T> root) {
         if (root == null) {
             return;
         }
         System.out.println(root);
-        preOrderTravel(root.getLeftChild());
-        preOrderTravel(root.getRightChild());
+        preOrderTravel(root.getLeft());
+        preOrderTravel(root.getRight());
     }
     // 中序遍历
-    public static <T> void midOrderTravel(TreeNode<T> root) {
+    public static <T> void midOrderTravel(BTreeNode<T> root) {
         if (root == null) {
             return;
         }
-        midOrderTravel(root.getLeftChild());
+        midOrderTravel(root.getLeft());
         System.out.println(root);
-        midOrderTravel(root.getRightChild());
+        midOrderTravel(root.getRight());
     }
     // 后续遍历
-    public static <T> void backOrderTravel(TreeNode<T> root) {
+    public static <T> void backOrderTravel(BTreeNode<T> root) {
         if (root == null) {
             return;
         }
-        backOrderTravel(root.getLeftChild());
-        backOrderTravel(root.getRightChild());
+        backOrderTravel(root.getLeft());
+        backOrderTravel(root.getRight());
         System.out.println(root);
     }
     // 层序遍历
-    public static <T> void levelTravel(TreeNode<T> root) {
-        Queue<TreeNode<T>> q = new LinkedList<TreeNode<T>>();
+    public static <T> void levelTravel(BTreeNode<T> root) {
+        Queue<BTreeNode<T>> q = new LinkedList<BTreeNode<T>>();
         q.offer(root);
         while (!q.isEmpty()) {
-            TreeNode<T> temp = q.poll();
+            BTreeNode<T> temp = q.poll();
             System.out.println(temp);
-            if (temp.getLeftChild() != null) {
-                q.offer(temp.getLeftChild());
+            if (temp.getLeft() != null) {
+                q.offer(temp.getLeft());
             }
-            if (temp.getRightChild() != null) {
-                q.offer(temp.getRightChild());
+            if (temp.getRight() != null) {
+                q.offer(temp.getRight());
             }
         }
     }
     // 交换左右子树
-    public static <T> TreeNode<T> exchange(TreeNode<T> root) {
+    public static <T> BTreeNode<T> exchange(BTreeNode<T> root) {
         if (root == null) {
             return null;
         }
-        TreeNode<T> left = exchange(root.getLeftChild());
-        TreeNode<T> right = exchange(root.getRightChild());
-        root.setLeftChild(right);
-        root.setRightChild(left);
+        BTreeNode<T> left = exchange(root.getLeft());
+        BTreeNode<T> right = exchange(root.getRight());
+        root.setLeft(right);
+        root.setRight(left);
         return root;
     }
     // 寻找两节点的公共父节点
-    public static <T> TreeNode<T> findAllFatherNode(TreeNode<T> root,
-                                                    TreeNode<T> lNode, TreeNode<T> rNode) {
+    public static <T> BTreeNode<T> findAllFatherNode(BTreeNode<T> root,
+                                                     BTreeNode<T> lNode, BTreeNode<T> rNode) {
         if (lNode == root || rNode == root) {
             return root;
         }
@@ -166,29 +128,29 @@ public class TreeOperateDemo {
             return null;
         }
         // 如果lNode是左子树的节点
-        if (nodeIsChild(root.getLeftChild(), lNode)) {
-            if (nodeIsChild(root.getRightChild(), rNode)) {
+        if (nodeIsChild(root.getLeft(), lNode)) {
+            if (nodeIsChild(root.getRight(), rNode)) {
                 return root;
             } else {
-                return findAllFatherNode(root.getLeftChild(), lNode, rNode);
+                return findAllFatherNode(root.getLeft(), lNode, rNode);
             }
         } else {
-            if (nodeIsChild(root.getLeftChild(), rNode)) {
+            if (nodeIsChild(root.getLeft(), rNode)) {
                 return root;
             } else {
-                return findAllFatherNode(root.getRightChild(), lNode, rNode);
+                return findAllFatherNode(root.getRight(), lNode, rNode);
             }
         }
     }
     //根据前序和中序重建二叉树
-    public static <T> TreeNode<T> getTreeFromPreAndMid(List<T> pre, List<T> mid) {
+    public static <T> BTreeNode<T> getTreeFromPreAndMid(List<T> pre, List<T> mid) {
         if (pre == null || mid == null || pre.size() == 0 || mid.size() == 0) {
             return null;
         }
         if (pre.size() == 1) {
-            return new TreeNode<T>(pre.get(0));
+            return new BTreeNode<T>(pre.get(0));
         }
-        TreeNode<T> root = new TreeNode<T>(pre.get(0));
+        BTreeNode<T> root = new BTreeNode<T>(pre.get(0));
         // 找出根节点在中序中的位置
         int index = 0;
         while (!mid.get(index++).equals(pre.get(0))) {
@@ -203,7 +165,7 @@ public class TreeOperateDemo {
             midLeft.add(mid.get(i));
         }
         // 重建左子树
-        root.setLeftChild(getTreeFromPreAndMid(preLeft, midLeft));
+        root.setLeft(getTreeFromPreAndMid(preLeft, midLeft));
         // 构建右子树的前序和中序
         List<T> preRight = new ArrayList<T>(pre.size() - index - 1);
         List<T> midRight = new ArrayList<T>(pre.size() - index - 1);
@@ -214,47 +176,28 @@ public class TreeOperateDemo {
             midRight.add(mid.get(index + i));
         }
         // 重建右子树
-        root.setRightChild(getTreeFromPreAndMid(preRight, midRight));
+        root.setRight(getTreeFromPreAndMid(preRight, midRight));
         return root;
     }
     // 比较两棵树是否相等
-    public static <T> boolean equals(TreeNode<T> node1, TreeNode<T> node2) {
+    public static <T> boolean equals(BTreeNode<T> node1, BTreeNode<T> node2) {
         if (node1 == null && node2 == null) {
             return true;
         } else if (node1 == null || node2 == null) {
             return false;
         }
         boolean isEqual = node1.getValue().equals(node2.getValue());
-        boolean isLeftEqual = equals(node1.getLeftChild(), node2.getLeftChild());
-        boolean isRightEqual = equals(node1.getRightChild(), node2.getRightChild());
+        boolean isLeftEqual = equals(node1.getLeft(), node2.getLeft());
+        boolean isRightEqual = equals(node1.getRight(), node2.getRight());
         return isEqual && isLeftEqual && isRightEqual;
     }
 
     public static void main(String[] args) {
-        TreeDataNode rot = new TreeDataNode();
-        rot.setId("0");
-        rot.setChilds(new ArrayList<>());
-        TreeDataNode node1 = new TreeDataNode();
-        node1.setId("1");
-        node1.setChilds(new ArrayList<>());
-        rot.getChilds().add(node1);
-        TreeDataNode node2 = new TreeDataNode();
-        node2.setId("2");
-        node1.getChilds().add(node2);
-        TreeDataNode node3 = new TreeDataNode();
-        node3.setId("3");
-        rot.getChilds().add(node3);
-        List listTree01 = new ArrayList();
-        rot.toListTree(listTree01);
-        List listTree02 = new ArrayList();
-        rot.toListTree(listTree02, new ArrayList<>());
-        System.out.println("==================");
-
-        TreeNode<Integer> t = new TreeNode<Integer>(1);
+        BTreeNode<Integer> t = new BTreeNode<Integer>(1);
         t.addLeft(2);
         t.addRight(3);
-        t.getLeftChild().addLeft(4);
-        t.getLeftChild().addRight(5);
+        t.getLeft().addLeft(4);
+        t.getLeft().addRight(5);
         System.out.println("中序遍历测试:");
         midOrderTravel(t);
         System.out.println("\n前序遍历测试:");
@@ -279,94 +222,11 @@ public class TreeOperateDemo {
         mid.add(5);
         mid.add(1);
         mid.add(3);
-        TreeNode<Integer> root = getTreeFromPreAndMid(pre, mid);
+        BTreeNode<Integer> root = getTreeFromPreAndMid(pre, mid);
         System.out.println("\n通过前序和中序构建树测试：");
         levelTravel(root);
         System.out.println("\n构建的树比较测试:");
         System.out.println(equals(t,root));
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TreeNode<T> {
-        private T value;
-
-        private TreeNode<T> leftChild;
-
-        private TreeNode<T> rightChild;
-
-        public TreeNode(T value) {
-            this.value = value;
-        }
-
-        public void addLeft(T value) {
-            TreeNode<T> left = new TreeNode<>(value);
-            this.leftChild = left;
-        }
-        public void addRight(T value) {
-            TreeNode<T> right = new TreeNode<>(value);
-            this.rightChild = right;
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if(!(obj instanceof TreeNode)){
-                return false;
-            }
-            return this.value.equals(((TreeNode<?>)obj).value);
-        }
-
-        @Override
-        public int hashCode() {
-            return this.value.hashCode();
-        }
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class TreeDataNode {
-        private String id;
-        private String code;
-        private String type;
-        private List<TreeDataNode> childs;
-        private TreeDataNode parentNode;
-
-        // 复写tostring方法：注意去除parentNode循环依赖
-        @Override
-        public String toString() {
-            return "TreeNode{" +
-                    "id='" + id + '\'' +
-                    ", code='" + code + '\'' +
-                    ", type='" + type + '\'' +
-                    ", childs=" + childs +
-                    '}';
-        }
-
-        // 将树转换成list形式
-        public void toListTree(List<TreeDataNode> list) {
-            list.add(this);
-            if (CollectionUtils.isEmpty(this.childs)) {
-                return;
-            }
-            this.childs.forEach(treeDataNode -> treeDataNode.toListTree(list));
-        }
-
-        // 获取树的所有路径
-        public void toListTree(List<List<TreeDataNode>> list, List<TreeDataNode> t) {
-            t.add(this);
-            if (CollectionUtils.isEmpty(this.childs)) {
-                return;
-            }
-            for (TreeDataNode treeDataNode : this.childs) {
-                List<TreeDataNode> tmp = new ArrayList<>();
-                tmp.addAll(t);
-                treeDataNode.toListTree(list, tmp);
-//                if (CollectionUtils.isEmpty(treeDataNode.getChilds())) {
-//                    list.add(tmp);
-//                }
-            }
-        }
     }
 }
 

@@ -10,7 +10,9 @@ hash算法：常规hash、一致性hash、hash slot 、冲突解决方法
 
 限流算法：计数器、固定窗口、滑动窗口、漏桶、令牌桶
 
-bitmap  bloom过滤器
+分布式一致性算法：raft、zab、paxos
+
+bitmap  bloom过滤器、布谷鸟过滤器
 
 
 
