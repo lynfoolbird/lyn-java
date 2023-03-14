@@ -1,16 +1,16 @@
 package com.lynjava.ddd.test.algorithm;
 
-import com.lynjava.ddd.test.algorithm.model.SListNode;
+import com.lynjava.ddd.test.algorithm.model.ListNode;
 
 /**
  * 链表基本操作
  */
 public class LinkListOperateDemo {
     public static void main(String[] args) {
-        SListNode node4 = new SListNode(4, null);
-        SListNode node3 = new SListNode(3, node4);
-        SListNode node2 = new SListNode(2, node3);
-        SListNode node1 = new SListNode(1, node2);
+        ListNode node4 = new ListNode(4, null);
+        ListNode node3 = new ListNode(3, node4);
+        ListNode node2 = new ListNode(2, node3);
+        ListNode node1 = new ListNode(1, node2);
 //        print(node1);
 //        SListNode rev = reverse(node1);
 //        print(rev);
@@ -20,8 +20,6 @@ public class LinkListOperateDemo {
 //        SListNode node4 = new SListNode(3, node5);
 //        intersectionOfOrderedLinkList(node1, node4);
         System.out.println(circleExist(node1));
-
-
     }
 
     /**
@@ -29,11 +27,11 @@ public class LinkListOperateDemo {
      * @param head
      * @return
      */
-    private static SListNode reverse(SListNode head) {
+    private static ListNode reverse(ListNode head) {
         if (head==null || head.next==null) {
             return head;
         }
-        SListNode last = reverse(head.next);
+        ListNode last = reverse(head.next);
         head.next.next = head;
         head.next = null;
         return last;
@@ -44,12 +42,12 @@ public class LinkListOperateDemo {
      * @param head
      * @return
      */
-    private static boolean circleExist(SListNode head) {
+    private static boolean circleExist(ListNode head) {
         if (head==null || head.next==null) {
             return false;
         }
-        SListNode p1 = head;
-        SListNode p2 = head;
+        ListNode p1 = head;
+        ListNode p2 = head;
         while (p2 != null) {
             p1 = p1.next;
             p2 = p2.next.next;
@@ -61,28 +59,28 @@ public class LinkListOperateDemo {
     }
 
     /**
-     * 求环的起始节点: 快慢指针
+     * TODO 求环的起始节点: 快慢指针
      * @param head
      */
-    private static void circleFront(SListNode head) {
+    private static void circleFront(ListNode head) {
     }
     /**
      * 两个有序链表求交集
      * @param list1
      * @param list2
      */
-    private static void intersectionOfOrderedLinkList(SListNode list1, SListNode list2) {
+    private static void intersectionOfOrderedLinkList(ListNode list1, ListNode list2) {
         if (list1==null || list2==null) {
             return;
         }
-        SListNode p1 = list1;
-        SListNode p2 = list2;
+        ListNode p1 = list1;
+        ListNode p2 = list2;
         while (p1!=null && p2!=null) {
-            if (p1.value == p2.value) {
-                System.out.println(p1.value);
+            if (p1.val == p2.val) {
+                System.out.println(p1.val);
                 p1 = p1.next;
                 p2 = p2.next;
-            } else if (p1.value > p2.value) {
+            } else if (p1.val > p2.val) {
                 p2 = p2.next;
             } else {
                 p1 = p1.next;
@@ -95,16 +93,20 @@ public class LinkListOperateDemo {
      * @param list1
      * @param list2
      */
-    public static SListNode mergeOfOrderedLinkList(SListNode list1, SListNode list2) {
-        if (list1==null || list2==null) {
-            return null;
+    public static ListNode mergeOfOrderedLinkList(ListNode list1, ListNode list2) {
+        if (list1 == null) {
+            return list2;
         }
-        SListNode p1 = list1;
-        SListNode p2 = list2;
-        SListNode list = new SListNode(-1, null);
-        SListNode p = list;
+        if (list2 == null) {
+            return list1;
+        }
+        ListNode p1 = list1;
+        ListNode p2 = list2;
+        // 虚节点
+        ListNode list = new ListNode(-1, null);
+        ListNode p = list;
         while (p1!=null && p2!=null) {
-            if (p1.value >= p2.value) {
+            if (p1.val >= p2.val) {
                 p.next = p2;
                 p2 = p2.next;
             } else {
@@ -114,18 +116,18 @@ public class LinkListOperateDemo {
             p = p.next;
         }
         if (p1 != null) {
-            p.setNext(p1);
+            p.next = p1;
         }
         if (p2 != null) {
-            p.setNext(p2);
+            p.next = p2;
         }
-        return list;
+        return list.next;
     }
 
-    private static void print(SListNode head) {
-        SListNode p = head;
+    private static void print(ListNode head) {
+        ListNode p = head;
         while (p != null) {
-            System.out.print(p.value + ", ");
+            System.out.print(p.val + ", ");
             p = p.next;
         }
         System.out.println();
