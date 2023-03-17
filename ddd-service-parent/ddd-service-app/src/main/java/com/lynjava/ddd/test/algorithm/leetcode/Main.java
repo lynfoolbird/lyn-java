@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.algorithm.leecode;
+package com.lynjava.ddd.test.algorithm.leetcode;
 
 import java.util.Scanner;
 
