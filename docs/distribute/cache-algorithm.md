@@ -42,6 +42,8 @@ LRU 缓存机制可以通过哈希表辅以双向链表实现，用一个哈希�
 
 在双向链表的实现中，使用一个伪头部（dummy head）和伪尾部（dummy tail）标记界限，这样在添加节点和删除节点的时候就不需要检查相邻的节点是否存在
 
+hash表中已存key为何双链表中还存？淘汰数据时需要先删除链表节点然后删除hash表中key。
+
 ```java
 class DLinkedNode {
         int key;

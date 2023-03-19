@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.algorithm.leetcode;
+package com.lynjava.ddd.test.algorithm.nowcoder;
 
 import lombok.Data;
 
