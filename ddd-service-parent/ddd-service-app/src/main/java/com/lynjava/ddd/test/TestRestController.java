@@ -5,6 +5,7 @@ import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.common.utils.DddApp;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import com.lynjava.ddd.test.common.ITestPrinter;
+import com.outter.LockService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,9 @@ public class TestRestController extends BaseAdminController{
     @Autowired
     private ExecutorService executorService;
 
+    @Autowired
+    private LockService lockService;
+
     @GetMapping("/{strategy}")
     public String doOperate(@PathVariable("strategy") String strategy, @RequestParam("type") String type,
                             @RequestHeader("changeNo") String changeNo) {
@@ -61,6 +65,8 @@ public class TestRestController extends BaseAdminController{
         ITestPrinter testPrinter = DddApp.getContext().getBean(ITestPrinter.class);
         testPrinter.print("hello world");
         printer.print("Ronaldo");
+        lockService.lock();
+        lockService.unLock();
         return msgResponse(LiveResponseCode.LIVE_ROOM_HAS_DELETED);
     }
 
