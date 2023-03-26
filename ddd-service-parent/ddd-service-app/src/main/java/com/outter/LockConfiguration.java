@@ -1,5 +1,6 @@
 package com.outter;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author li
  */
 @Configuration
+@ConditionalOnProperty(prefix = "lock", name = "enable", havingValue = "true")
 public class LockConfiguration {
 
     @Bean
