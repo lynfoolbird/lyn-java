@@ -1,0 +1,2 @@
+com.lynjava.ddd.domain.shared.EurekaRegistryImpl
+com.lynjava.ddd.domain.shared.ZookeeperRegistryImpl
