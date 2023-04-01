@@ -1,5 +1,7 @@
 package com.lynjava.ddd.test;
 
+import com.lynjava.ddd.common.annotation.DistributeLockAnnotation;
+import com.lynjava.ddd.common.consts.RedisLockTypeEnum;
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.common.utils.DddApp;
@@ -14,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.QueryParam;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Date;
@@ -71,7 +74,8 @@ public class TestRestController extends BaseAdminController{
     }
 
     @PutMapping("/test4.do")
-    public BaseResponse test4(){
+    @DistributeLockAnnotation(typeEnum = RedisLockTypeEnum.ONE, lockTimeout = 2)
+    public BaseResponse test4(@QueryParam("orderId") String orderId){
         return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
     }
 
