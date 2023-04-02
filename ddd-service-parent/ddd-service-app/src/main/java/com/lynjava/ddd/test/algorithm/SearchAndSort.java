@@ -46,7 +46,7 @@ public class SearchAndSort {
     /**
      * 递归实现二分算法
      */
-    public static int binarySearch_2(int key,int[] array,int low,int high){
+    public static int binarySearch_2(int key,int[] array,int low, int high){
         //防越界
         if (key < array[low] || key > array[high] || low > high) {
             return -1;
@@ -82,6 +82,29 @@ public class SearchAndSort {
         }
 
         return nums[left];
+    }
+
+    /**
+     * 旋转非递减数组求最小值
+     * 方法一：穷举
+     * 方法二：二分查找
+     * @param array
+     * @return
+     */
+    int minNumberInRotateArray(int[] rotateArray) {
+        int left = 0;
+        int right = rotateArray.length-1;
+        while(left < right)
+        {
+            int mid = (left+right) / 2; //取中间值
+            if(rotateArray[mid] > rotateArray[right])
+                left = mid+1;//搜索右边
+            else if(rotateArray[mid] < rotateArray[right])
+                right = mid;//搜索左边
+            else
+                right -= 1;
+        }
+        return rotateArray[left];
     }
 
     public static void bubbleSort(int[] arr) {

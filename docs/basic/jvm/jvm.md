@@ -382,7 +382,7 @@ JVM 中内置了三个重要的 ClassLoader，启动类加载器（Bootstrap Cla
 ### 5.2.3 破坏双亲委派模型
 双亲委派模型并不是一个具有强制性约束的模型，而是Java设计者推荐给开发者们的类加载器实现方式。在Java的世界中大部分的类加载器都遵循这个模型，但也有例外的情况，直到Java模块化出现为止，双亲委派模型主要出现过3次较大规模“被破坏”的情况。
 
-如果我们自己想定义一个类加载器，破坏双亲委派模型，**只需要重写重写其中的loadClass方法，使其不进行双亲委派即可。**
+如果我们自己想定义一个类加载器，破坏双亲委派模型，**只需要重写其中的loadClass方法，使其不进行双亲委派即可。**不打破双亲委派模型的话只需覆写findClass方法即可。
 
 [真正理解线程上下文类加载器](https://blog.csdn.net/yangcheng33/article/details/52631940?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control&dist_request_id=1328679.37176.16162927498290399&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control)
 
@@ -486,6 +486,7 @@ interval 和 count，表示查询间隔和次数，比如每隔 1000 毫秒查�
 
 **选项列表**:
 ![img](images/cmd_jstat.png)
+
 ### 6.1.3 jinfo
 jinfo（Configuration Info for Java），实时查看和调整 JVM 的各项参数。在上面讲到 jps -v 指令时，可以看到它把虚拟机启动时显式的参数列表都打印出来了，但如果想更加清晰的看具体的一个参数或者想知道未被显式指定的参数时，就可以通过 jinfo -flag 来查询了。
 
@@ -694,6 +695,8 @@ Arthas支持JDK 6+，支持Linux/Mac/Windows，采用命令行交互模式，同
 - 设置 **-XX:+DisableExplicitGC** 禁止系统 System.gc()。防止手动误触发 FGC 造成问题。
 
 ## 7.3 常见问题排查
+
+[JAVA 线上故障排查完整套路](https://baijiahao.baidu.com/s?id=1695727716370932418&wfr=spider&for=pc)
 
 ### 7.3.1 .线上服务CPU占用过高怎么排查？
 

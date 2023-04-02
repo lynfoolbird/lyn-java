@@ -846,6 +846,8 @@ ReentrantLock 是可重入的独占锁，只能有一个线程可以获取该锁
 
 # 21 掌握线程池ThreadPool
 
+[要是以前有人这么讲线程池，我早就该明白了！ (qq.com)](https://mp.weixin.qq.com/s/Exy7pRGND9TCjRd9TZK4jg)
+
 ## 21.1 为何要使用线程池threadpool？
 避免线程膨胀，创建线程开销大基于重复利用的考虑。池化技术的思想主要是为了减少每次获取资源的消耗，提⾼对资源的利⽤率 。使⽤线程池的好处：
 

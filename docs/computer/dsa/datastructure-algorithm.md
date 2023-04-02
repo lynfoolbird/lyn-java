@@ -8,7 +8,7 @@ hash算法：常规hash、一致性hash、hash slot 、冲突解决方法
 
 缓存算法：LRU、LFU
 
-限流算法：计数器、固定窗口、滑动窗口、漏桶、令牌桶
+限流算法：固定窗口(计数器)、滑动窗口、漏桶、令牌桶
 
 分布式一致性算法：raft、zab、paxos
 
@@ -35,6 +35,10 @@ https://www.nowcoder.com/exam/oj?page=1&tab=%E7%AE%97%E6%B3%95%E7%AF%87&topicId=
 牛客网：https://www.nowcoder.com/ta/huawei
 
 leetcode
+
+
+
+输入读取Scanner，存入二维数组，树
 
 
 
