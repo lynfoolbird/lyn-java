@@ -46,4 +46,8 @@ public interface IClusterApi {
     @DELETE
     @Path("/{id}")
     Result deleteCluster(@PathParam("id") String clusterId);
+
+    @DELETE
+    @Path("/")
+    Result batchDeleteCluster(List<String> clusterIds);
 }

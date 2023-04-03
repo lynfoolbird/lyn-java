@@ -1,6 +1,6 @@
 package com.lynjava.ddd.test;
 
-import com.lynjava.ddd.common.annotation.DistributeLockAnnotation;
+import com.lynjava.ddd.common.annotation.DistributeLock;
 import com.lynjava.ddd.common.consts.RedisLockTypeEnum;
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
@@ -74,7 +74,7 @@ public class TestRestController extends BaseAdminController{
     }
 
     @PutMapping("/test4.do")
-    @DistributeLockAnnotation(typeEnum = RedisLockTypeEnum.ONE, lockTimeout = 2)
+    @DistributeLock(typeEnum = RedisLockTypeEnum.ONE, lockTimeout = 2)
     public BaseResponse test4(@QueryParam("orderId") String orderId){
         return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
     }

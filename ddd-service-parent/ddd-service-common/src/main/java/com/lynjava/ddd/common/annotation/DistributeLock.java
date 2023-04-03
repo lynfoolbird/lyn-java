@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface DistributeLockAnnotation {
+public @interface DistributeLock {
     // 特定参数识别，默认取第 0 个下标
     int lockFiled() default 0;
 

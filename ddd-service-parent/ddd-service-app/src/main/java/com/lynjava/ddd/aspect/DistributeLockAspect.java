@@ -1,6 +1,6 @@
 package com.lynjava.ddd.aspect;
 
-import com.lynjava.ddd.common.annotation.DistributeLockAnnotation;
+import com.lynjava.ddd.common.annotation.DistributeLock;
 import com.lynjava.ddd.common.consts.RedisLockTypeEnum;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class DistributeLockAspect {
 
-    @Pointcut("@annotation(com.lynjava.ddd.common.annotation.DistributeLockAnnotation)")
+    @Pointcut("@annotation(com.lynjava.ddd.common.annotation.DistributeLock)")
     public void distributeLock() {
     }
 
@@ -37,10 +37,10 @@ public class DistributeLockAspect {
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
         // 解析参数
         Method method = methodSignature.getMethod();
-        DistributeLockAnnotation annotation = method.getAnnotation(DistributeLockAnnotation.class);
-        RedisLockTypeEnum typeEnum = annotation.typeEnum();
+        DistributeLock distributeLock = method.getAnnotation(DistributeLock.class);
+        RedisLockTypeEnum typeEnum = distributeLock.typeEnum();
         Object[] params = pjp.getArgs();
-        String ukString = params[annotation.lockFiled()].toString();
+        String ukString = params[distributeLock.lockFiled()].toString();
         // 省略很多参数校验和判空
         String businessKey = typeEnum.getUniqueKey(ukString);
         String uniqueValue = UUID.randomUUID().toString();
@@ -51,8 +51,8 @@ public class DistributeLockAspect {
             System.out.println("call distribute lock.");
             Thread currentThread = Thread.currentThread();
             // 将本次 Task 信息加入「延时」队列中
-            holderList.add(new RedisLockDefinitionHolder(businessKey, annotation.lockTimeout(), System.currentTimeMillis(),
-                    currentThread, annotation.tryCount()));
+            holderList.add(new RedisLockDefinitionHolder(businessKey, distributeLock.lockTimeout(), System.currentTimeMillis(),
+                    currentThread, distributeLock.tryCount()));
             // 执行业务操作
             result = pjp.proceed();
             // 线程被中断，抛出异常，中断此次请求

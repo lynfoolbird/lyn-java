@@ -5,6 +5,7 @@ import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.ClusterAppService;
 import com.lynjava.ddd.api.shared.Result;
+import com.lynjava.ddd.common.annotation.DataScopeLimit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,6 +20,7 @@ public class ClusterApiImpl implements IClusterApi {
     private ClusterAppService clusterAppService;
 
     @Override
+    @DataScopeLimit(resourceIdSpel = "#id", resourceType = "CLUSTER_ID", rights = {"read"})
     public Result<ClusterOutputDto> getCluster(String id) {
         ClusterOutputDto outputDto = clusterAppService.getCluster();
         return Result.success(outputDto);
@@ -48,6 +50,12 @@ public class ClusterApiImpl implements IClusterApi {
 
     @Override
     public Result deleteCluster(String clusterId) {
+        return Result.success();
+    }
+
+    @Override
+    @DataScopeLimit(resourceIdSpel = "#clusterIds", resourceType = "CLUSTER_ID", rights = {"write"})
+    public Result batchDeleteCluster(List<String> clusterIds) {
         return Result.success();
     }
 }
