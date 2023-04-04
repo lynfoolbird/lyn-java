@@ -49,5 +49,5 @@ public interface IClusterApi {
 
     @DELETE
     @Path("/")
-    Result batchDeleteCluster(List<String> clusterIds);
+    Result batchDeleteCluster(List<ClusterInputDto> clusterInputDtoList);
 }

@@ -83,10 +83,8 @@ public class SpELParserUtils {
     /**
      * 解析spel表达式
      *
-     * @param method  方法
-     * @param args 参数值
+     * @param joinPoint  joinPoint
      * @param spelExpression  表达式
-     * @param clz  返回结果的类型
      * @return 执行spel表达式后的结果
      */
     public static Object parse(JoinPoint joinPoint, String spelExpression) {
@@ -99,6 +97,28 @@ public class SpELParserUtils {
             context.setVariable(params[i], args[i]);
         }
         return getResult(context, spelExpression, Object.class);
+    }
+
+    /**
+     * 解析spel表达式
+     *
+     * @param joinPoint joinPoint
+     * @param spelExpression  表达式
+     * @param clz  返回结果的类型
+     * @return 执行spel表达式后的结果
+     */
+    public static <T> T parse(JoinPoint joinPoint, String spelExpression, Class<T> clz) {
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        String[] paramNames = parameterNameDiscoverer.getParameterNames(methodSignature.getMethod());
+        if (Objects.isNull(paramNames) || paramNames.length==0) {
+            return null;
+        }
+        Object[] args = joinPoint.getArgs();
+        EvaluationContext context = new StandardEvaluationContext();
+        for (int i = 0; i < paramNames.length; i++) {
+            context.setVariable(paramNames[i], args[i]);
+        }
+        return getResult(context, spelExpression, clz);
     }
 
     /**

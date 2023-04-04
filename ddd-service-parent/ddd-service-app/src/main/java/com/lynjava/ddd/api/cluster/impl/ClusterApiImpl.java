@@ -54,8 +54,8 @@ public class ClusterApiImpl implements IClusterApi {
     }
 
     @Override
-    @DataScopeLimit(resourceIdSpel = "#clusterIds", resourceType = "CLUSTER_ID", rights = {"write"})
-    public Result batchDeleteCluster(List<String> clusterIds) {
+    @DataScopeLimit(resourceIdSpel = "#clusterList.![id]", resourceType = "CLUSTER_ID", rights = {"write"})
+    public Result batchDeleteCluster(List<ClusterInputDto> clusterList) {
         return Result.success();
     }
 }
