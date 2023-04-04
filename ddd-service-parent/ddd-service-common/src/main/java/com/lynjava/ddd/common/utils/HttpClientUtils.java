@@ -2,6 +2,7 @@ package com.lynjava.ddd.common.utils;
 
 import com.lynjava.ddd.common.model.HttpResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -180,7 +181,36 @@ public final class HttpClientUtils {
     public static String doPatch(){
         return "doPatch";
     }
-    public static String doDelete(){
-        return "doDelete";
+    public static HttpResult doDelete(String url, Map<String, Object> headers, String json){
+        HttpDelete httpDelete = new HttpDelete(url);
+        httpDelete.addHeader("Content-Type", ContentType.APPLICATION_JSON);
+        headers.entrySet().stream().forEach(
+                entry -> httpDelete.addHeader(entry.getKey(), entry.getValue())
+        );
+        // 设置请求体
+        StringEntity stringEntity = new StringEntity(json, StandardCharsets.UTF_8);
+        httpDelete.setEntity(stringEntity);
+        System.out.println("requestUrl:" + url + ",headers:" + headers + ",body:"+ json);
+        try (CloseableHttpResponse response = httpClient.execute(httpDelete);
+             HttpEntity entity = response.getEntity()
+        ) {
+            // 响应码
+            int code = response.getCode();
+            // 响应体
+            String data = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+            // 销毁流
+            EntityUtils.consume(stringEntity);
+            System.out.println("result is " + response.toString());
+            return HttpResult.builder().success(Boolean.TRUE)
+                    .code(code)
+                    .data(data)
+                    .build();
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            return HttpResult.builder().success(Boolean.FALSE)
+                    .code(500)
+                    .message(e.getMessage())
+                    .build();
+        }
     }
 }

@@ -3,7 +3,6 @@ package com.lynjava.ddd.test.architecture.anticorruption.service;
 
 import com.lynjava.ddd.test.architecture.anticorruption.beans.IConvertBean;
 import com.lynjava.ddd.test.architecture.anticorruption.consts.URIEnum;
-import com.lynjava.ddd.test.architecture.anticorruption.utils.HttpClientUtil;
 
 import java.util.Map;
 
@@ -56,9 +55,11 @@ public class AbstractCallService implements ICallService {
     private String invoke(String requestUrl, Map<String, Object> headers, String body) {
         switch (this.uri.getMethod()) {
             case POST:
-                return HttpClientUtil.doPost(requestUrl, headers, body);
+                // 发送POST请求，获取响应
+//                return HttpClientUtil.doPost(requestUrl, headers, body);
             case GET:
-                return HttpClientUtil.doGet(requestUrl);
+                // 发送GET请求，获取响应
+//                return HttpClientUtil.doGet(requestUrl);
         }
         return null;
     }

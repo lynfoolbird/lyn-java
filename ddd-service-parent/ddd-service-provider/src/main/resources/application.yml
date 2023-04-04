@@ -13,6 +13,10 @@ thread-pool:
   keepAliveTime: 100
   blockQueueSize: 10
 
+# http连接池
+http-pool:
+  maxTotal: 200
+
 # 子域.功能
 cluster:
   iam:
