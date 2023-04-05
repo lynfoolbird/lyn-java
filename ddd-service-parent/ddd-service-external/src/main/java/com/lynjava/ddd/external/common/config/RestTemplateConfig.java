@@ -20,8 +20,13 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+/**
+ * RestTemplateConfig
+ *
+ * @author li
+ */
 @Configuration
 @ConfigurationProperties(prefix = "http-pool")
 @Getter
@@ -36,7 +41,7 @@ public class RestTemplateConfig {
         RestTemplate restTemplate = new RestTemplate(factory);
         // 支持中文编码
         restTemplate.getMessageConverters()
-                .set(1, new StringHttpMessageConverter(Charset.forName("UTF-8")));
+                .set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         return restTemplate;
     }
 

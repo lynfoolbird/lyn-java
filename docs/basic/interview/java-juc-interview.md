@@ -1202,7 +1202,114 @@ ForkJoinTask与一般Task的主要区别在于它需要实现compute方法，在
 
 # 24 如何停止线程？如何中断线程？
 
+方法一：使用stop方法（已废弃），可能会导致线程安全问题
 
+方法二：使用interrupt机制
+
+```java
+class Task implements Runnable {
+    public void run() {
+        while(!Thread.currentThread().interrupted()){ //检查线程中断状态
+            System.out.println("I'm running...");
+        }
+        System.out.println("I'm stopped.");
+    }
+}
+
+public class Main {
+    public void main(String[] args) throws InterruptedException{
+        Task task = new Task();
+        Thread t = new Thread(task);
+        t.start(); //启动任务线程
+        Thread.sleep(3*1000); //主线程休眠3秒
+        t.interrupt();//三秒后中断任务线程
+    }
+}
+```
+
+**原理：** 对于 Java 而言，最正确的停止线程的方式是使用 interrupt。但 interrupt仅仅起到通知被停止线程的作用。而对于被停止的线程而言，它拥有完全的自主权，它既可以选择立即停止，也可以选择一段时间后停止，也可以选择压根不停止。
+**可中断的阻塞：** 针对线程处于由sleep, wait, join，LockSupport.park等方法调用产生的阻塞状态时，调用interrupt方法，会抛出异常InterruptedException，同时会清除中断标记位，自动改为false。
+
+注意点：**interrupted方法内部return的是currentThread而不是调用方法的线程**
+
+interrupt()方法只是改变中断状态，不会中断一个正在运行的线程。需要用户自己去监视线程的状态为并做处理。支持线程中断的方法（也就是线程中断后会抛出interruptedException的方法）就是在监视线程的中断状态，一旦线程的中断状态被置为“中断状态”，就会抛出中断异常。这一方法实际完成的是，给受阻塞的线程发出一个中断信号，这样受阻线程检查到中断标识，就得以退出阻塞的状态。
+
+- interrupt() => 设置中断状态，设置为已中断
+- isInterrupted() => 获取中断状态
+- interrupted() => 恢复中断状态，并返回恢复前的状态。（即如果被中断，会设置为未中断，并返回true）
+
+方法三：使用volatile变量通过标识位停止线程
+
+```java
+public class VolatileStopThread {
+    // 1. 声明生产者Producer，通过 volatile 标记的初始值为 false 的布尔值 canceled 来停止线程。
+    // 2. 在 run() 方法中，while 的判断语句是 num 是否小于 100000 及 canceled 是否被标记。
+    // 3. while 循环体中判断 num 如果是 50 的倍数就放到 storage 仓库中，storage 是生产者与消费者之间进行通信的存储器，当 num 大于 100000 或被通知停止时，会跳出 while 循环并执行 finally 语句块，告诉大家“生产者结束运行”。
+    static class Producer implements Runnable {
+        public volatile boolean canceled = false;
+        BlockingQueue storage;
+        public Producer(BlockingQueue storage) {
+            this.storage = storage;
+        }
+
+        @Override
+        public void run() {
+            int num = 0;
+            try {
+                while (num <= 100000 && !canceled) {
+                    if (num % 100 == 0) {
+                        storage.put(num);
+                        System.out.println(num + "是100的倍数,被放到仓库中了。");
+                    }
+                    num++;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("生产者结束运行");
+            }
+        }
+    }
+    //对于消费者 Consumer，它与生产者共用同一个仓库 storage，并且在方法内通过 needMoreNums() 方法判断是否需要继续使用更多的数字
+    //刚才生产者生产了一些 100 的倍数供消费者使用，消费者是否继续使用数字的判断条件是产生一个随机数并与 0.88 进行比较，大于 0.88 就不再继续使用数字.
+    static class Consumer {
+        BlockingQueue storage;
+        public Consumer(BlockingQueue storage) {
+            this.storage = storage;
+        }
+        public boolean needMoreNums() {
+            if (Math.random() > 0.88) {
+                return false;
+            }
+            return true;
+        }
+    }
+    // main 函数，首先创建了生产者/消费者共用的仓库 BlockingQueue storage，仓库容量是 8.
+    //并且建立生产者并将生产者放入线程后启动线程，启动后进行 500 毫秒的休眠.
+    //休眠时间保障生产者有足够的时间把仓库塞满，而仓库达到容量后就不会再继续往里塞，这时生产者会阻塞，500 毫秒后消费者也被创建出来，并判断是否需要使用更多的数字，然后每次消费后休眠 100 毫秒，这样的业务逻辑是有可能出现在实际生产中的。
+    public static void main(String[] args) throws InterruptedException {
+        ArrayBlockingQueue storage = new ArrayBlockingQueue(8);
+        Producer producer = new Producer(storage);
+        Thread producerThread = new Thread(producer);
+        producerThread.start();
+        Thread.sleep(500);
+        Consumer consumer = new Consumer(storage);
+        while (consumer.needMoreNums()) {
+            System.out.println(consumer.storage.take() + "被消费了");
+            Thread.sleep(100);
+        }
+        System.out.println("消费者不需要更多数据了。");
+
+        //一旦消费不需要更多数据了，我们应该让生产者也停下来，但是实际情况却停不下来
+        producer.canceled = true;
+        System.out.println("producer.canceled ："+ producer.canceled);
+    }
+}
+```
+
+执行发现已经打印出“ 消费者不需要更多数据了”，并且“producer.canceled ：true” ，但是生产者却没有停止。
+
+**原因：** 因为生产者生产速度过快，所以大多数情况下，生产者是属于阻塞的状态，也就是会停留在 storage.put(num)这个地方。此时就需要等待消费者 storage.take(num)才会向下执行。因此中断线程在把producer.canceled 设置为true时，此时我们的目的是把线程中断，但是最终并不是像我们所期望的那样，生产者阻塞在storage.put(num)这步 ,消费者也不能继续消费，导致程序无法执行下去，而我们要中断线程是要进入到下一次的while 循环判断，producer.canceled =true 才能跳出循环，最终执行finall中的 “生产者结束运行”，才能结束。所以长期阻塞的情况下volatile设置标记位的方法，不能中断线程的运行。
 
 # 25 并发编程题
 
