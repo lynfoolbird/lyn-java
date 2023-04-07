@@ -63,14 +63,13 @@ public class ClusterAppService {
     }
 
     public ClusterOutputDto getCluster() {
-        iamExternalService.printIam();
         return clusterAssembler.toOutputDto(clusterDomainService.getCluster());
     }
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
         if (Objects.equals(CommonConstants.SWITCH_ON, clusterIamEnable)) {
-            iamExternalService.printIam();
+            iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
         }
         return clusterDomainService.createCluster(clusterAssembler.toDO(clusterInputDto));
     }

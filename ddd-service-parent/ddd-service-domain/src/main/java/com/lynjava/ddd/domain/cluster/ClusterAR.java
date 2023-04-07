@@ -3,9 +3,9 @@ package com.lynjava.ddd.domain.cluster;
 import com.lynjava.ddd.common.model.BaseEntity;
 import com.lynjava.ddd.domain.cluster.entity.InstanceEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.Map;
  * 封装行为、充血模型
  */
 @Data
-@Builder
+@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClusterAR extends BaseEntity {

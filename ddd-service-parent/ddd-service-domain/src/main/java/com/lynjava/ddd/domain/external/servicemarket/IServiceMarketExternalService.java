@@ -1,7 +1,6 @@
 package com.lynjava.ddd.domain.external.servicemarket;
 
-import com.lynjava.ddd.common.model.ResponseDataWrapper;
-import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtInDto;
+import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtOutDto;
 
 import java.util.List;
@@ -11,5 +10,5 @@ import java.util.List;
  */
 public interface IServiceMarketExternalService {
 
-    ResponseDataWrapper<List<OrderExtOutDto>> createOrder(OrderExtInDto orderExtInDto);
+    List<OrderExtOutDto> createOrder(ClusterAR clusterAR);
 }

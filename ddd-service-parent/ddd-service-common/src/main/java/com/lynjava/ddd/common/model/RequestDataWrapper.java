@@ -5,24 +5,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serializable;
-import java.util.Date;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class BaseEntity implements Serializable {
-
+public class RequestDataWrapper<T> {
     private String id;
 
-    private String isDeleted;
+    private String type;
 
-    private Date createdDate;
+    private Data<T> data;
 
-    private String createdBy;
-
-    private Date lastUpdatedDate;
-
-    private String lastUpdatedBy;
+    @lombok.Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @SuperBuilder(toBuilder = true)
+    public static class Data<T> {
+        private T attributes;
+    }
 }

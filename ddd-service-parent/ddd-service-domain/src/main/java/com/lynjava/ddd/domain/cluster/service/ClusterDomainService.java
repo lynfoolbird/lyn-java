@@ -6,7 +6,6 @@ import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.factory.ClusterFactory;
 import com.lynjava.ddd.domain.cluster.repository.IClusterRepository;
 import com.lynjava.ddd.domain.external.servicemarket.IServiceMarketExternalService;
-import com.lynjava.ddd.domain.external.servicemarket.converter.ServiceMarketConverter;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,9 +24,6 @@ public class ClusterDomainService {
     private IClusterRepository clusterRepository;
 
     @Inject
-    private ServiceMarketConverter serviceMarketConverter;
-
-    @Inject
     private IServiceMarketExternalService serviceMarketExternalService;
 
     public ClusterAR getCluster() {
@@ -39,7 +35,7 @@ public class ClusterDomainService {
         System.out.println("ClusterDomainService:" + "createCluster");
         clusterRepository.createCluster(clusterFactory.toPO(clusterAR));
 
-        System.out.println(JSON.toJSONString(serviceMarketExternalService.createOrder(serviceMarketConverter.toInputDto(clusterAR))));
+        System.out.println(JSON.toJSONString(serviceMarketExternalService.createOrder(clusterAR)));
         return "succ";
     }
 
