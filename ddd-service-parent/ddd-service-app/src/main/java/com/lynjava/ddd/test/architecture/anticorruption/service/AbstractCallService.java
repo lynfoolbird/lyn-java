@@ -24,32 +24,11 @@ public class AbstractCallService implements ICallService {
     }
 
     public String execute() throws Exception {
-        String url = this.getGateway() + this.uri.getUri();
         IConvertBean convertBean = (IConvertBean) this.uri.getConvertBeanCls().newInstance();
-        String requestUrl = generateRequstUrl(url, convertBean.convertPathParam(param), convertBean.convertQueryParam(param));
+        String requestUrl = this.getGateway() + this.uri.generateRequestUrl(convertBean.convertPathParam(param), convertBean.convertQueryParam(param));
         Map<String, Object> headers = convertBean.convertHeader(this.param);
         String bodyJson = convertBean.convertBody(this.param);
         return invoke(requestUrl, headers, bodyJson);
-    }
-    private String generateRequstUrl(String url, Map<String, Object> pathParam, Map<String, Object> queryParam){
-        StringBuilder requstUrl = new StringBuilder();
-        String resUrl = "";
-        for (Map.Entry entry: pathParam.entrySet()) {
-             resUrl = url.replace("{" + entry.getKey() + "}",(String)entry.getValue());
-        }
-        requstUrl.append(resUrl);
-        if (queryParam.size()<1) {
-          return requstUrl.toString();
-        }
-        requstUrl.append("?");
-        for (Map.Entry entry:queryParam.entrySet()) {
-            requstUrl.append(entry.getKey())
-                    .append("=")
-                    .append(entry.getValue())
-                    .append("&");
-        }
-        requstUrl.deleteCharAt(requstUrl.length() - 1);
-        return requstUrl.toString();
     }
 
     private String invoke(String requestUrl, Map<String, Object> headers, String body) {

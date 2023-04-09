@@ -34,7 +34,7 @@ public class ServiceMarketExternalServiceImpl extends BaseExternalService implem
     public List<OrderExtOutDto> createOrder(ClusterAR clusterAR) {
         // DTO转换
         OrderExtInDto orderExtInDto = serviceMarketConverter.toInputDto(clusterAR);
-        // 包装body
+        // 包装请求体
         RequestDataWrapper<OrderExtInDto> body = RequestDataWrapper.<OrderExtInDto>builder()
                 .type("CLUSTER")
                 .data(RequestDataWrapper.Data.<OrderExtInDto>builder().attributes(orderExtInDto).build())
@@ -45,6 +45,10 @@ public class ServiceMarketExternalServiceImpl extends BaseExternalService implem
         Map<String, String> map = new HashMap<>();
         map.put("orderId", "id00001");
         json.put("data", Arrays.asList(map));
+        // 发送http请求
+//        restTemplate.exchange()
+
+        // 解析响应体
         ResponseDataWrapper<List<OrderExtOutDto>> response = JSON.parseObject(json.toJSONString(),
                 new TypeReference<ResponseDataWrapper<List<OrderExtOutDto>>>() {});
         ResponseDataWrapper<List<OrderExtOutDto>> response2 = json.toJavaObject(new DataBaseOutputDtoTypeReference());
