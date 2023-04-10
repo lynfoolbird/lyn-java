@@ -5,6 +5,7 @@ import com.lynjava.ddd.test.architecture.anticorruption.beans.IConvertBean;
 import com.lynjava.ddd.test.architecture.anticorruption.beans.SyncStaticRouterConvertBean;
 
 import java.util.Map;
+import java.util.Objects;
 
 public enum URIEnum {
     /**
@@ -35,9 +36,33 @@ public enum URIEnum {
         return convertBeanCls;
     }
 
-    // TODO 根据参数动态构建url
-    public String buildUrl(String gateway, Object...params) {
-        return this.uri;
+    /**
+     * 根据参数动态构建url
+     *
+     * @param params
+     * @return
+     */
+    public String generateRequestUrl(Object...params) {
+        StringBuilder sb = new StringBuilder();
+        if (Objects.isNull(params) || params.length == 0) {
+            return sb.append(uri).toString();
+        }
+        // 1、获取所有参数名
+        String[] firstStrArr = uri.split("\\{");
+        String[] paramNames = new String[firstStrArr.length];
+        for (int i=0; i<firstStrArr.length; i++) {
+            if (!firstStrArr[i].contains("}")) {
+                continue;
+            }
+            String[] secondStrArr = firstStrArr[i].split("}");
+            paramNames[i - 1] = secondStrArr[0];
+        }
+        // 2、用值替换所有参数
+        String newUri = uri;
+        for (int i=0; i<params.length; i++) {
+            newUri = newUri.replace("{" + paramNames[i] + "}", String.valueOf(params[i]));
+        }
+        return sb.append(newUri).toString();
     }
 
     public String generateRequestUrl(Map<String, Object> pathParam, Map<String, Object> queryParam){
