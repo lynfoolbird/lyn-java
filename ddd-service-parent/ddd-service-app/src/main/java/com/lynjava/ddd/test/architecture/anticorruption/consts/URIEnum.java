@@ -24,8 +24,8 @@ public enum URIEnum {
         this.convertBeanCls = clazz;
     }
 
-    public String getUri() {
-        return uri;
+    public String getUri(Object...params) {
+        return generateRequestUrl(params);
     }
 
     public RestMethodTypeEnum getMethod() {
