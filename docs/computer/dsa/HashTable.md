@@ -91,6 +91,48 @@ public static int[] twoSum1(int[] numbers, int target) {
     }
 ```
 
+# 缺失的第一个正整数
+
+方法一：
+
+```java
+public int minNumberDisappeared (int[] nums) {
+        int n = nums.length;
+        HashMap<Integer, Integer> mp = new HashMap<Integer, Integer>();
+        //哈希表记录数组中出现的每个数字
+        for(int i = 0; i < n; i++)
+            mp.put(nums[i], 1);
+        int res = 1;
+        //从1开始找到哈希表中第一个没有出现的正整数
+        while(mp.containsKey(res))
+            res++;
+        return res;
+    }
+```
+
+方法二：
+
+```java
+public int minNumberDisappeared (int[] nums) {
+        int n = nums.length;
+        //遍历数组
+        for(int i = 0; i < n; i++)
+            //负数全部记为n+1
+            if(nums[i] <= 0)
+                nums[i] = n + 1;
+        for(int i = 0; i < n; i++)
+            //对于1-n中的数字
+            if(Math.abs(nums[i]) <= n)
+                //这个数字的下标标记为负数
+                nums[Math.abs(nums[i]) - 1] = -1 * Math.abs(nums[Math.abs(nums[i]) - 1]);
+        for(int i = 0; i < n; i++)
+            //找到第一个元素不为负数的下标
+            if(nums[i] > 0)
+                return i + 1;
+        return n + 1;
+    }
+```
+
 
 
 

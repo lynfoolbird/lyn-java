@@ -24,7 +24,7 @@ public enum URIEnum {
         this.convertBeanCls = clazz;
     }
 
-    public String getUri(Object...params) {
+    public String getUri(String...params) {
         return generateRequestUrl(params);
     }
 
@@ -42,7 +42,7 @@ public enum URIEnum {
      * @param params
      * @return
      */
-    public String generateRequestUrl(Object...params) {
+    public String generateRequestUrl(String...params) {
         StringBuilder sb = new StringBuilder();
         if (Objects.isNull(params) || params.length == 0) {
             return sb.append(uri).toString();
@@ -60,7 +60,7 @@ public enum URIEnum {
         // 2、用值替换所有参数
         String newUri = uri;
         for (int i=0; i<params.length; i++) {
-            newUri = newUri.replace("{" + paramNames[i] + "}", String.valueOf(params[i]));
+            newUri = newUri.replace("{" + paramNames[i] + "}", params[i]);
         }
         return sb.append(newUri).toString();
     }
