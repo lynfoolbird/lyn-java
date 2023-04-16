@@ -1,0 +1,4 @@
+## AutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lynjava.limiter.config.LynLimiterConfigure,\
+  com.lynjava.limiter.aspect.LynLimiterAspect

@@ -121,6 +121,12 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <version>${openfeign.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.lynjava</groupId>
+            <artifactId>lyn-limiter-spring-boot-starter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <!-- 发布库管理 -->

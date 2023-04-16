@@ -7,6 +7,7 @@ import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.common.utils.DddApp;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import com.lynjava.ddd.test.common.ITestPrinter;
+import com.lynjava.limiter.annotation.LynLimit;
 import com.outter.LockService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,8 @@ public class TestRestController extends BaseAdminController{
     }
 
     @PostMapping("/test5.do")
-    public BaseResponse test5(){
+    @LynLimit(permitsPerSecond = 1, key = "test5")
+    public BaseResponse test5() {
         return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
     }
 
