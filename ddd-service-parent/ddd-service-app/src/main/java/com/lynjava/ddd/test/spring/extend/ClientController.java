@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/client")
-public class Client {
+public class ClientController {
 
     @Autowired
     private ThirdPartyQueryService thirdPartyQueryService;
 
-    @GetMapping("/")
-    public String queryOrder(@RequestParam("orderId") String orderId) {
+    @GetMapping("/order")
+    public String queryOrder(@RequestParam String orderId) {
         thirdPartyQueryService.findOrder(orderId);
         return "";
     }

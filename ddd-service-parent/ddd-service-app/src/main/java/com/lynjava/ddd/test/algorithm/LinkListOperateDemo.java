@@ -294,6 +294,75 @@ public class LinkListOperateDemo {
         return list.next;
     }
 
+
+    /**
+     * 两个链表的第一个公共节点
+     * 方法一：双指针，遍历到表尾时从另一个表的表头遍历
+     * 方法二：先计算长度，m，n；长度长的先走m-n步，然后另一指针走
+     * 方法三：先遍历其一，存集合中，再遍历另一个判断是否存在集合中
+     *
+     * @param list1
+     * @param list2
+     */
+    public static ListNode findFirstCommonNode(ListNode list1, ListNode list2) {
+        ListNode p1 = list1;
+        ListNode p2 = list2;
+        while (p1 != p2) {
+            p1 = p1==null ? list2 : list1.next;
+            p2 = p2==null ? list1 : list2.next;
+        }
+        return p1;
+    }
+
+    /**
+     * BM15 删除有序链表的重复元素-I(重复元素取一)
+     * @param head
+     * @return
+     */
+    public static ListNode deleteDuplicates1(ListNode head) {
+        if (head==null || head.next==null) {
+            return head;
+        }
+        ListNode p1 = head;
+        while (p1!=null && p1.next!=null) {
+            if (p1.val == p1.next.val) {
+                p1.next = p1.next.next;
+            } else {
+                p1=p1.next;
+            }
+        }
+        return head;
+    }
+
+    /**
+     * BM12 删除有序链表的重复元素-II(重复元素都删除)
+     * 方法一：增加内循环，遍历删除所有重复
+     * 方法二：哈希表，遍历存储所有节点出现次数，删除出现次数超过1的节点
+     * @param head
+     * @return
+     */
+    public static ListNode deleteDuplicates2(ListNode head) {
+        if (head==null || head.next==null) {
+            return head;
+        }
+        //在链表前加一个表头
+        ListNode res = new ListNode(0);
+        res.next = head;
+        ListNode cur = res;
+        while (cur.next != null && cur.next.next != null) {
+            //遇到相邻两个节点值相同
+            if (cur.next.val == cur.next.next.val) {
+                int temp = cur.next.val;
+                //将所有相同的都跳过
+                while (cur.next != null && cur.next.val == temp)
+                    cur.next = cur.next.next;
+            } else
+                cur = cur.next;
+        }
+        //返回时去掉表头
+        return res.next;
+    }
+
     private static void print(ListNode head) {
         ListNode p = head;
         while (p != null) {

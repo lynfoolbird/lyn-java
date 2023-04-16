@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
 
 /**
  * 树的基本操作
@@ -189,6 +190,110 @@ public class TreeOperateDemo {
                 return findAllFatherNode(root.getRight(), lNode, rNode);
             }
         }
+    }
+
+    /**
+     * BM31 对称的二叉树
+     * 方法一： 递归
+     * @param pRoot
+     * @return
+     */
+    public static boolean isSymmetrical(TreeNode pRoot) {
+        return recursion(pRoot, pRoot);
+    }
+    private static boolean recursion(TreeNode root1, TreeNode root2){
+        //可以两个都为空
+        if(root1 == null && root2 == null)
+            return true;
+        //只有一个为空或者节点值不同，必定不对称
+        if(root1 == null || root2 == null || root1.val != root2.val)
+            return false;
+        //每层对应的节点进入递归比较
+        return recursion(root1.left, root2.right) && recursion(root1.right, root2.left);
+    }
+
+    /**
+     * BM31 对称的二叉树
+     * 方法二： 借助层序遍历，两个队列，一个从左到右，一个从右到左
+     * @param pRoot
+     * @return
+     */
+    public static boolean isSymmetrical2(TreeNode pRoot) {
+        //空树为对称的
+        if(pRoot == null)
+            return true;
+        //辅助队列用于从两边层次遍历
+        Queue<TreeNode> q1 = new LinkedList<TreeNode>();
+        Queue<TreeNode> q2 = new LinkedList<TreeNode>();
+        q1.offer(pRoot.left);
+        q2.offer(pRoot.right);
+        while(!q1.isEmpty() && !q2.isEmpty()){
+            //分别从左边和右边弹出节点
+            TreeNode left = q1.poll();
+            TreeNode right = q2.poll();
+            //都为空暂时对称
+            if(left == null && right == null)
+                continue;
+            //某一个为空或者数字不相等则不对称
+            if(left == null || right == null || left.val != right.val)
+                return false;
+            //从左往右加入队列
+            q1.offer(left.left);
+            q1.offer(left.right);
+            //从右往左加入队列
+            q2.offer(right.right);
+            q2.offer(right.left);
+        }
+        //都检验完都是对称的
+        return true;
+    }
+
+    /**
+     * BM33 二叉树的镜像
+     * 方法一：递归，后序遍历
+     * @param pRoot
+     * @return
+     */
+    public static TreeNode mirror1(TreeNode pRoot) {
+        //空树返回
+        if(pRoot == null)
+            return null;
+        //先递归子树
+        TreeNode left = mirror1(pRoot.left);
+        TreeNode right = mirror1(pRoot.right);
+        //交换
+        pRoot.left = right;
+        pRoot.right = left;
+        return pRoot;
+    }
+
+    /**
+     * BM33 二叉树的镜像
+     * 方法二：利用栈
+     * @param pRoot
+     * @return
+     */
+    public static TreeNode mirror2(TreeNode pRoot) {
+        //空树
+        if(pRoot == null)
+            return null;
+        //辅助栈
+        Stack<TreeNode> s = new Stack<TreeNode>();
+        //根节点先进栈
+        s.push(pRoot);
+        while (!s.isEmpty()){
+            TreeNode node = s.pop();
+            //左右节点入栈
+            if(node.left != null)
+                s.push(node.left);
+            if(node.right != null)
+                s.push(node.right);
+            //交换左右
+            TreeNode temp = node.left;
+            node.left = node.right;
+            node.right = temp;
+        }
+        return pRoot;
     }
     //根据前序和中序重建二叉树
 //    public static  TreeNode getTreeFromPreAndMid(List pre, List mid) {
