@@ -11,4 +11,6 @@ import java.util.List;
 public interface IServiceMarketExternalService {
 
     List<OrderExtOutDto> createOrder(ClusterAR clusterAR);
+
+    List<String> createOrder(List<ClusterAR> clusters);
 }

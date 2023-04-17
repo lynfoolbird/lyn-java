@@ -2,6 +2,7 @@ package com.lynjava.ddd.domain.external.servicemarket.converter;
 
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtInDto;
+import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtOutDto;
 
 import javax.inject.Named;
 
@@ -18,5 +19,9 @@ public class ServiceMarketConverter {
                 .quantity(100)
                 .build();
         return orderExtInDto;
+    }
+
+    public ClusterAR toDO(OrderExtOutDto orderExtOutDto) {
+        return ClusterAR.builder().id(orderExtOutDto.getOrderId()).build();
     }
 }

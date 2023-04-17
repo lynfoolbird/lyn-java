@@ -9,6 +9,7 @@ import javax.inject.Named;
 
 /**
  * 功能：inputDto、outputDto与DO相互转换
+ * 用MapStruct工具，深拷贝or浅拷贝
  */
 @Named
 public class ClusterAssembler {

@@ -2,7 +2,6 @@ package com.lynjava.ddd.external.servicemarket;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.lynjava.ddd.common.model.RequestDataWrapper;
 import com.lynjava.ddd.common.model.ResponseDataWrapper;
@@ -12,20 +11,17 @@ import com.lynjava.ddd.domain.external.servicemarket.converter.ServiceMarketConv
 import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtInDto;
 import com.lynjava.ddd.domain.external.servicemarket.dto.OrderExtOutDto;
 import com.lynjava.ddd.external.BaseExternalService;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Named
 public class ServiceMarketExternalServiceImpl extends BaseExternalService implements IServiceMarketExternalService {
-
-    @Inject
-    private RestTemplate restTemplate;
 
     @Inject
     private ServiceMarketConverter serviceMarketConverter;
@@ -34,25 +30,36 @@ public class ServiceMarketExternalServiceImpl extends BaseExternalService implem
     public List<OrderExtOutDto> createOrder(ClusterAR clusterAR) {
         // DTO转换
         OrderExtInDto orderExtInDto = serviceMarketConverter.toInputDto(clusterAR);
-        // 包装请求体
+        // 请求体
         RequestDataWrapper<OrderExtInDto> body = RequestDataWrapper.<OrderExtInDto>builder()
                 .type("CLUSTER")
                 .data(RequestDataWrapper.Data.<OrderExtInDto>builder().attributes(orderExtInDto).build())
                 .build();
-        JSONObject json = new JSONObject();
-        json.put("id", "001");
-        json.put("type", "rule");
-        Map<String, String> map = new HashMap<>();
-        map.put("orderId", "id00001");
-        json.put("data", Arrays.asList(map));
-        // 发送http请求
-//        restTemplate.exchange()
-
-        // 解析响应体
-        ResponseDataWrapper<List<OrderExtOutDto>> response = JSON.parseObject(json.toJSONString(),
+        // 请求头
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("ContentType", "application/json");
+        HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(body), headers);
+        // 发送rest请求
+        ResponseEntity<String> responseEntity = restTemplate
+                .exchange("url", HttpMethod.POST, httpEntity, String.class);
+        // 响应码
+        int responseCode = responseEntity.getStatusCodeValue();
+        // 响应头
+        HttpHeaders responseHeaders = responseEntity.getHeaders();
+        // 响应体
+        String responseBody = responseEntity.getBody();
+        ResponseDataWrapper<List<OrderExtOutDto>> response = JSON.parseObject(responseBody,
                 new TypeReference<ResponseDataWrapper<List<OrderExtOutDto>>>() {});
-        ResponseDataWrapper<List<OrderExtOutDto>> response2 = json.toJavaObject(new DataBaseOutputDtoTypeReference());
+        ResponseDataWrapper<List<OrderExtOutDto>> response2 = JSON.parseObject(responseBody)
+                .toJavaObject(new DataBaseOutputDtoTypeReference());
         return response.getData();
+    }
+
+    @Override
+    public List<String> createOrder(List<ClusterAR> clusters) {
+        List<String> orderIds = sendRequest("url", HttpMethod.POST, clusters, new TypeReference<List<String>>() {
+        });
+        return orderIds;
     }
 
     public static class DataBaseOutputDtoTypeReference extends TypeReference<ResponseDataWrapper<List<OrderExtOutDto>>> {
