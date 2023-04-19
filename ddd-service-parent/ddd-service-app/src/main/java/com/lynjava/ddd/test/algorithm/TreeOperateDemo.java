@@ -295,7 +295,134 @@ public class TreeOperateDemo {
         }
         return pRoot;
     }
-    //根据前序和中序重建二叉树
+
+    /**
+     * BM32 合并二叉树
+     * 方法一：递归
+     * @param t1
+     * @param t2
+     * @return
+     */
+    public TreeNode mergeTrees (TreeNode t1, TreeNode t2) {
+        // write code here
+        if (t1==null) {
+            return t2;
+        }
+        if (t2==null) {
+            return t1;
+        }
+        TreeNode root = new TreeNode(t1.val+t2.val);
+        root.left = mergeTrees(t1.left, t2.left);
+        root.right = mergeTrees(t1.right, t2.right);
+        return root;
+    }
+
+    /**
+     * BM32 合并二叉树
+     * 方法二：层序遍历
+     * @param t1
+     * @param t2
+     * @return
+     */
+    public TreeNode mergeTrees2 (TreeNode t1, TreeNode t2) {
+        //若只有一个节点返回另一个，两个都为null自然返回null
+        if (t1 == null)
+            return t2;
+        if (t2 == null)
+            return t1;
+        //合并根节点
+        TreeNode head = new TreeNode(t1.val + t2.val);
+        //连接后的树的层次遍历节点
+        Queue<TreeNode> q = new LinkedList<TreeNode>();
+        //分别存两棵树的层次遍历节点
+        Queue<TreeNode> q1 = new LinkedList<TreeNode>();
+        Queue<TreeNode> q2 = new LinkedList<TreeNode>();
+        q.offer(head);
+        q1.offer(t1);
+        q2.offer(t2);
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            TreeNode node = q.poll();
+            TreeNode node1 = q1.poll();
+            TreeNode node2 = q2.poll();
+            TreeNode left1 = node1.left;
+            TreeNode left2 = node2.left;
+            TreeNode right1 = node1.right;
+            TreeNode right2 = node2.right;
+            if(left1 != null || left2 != null){
+                //两个左节点都存在
+                if(left1 != null && left2 != null){
+                    TreeNode left = new TreeNode(left1.val + left2.val);
+                    node.left = left;
+                    //新节点入队列
+                    q.offer(left);
+                    q1.offer(left1);
+                    q2.offer(left2);
+                    //只连接一个节点
+                }else if(left1 != null)
+                    node.left = left1;
+                else
+                    node.left = left2;
+            }
+            if(right1 != null || right2 != null){
+                //两个右节点都存在
+                if(right1 != null && right2 != null) {
+                    TreeNode right = new TreeNode(right1.val + right2.val);
+                    node.right = right;
+                    //新节点入队列
+                    q.offer(right);
+                    q1.offer(right1);
+                    q2.offer(right2);
+                    //只连接一个节点
+                }else if(right1 != null)
+                    node.right = right1;
+                else
+                    node.right = right2;
+            }
+        }
+        return head;
+    }
+
+    /**
+     * BM36 是否平衡二叉树
+     * 方法一：递归
+     * @param root
+     * @return
+     */
+    public boolean IsBalanced_Solution(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return IsBalanced_Solution(root.left) && IsBalanced_Solution(root.right)
+                && Math.abs(getTreeDepth(root.left)-getTreeDepth(root.right)) <2;
+    }
+
+    /**
+     * BM36 是否平衡二叉树
+     * 方法二：回溯，对于父节点，需要确定两个子节点深度之差小于一。
+     * 对于作为子节点的立场，需要向自己的上一级节点传递的自己深度
+     * @param root
+     * @return
+     */
+    public static boolean IsBalanced_Solution2(TreeNode root) {
+        if(deep(root)==-1) return false;
+        return true;
+    }
+    public static int deep(TreeNode node){
+        if(node==null) return 0;
+        int left=deep(node.left);
+        if(left == -1 ) return -1;
+        int right=deep(node.right);
+        if(right == -1 ) return -1;
+
+        //两个子节点深度之差小于一
+        if((left-right)>1 || (right-left)>1){
+            return -1;
+        }
+        //父节点需要向自己的父节点报告自己的深度
+        return (left>right?left:right)+1;
+    }
+
+        //根据前序和中序重建二叉树
 //    public static  TreeNode getTreeFromPreAndMid(List pre, List mid) {
 //        if (pre == null || mid == null || pre.size() == 0 || mid.size() == 0) {
 //            return null;
