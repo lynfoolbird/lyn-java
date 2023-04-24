@@ -2,6 +2,7 @@ package com.lynjava.ddd.common.consts;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public interface CommonConstants {
 
@@ -25,4 +26,5 @@ public interface CommonConstants {
         }
     };
 
+    Pattern PATTERN_EXTRACT_PARAMS = Pattern.compile("\\{[^}]+\\}");
 }

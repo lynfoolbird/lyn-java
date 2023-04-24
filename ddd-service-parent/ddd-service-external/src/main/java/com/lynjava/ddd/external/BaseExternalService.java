@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.lynjava.ddd.common.model.RequestDataWrapper;
 import com.lynjava.ddd.common.model.ResponseDataWrapper;
+import com.lynjava.ddd.external.common.consts.RequestURIEnum;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,10 +18,40 @@ import javax.inject.Inject;
 /**
  * 防腐层公共：可封装http请求等
  */
-public class BaseExternalService {
+public abstract class BaseExternalService {
 
     @Inject
-    protected RestTemplate restTemplate;
+    private RestTemplate restTemplate;
+
+    public String sendRequest(RequestURIEnum uriEnum, Object bodyJson, String...params) {
+        // 请求头
+        HttpHeaders headers = buildHeaders();
+        HttpEntity<Object> httpEntity = new HttpEntity<>(bodyJson, headers);
+        String url = uriEnum.buildRequestUrl(getGateway(), params);
+        // 发送rest请求
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, uriEnum.getMethod(), httpEntity, String.class);
+        // 响应码
+        int responseCode = responseEntity.getStatusCodeValue();
+        // 响应头
+        HttpHeaders responseHeaders = responseEntity.getHeaders();
+        // 响应体
+        return responseEntity.getBody();
+    }
+
+    public <T> T sendRequest(RequestURIEnum uriEnum, Object bodyJson, Class<T> clazz, String...params) {
+        // 请求头
+        HttpHeaders headers = buildHeaders();
+        HttpEntity<Object> httpEntity = new HttpEntity<>(bodyJson, headers);
+        String url = uriEnum.buildRequestUrl(getGateway(), params);
+        // 发送rest请求
+        ResponseEntity<T> responseEntity = restTemplate.exchange(url, uriEnum.getMethod(), httpEntity, clazz);
+        // 响应码
+        int responseCode = responseEntity.getStatusCodeValue();
+        // 响应头
+        HttpHeaders responseHeaders = responseEntity.getHeaders();
+        // 响应体
+        return responseEntity.getBody();
+    }
 
     /**
      * 响应带泛型参数
@@ -38,8 +69,7 @@ public class BaseExternalService {
                 .data(RequestDataWrapper.Data.<Object>builder().attributes(object).build())
                 .build();
         // 请求头
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("ContentType", "application/json");
+        HttpHeaders headers = buildHeaders();
         HttpEntity<RequestDataWrapper<Object>> httpEntity = new HttpEntity<>(requestBody, headers);
         // 发送rest请求
         ResponseEntity<String> responseEntity = restTemplate
@@ -77,8 +107,7 @@ public class BaseExternalService {
                 .data(RequestDataWrapper.Data.<Object>builder().attributes(object).build())
                 .build();
         // 请求头
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("ContentType", "application/json");
+        HttpHeaders headers = buildHeaders();
         HttpEntity<RequestDataWrapper<Object>> httpEntity = new HttpEntity<>(requestBody, headers);
         // 发送rest请求
         ResponseEntity<String> responseEntity = restTemplate
@@ -98,5 +127,17 @@ public class BaseExternalService {
         } else {
             return (T) dataObj;
         }
+    }
+
+    protected abstract String getGateway();
+
+    /**
+     * 请求头
+     * @return
+     */
+    protected HttpHeaders buildHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("ContentType", "application/json");
+        return headers;
     }
 }
