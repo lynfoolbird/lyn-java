@@ -19,7 +19,8 @@ import javax.inject.Named;
 import java.util.List;
 
 @Named
-public class ServiceMarketExternalServiceImpl extends BaseExternalService implements IServiceMarketExternalService {
+public class ServiceMarketExternalServiceImpl extends BaseExternalService
+        implements IServiceMarketExternalService {
     @Value("${sevice.market.gateway:http://dev.lyn.com}")
     private String serviceMarketGateway;
     @Inject
@@ -30,7 +31,7 @@ public class ServiceMarketExternalServiceImpl extends BaseExternalService implem
         // DTO转换
         OrderExtInDto orderExtInDto = serviceMarketConverter.toInputDto(clusterAR);
         // 响应体
-        String responseBody = sendRequest(RequestURIEnum.SERVICE_MARKET_CREATE_ORDER, JSON.toJSONString(orderExtInDto), "CREATE");
+        String responseBody = sendRequest(RequestURIEnum.SERVICE_MARKET_CREATE_ORDER, orderExtInDto, String.class,"CREATE");
         ResponseDataWrapper<List<OrderExtOutDto>> response = JSON.parseObject(responseBody,
                 new TypeReference<ResponseDataWrapper<List<OrderExtOutDto>>>() {});
         ResponseDataWrapper<List<OrderExtOutDto>> response2 = JSON.parseObject(responseBody)

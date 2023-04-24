@@ -23,25 +23,10 @@ public abstract class BaseExternalService {
     @Inject
     private RestTemplate restTemplate;
 
-    public String sendRequest(RequestURIEnum uriEnum, Object bodyJson, String...params) {
-        // 请求头
-        HttpHeaders headers = buildHeaders();
-        HttpEntity<Object> httpEntity = new HttpEntity<>(bodyJson, headers);
-        String url = uriEnum.buildRequestUrl(getGateway(), params);
-        // 发送rest请求
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, uriEnum.getMethod(), httpEntity, String.class);
-        // 响应码
-        int responseCode = responseEntity.getStatusCodeValue();
-        // 响应头
-        HttpHeaders responseHeaders = responseEntity.getHeaders();
-        // 响应体
-        return responseEntity.getBody();
-    }
-
     public <T> T sendRequest(RequestURIEnum uriEnum, Object bodyJson, Class<T> clazz, String...params) {
         // 请求头
         HttpHeaders headers = buildHeaders();
-        HttpEntity<Object> httpEntity = new HttpEntity<>(bodyJson, headers);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(JSON.toJSONString(bodyJson), headers);
         String url = uriEnum.buildRequestUrl(getGateway(), params);
         // 发送rest请求
         ResponseEntity<T> responseEntity = restTemplate.exchange(url, uriEnum.getMethod(), httpEntity, clazz);
