@@ -27,7 +27,7 @@ public enum RequestURIEnum {
     public String buildRequestUrl(String gateway, String...params) {
         StringBuilder sb = new StringBuilder(64);
         sb.append(gateway);
-        Matcher mather = CommonConstants.PATTERN_EXTRACT_PARAMS.matcher(this.uri);
+        Matcher mather = CommonConstants.RegexPattern.EXTRACT_PARAMS.matcher(this.uri);
         String finalUrl = this.uri;
         int index = 0;
         while (mather.find() && index<params.length) {

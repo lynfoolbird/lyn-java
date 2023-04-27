@@ -26,5 +26,15 @@ public interface CommonConstants {
         }
     };
 
-    Pattern PATTERN_EXTRACT_PARAMS = Pattern.compile("\\{[^}]+\\}");
+    interface RegexPattern {
+        Pattern EXTRACT_PARAMS = Pattern.compile("\\{[^}]+\\}");
+    }
+
+    /**
+     * 利用内部类将常量分组
+     */
+    interface State {
+        String VALID = "Y";
+        String INVALID = "N";
+    }
 }
