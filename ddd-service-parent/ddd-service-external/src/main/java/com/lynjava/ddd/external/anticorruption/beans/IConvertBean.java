@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.architecture.anticorruption.beans;
+package com.lynjava.ddd.external.anticorruption.beans;
 
 import java.util.Map;
 

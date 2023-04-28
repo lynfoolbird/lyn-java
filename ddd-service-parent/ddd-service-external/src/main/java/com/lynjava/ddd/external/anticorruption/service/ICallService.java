@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.architecture.anticorruption.service;
+package com.lynjava.ddd.external.anticorruption.service;
 
 public interface ICallService {
     String getGateway();

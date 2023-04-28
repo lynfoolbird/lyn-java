@@ -27,24 +27,26 @@ public class ServiceMarketExternalServiceImpl extends BaseExternalService
     private ServiceMarketConverter serviceMarketConverter;
 
     @Override
-    public List<OrderExtOutDto> createOrder(ClusterAR clusterAR) {
+    public ClusterAR createOrder(ClusterAR clusterAR) {
         // DTO转换
         OrderExtInDto orderExtInDto = serviceMarketConverter.toInputDto(clusterAR);
         // 响应体
-        String responseBody = sendRequest(RequestURIEnum.SERVICE_MARKET_CREATE_ORDER, orderExtInDto, String.class,"CREATE");
-        ResponseDataWrapper<List<OrderExtOutDto>> response = JSON.parseObject(responseBody,
-                new TypeReference<ResponseDataWrapper<List<OrderExtOutDto>>>() {});
-        ResponseDataWrapper<List<OrderExtOutDto>> response2 = JSON.parseObject(responseBody)
-                .toJavaObject(new DataBaseOutputDtoTypeReference());
-        return response.getData();
+        OrderExtOutDto response = sendRequest(RequestURIEnum.SERVICE_MARKET_CREATE_ORDER, orderExtInDto, OrderExtOutDto.class,"CREATE");
+        // DTO转换
+        return serviceMarketConverter.toDO(response);
     }
 
     @Override
-    public List<String> createOrder(List<ClusterAR> clusters) {
+    public List<OrderExtOutDto> createOrder(List<ClusterAR> clusters) {
         String url = RequestURIEnum.SERVICE_MARKET_CREATE_ORDER.buildRequestUrl(getGateway(), "123");
-        List<String> orderIds = sendRequest(url, RequestURIEnum.SERVICE_MARKET_CREATE_ORDER.getMethod(), clusters,
-                new TypeReference<List<String>>() {});
-        return orderIds;
+        List<OrderExtOutDto> orders = sendRequest(url, RequestURIEnum.SERVICE_MARKET_CREATE_ORDER.getMethod(), clusters,
+                new TypeReference<List<OrderExtOutDto>>() {});
+
+        String resStr = sendRequest(url, RequestURIEnum.SERVICE_MARKET_CREATE_ORDER.getMethod(), clusters,
+                String.class);
+        ResponseDataWrapper<List<OrderExtOutDto>> wrapper = JSON.parseObject(resStr, new DataBaseOutputDtoTypeReference());
+        orders = wrapper.getData();
+        return orders;
     }
 
     @Override

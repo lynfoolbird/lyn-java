@@ -1,8 +1,8 @@
-package com.lynjava.ddd.test.architecture.anticorruption;
+package com.lynjava.ddd.external.anticorruption;
 
 
-import com.lynjava.ddd.test.architecture.anticorruption.consts.URIEnum;
-import com.lynjava.ddd.test.architecture.anticorruption.service.AbstractCallService;
+import com.lynjava.ddd.external.anticorruption.consts.URIEnum;
+import com.lynjava.ddd.external.anticorruption.service.AbstractCallService;
 
 import java.lang.reflect.Constructor;
 

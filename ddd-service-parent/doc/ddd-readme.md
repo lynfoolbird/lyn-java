@@ -37,15 +37,15 @@ parent里面原则上只作依赖包版本管理及极少的通用依赖
 
 ### 分支管理
 
-上线分支：release_beta_上线时间；
+上线分支：release_迭代；
 开发分支：develop；
 迭代分支：dev_8.8_team  基于develop分支拉；
-个人分支： dev_8.8_team_工号  基于迭代分支拉
+个人分支： person_工号_迭代  基于迭代分支拉
 
 ### 调用规范
 
-1 服务内跨子域跨聚合调用，在app层编排领域服务
-2 系统内各服务间调用，在防腐层用rpc
+1 微服务内跨子域跨聚合调用，在app层编排领域服务
+2 系统内各微服务间调用，在防腐层用rpc或者rest调用
 3 外部系统调用，在防腐层用http，feign
 
 TODO
@@ -55,11 +55,14 @@ TODO
   pojo转换工具类MapStruct、dozer 深拷贝 浅拷贝; spring event, spring batch
   https://mp.weixin.qq.com/s/lZr-gTAKoA_FJSshu7KXvA
   https://cloud.tencent.com/developer/article/1650522
-3 过滤器、拦截器、自定义注解、AOP
+3 过滤器、拦截器、监听器、自定义注解、AOP
 4 mybatis集成 mysql集成 连接池 事务  动态多数据源 cxf集成swagger
 5 springevent、动态加载bean，启动后执行runner；异步@Async、定时调度@Schedule、事务@Transaction、线程池
   RestTemplate http连接池
-6 中间件集成：redis、kafka，es，mycat、任务调度xxljob；工作流Activity snake；模板引擎freemaker，thmleaf、beatle；
+6 中间件集成：redis、kafka，es，mycat、
+  任务调度xxljob；
+  工作流Activity snake；
+  模板引擎freemaker，thmleaf、beatle；
   规则引擎；消息集成：短信、邮件
 7 分布式：zk
 

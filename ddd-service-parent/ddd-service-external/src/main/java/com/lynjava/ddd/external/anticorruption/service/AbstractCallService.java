@@ -1,12 +1,12 @@
-package com.lynjava.ddd.test.architecture.anticorruption.service;
+package com.lynjava.ddd.external.anticorruption.service;
 
 
-import com.lynjava.ddd.test.architecture.anticorruption.beans.IConvertBean;
-import com.lynjava.ddd.test.architecture.anticorruption.consts.URIEnum;
+import com.lynjava.ddd.external.anticorruption.beans.IConvertBean;
+import com.lynjava.ddd.external.anticorruption.consts.URIEnum;
 
 import java.util.Map;
 
-public class AbstractCallService implements ICallService {
+public abstract class AbstractCallService implements ICallService {
 
     private URIEnum uri;
     private Object param;
@@ -19,9 +19,7 @@ public class AbstractCallService implements ICallService {
         this.param = param;
     }
 
-    public String getGateway() {
-        return null;
-    }
+    public abstract String getGateway();
 
     public String execute() throws Exception {
         IConvertBean convertBean = (IConvertBean) this.uri.getConvertBeanCls().newInstance();

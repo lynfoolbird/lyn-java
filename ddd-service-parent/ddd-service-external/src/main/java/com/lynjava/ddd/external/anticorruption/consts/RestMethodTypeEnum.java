@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.architecture.anticorruption.consts;
+package com.lynjava.ddd.external.anticorruption.consts;
 
 public enum RestMethodTypeEnum {
     GET, PUT, POST, PATCH, DELETE;

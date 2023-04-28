@@ -1,8 +1,8 @@
-package com.lynjava.ddd.test.architecture.anticorruption.consts;
+package com.lynjava.ddd.external.anticorruption.consts;
 
 
-import com.lynjava.ddd.test.architecture.anticorruption.beans.IConvertBean;
-import com.lynjava.ddd.test.architecture.anticorruption.beans.SyncStaticRouterConvertBean;
+import com.lynjava.ddd.external.anticorruption.beans.IConvertBean;
+import com.lynjava.ddd.external.anticorruption.beans.SyncStaticRouterConvertBean;
 
 import java.util.Map;
 import java.util.Objects;
@@ -18,7 +18,7 @@ public enum URIEnum {
     private RestMethodTypeEnum method;
     private Class convertBeanCls;
 
-    <T extends IConvertBean>URIEnum(String uri, RestMethodTypeEnum method, Class<T> clazz) {
+    <T extends IConvertBean> URIEnum(String uri, RestMethodTypeEnum method, Class<T> clazz) {
         this.uri = uri;
         this.method = method;
         this.convertBeanCls = clazz;

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface IServiceMarketExternalService {
 
-    List<OrderExtOutDto> createOrder(ClusterAR clusterAR);
+    ClusterAR createOrder(ClusterAR clusterAR);
 
-    List<String> createOrder(List<ClusterAR> clusters);
+    List<OrderExtOutDto> createOrder(List<ClusterAR> clusters);
 }

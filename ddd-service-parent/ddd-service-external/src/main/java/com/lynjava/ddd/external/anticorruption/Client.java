@@ -1,9 +1,9 @@
-package com.lynjava.ddd.test.architecture.anticorruption;
+package com.lynjava.ddd.external.anticorruption;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.lynjava.ddd.test.architecture.anticorruption.consts.URIEnum;
-import com.lynjava.ddd.test.architecture.anticorruption.service.impl.AlbCallService;
+import com.lynjava.ddd.external.anticorruption.consts.URIEnum;
+import com.lynjava.ddd.external.anticorruption.service.impl.AlbCallService;
 
 import java.util.HashMap;
 import java.util.Map;
