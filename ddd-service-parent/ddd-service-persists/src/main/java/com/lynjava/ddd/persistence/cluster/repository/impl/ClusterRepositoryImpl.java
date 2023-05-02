@@ -19,7 +19,12 @@ public class ClusterRepositoryImpl implements IClusterRepository {
 
     @Override
     public int createCluster(ClusterPO clusterPO) {
-        System.out.println("ClusterRepositoryImpl:" + "createCluster" + clusterDao.selectMaxAge());
-        return 0;
+        System.out.println("ClusterRepositoryImpl:" + "createCluster begin");
+        return clusterDao.insert(clusterPO);
+    }
+
+    @Override
+    public ClusterPO getById(int id) {
+        return clusterDao.selectById(id);
     }
 }

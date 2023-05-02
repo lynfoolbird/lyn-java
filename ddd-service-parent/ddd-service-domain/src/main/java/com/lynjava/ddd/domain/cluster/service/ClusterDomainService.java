@@ -1,10 +1,10 @@
 package com.lynjava.ddd.domain.cluster.service;
 
 
-import com.alibaba.fastjson.JSON;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.factory.ClusterFactory;
 import com.lynjava.ddd.domain.cluster.repository.IClusterRepository;
+import com.lynjava.ddd.domain.cluster.repository.po.ClusterPO;
 import com.lynjava.ddd.domain.external.servicemarket.IServiceMarketExternalService;
 
 import javax.inject.Inject;
@@ -34,9 +34,14 @@ public class ClusterDomainService {
     public String createCluster(ClusterAR clusterAR) {
         System.out.println("ClusterDomainService:" + "createCluster");
         clusterRepository.createCluster(clusterFactory.toPO(clusterAR));
-
-        System.out.println(JSON.toJSONString(serviceMarketExternalService.createOrder(clusterAR)));
+        ClusterAR cluster = serviceMarketExternalService.createOrder(clusterAR);
+        System.out.println("success");
         return "succ";
+    }
+
+    public ClusterAR getById(int id) {
+        ClusterPO clusterPO = clusterRepository.getById(id);
+        return clusterFactory.toDO(clusterPO);
     }
 
 }

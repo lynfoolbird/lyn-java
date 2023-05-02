@@ -9,4 +9,6 @@ public interface IClusterRepository {
 
     int createCluster(ClusterPO clusterPO);
 
+    ClusterPO getById(int id);
+
 }
