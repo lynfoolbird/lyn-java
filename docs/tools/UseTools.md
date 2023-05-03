@@ -10,7 +10,7 @@ mybatis-plus
 
 ## idea
 
-依赖jar、插件：lombok、mybatis、arthas
+依赖jar、插件：lombok、mybatis、arthas、mavenhelper、keyprompterx、one dark theme
 
 # test
 
