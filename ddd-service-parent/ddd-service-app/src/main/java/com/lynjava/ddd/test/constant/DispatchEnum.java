@@ -1,6 +1,6 @@
 package com.lynjava.ddd.test.constant;
 
-import com.lynjava.ddd.common.context.DddApp;
+import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.test.service.ITestService;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public enum DispatchEnum {
     SAY_HELLO("testServiceImpl", "sayHello"){
         @Override
         public Object invoke(Object[] params) {
-            ITestService testService = DddApp.getContext().getBean(getComponentName(), ITestService.class);
+            ITestService testService = DddAppContext.getContext().getBean(getComponentName(), ITestService.class);
             return testService.sayHello((String) params[0]);
         }
     };

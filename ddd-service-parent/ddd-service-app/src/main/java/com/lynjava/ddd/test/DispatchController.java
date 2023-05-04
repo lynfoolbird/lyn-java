@@ -1,6 +1,6 @@
 package com.lynjava.ddd.test;
 
-import com.lynjava.ddd.common.context.DddApp;
+import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.test.constant.DispatchEnum;
 import lombok.Data;
 
@@ -18,7 +18,7 @@ import java.util.Objects;
 public class DispatchController {
     @PostMapping("/demo1")
     public Object dispatch(@RequestBody DispatchInfoDto dto) {
-        Object bean = DddApp.getContext().getBean(dto.getComponentName());
+        Object bean = DddAppContext.getContext().getBean(dto.getComponentName());
         Class<? extends Object>[] paramClass = null;
         Object[] params = dto.getParams();
         if (params != null) {

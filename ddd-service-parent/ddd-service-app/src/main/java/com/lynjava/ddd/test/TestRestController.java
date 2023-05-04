@@ -4,7 +4,7 @@ import com.lynjava.ddd.common.annotation.DistributeLock;
 import com.lynjava.ddd.common.consts.RedisLockTypeEnum;
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
-import com.lynjava.ddd.common.context.DddApp;
+import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import com.lynjava.ddd.test.common.ITestPrinter;
 import com.lynjava.limiter.annotation.LynLimit;
@@ -47,7 +47,7 @@ public class TestRestController extends BaseAdminController{
                             @RequestHeader("changeNo") String changeNo) {
         mainOperateService.doOperate(strategy);
         mainOperateService.doOperate2(type);
-        MainOperateService service = DddApp.getContext().getBean(MainOperateService.class);
+        MainOperateService service = DddAppContext.getContext().getBean(MainOperateService.class);
         service.doOperate(strategy);
         return "success";
     }
@@ -66,7 +66,7 @@ public class TestRestController extends BaseAdminController{
 
     @RequestMapping(value = {"/test3.do"}, method = RequestMethod.GET)
     public BaseResponse test3(){
-        ITestPrinter testPrinter = DddApp.getContext().getBean(ITestPrinter.class);
+        ITestPrinter testPrinter = DddAppContext.getContext().getBean(ITestPrinter.class);
         testPrinter.print("hello world");
         printer.print("Ronaldo");
         lockService.lock();

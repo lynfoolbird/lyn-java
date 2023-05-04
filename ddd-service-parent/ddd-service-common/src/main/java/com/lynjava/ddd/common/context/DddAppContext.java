@@ -7,14 +7,14 @@ import org.springframework.context.ApplicationContext;
  *
  * @author li
  */
-public final class DddApp {
+public final class DddAppContext {
 
     private static ApplicationContext context;
-    private DddApp() {
+    private DddAppContext() {
     }
 
     public static void setContext(ApplicationContext context) {
-        DddApp.context = context;
+        DddAppContext.context = context;
     }
 
     public static ApplicationContext getContext() {

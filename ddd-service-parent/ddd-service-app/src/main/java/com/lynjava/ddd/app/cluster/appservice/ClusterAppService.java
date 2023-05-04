@@ -8,7 +8,7 @@ import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
 import com.lynjava.ddd.common.consts.CommonConstants;
 import com.lynjava.ddd.common.context.DddRequestContext;
 import com.lynjava.ddd.common.exception.AppException;
-import com.lynjava.ddd.common.context.DddApp;
+import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.common.utils.UUIDUtils;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
@@ -88,7 +88,7 @@ public class ClusterAppService {
         IClusterPartialService bean1 = applicationContext.getBean(type, IClusterPartialService.class);
         bean1.process(body);
 
-        IClusterPartialService bean2 = DddApp.getContext().getBean(type, IClusterPartialService.class);
+        IClusterPartialService bean2 = DddAppContext.getContext().getBean(type, IClusterPartialService.class);
         bean2.process(body);
 
         IClusterPartialService bean3 = patchServiceMap.get(type);
