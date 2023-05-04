@@ -5,7 +5,5 @@ import lombok.Data;
 
 @Data
 public class RouterInputDto extends BaseDto {
-    private String id;
-
     private String name;
 }

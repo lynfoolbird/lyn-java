@@ -1,6 +1,7 @@
 package com.lynjava.ddd.domain.cluster.service;
 
 
+import com.lynjava.ddd.common.context.DddRequestContext;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.factory.ClusterFactory;
 import com.lynjava.ddd.domain.cluster.repository.IClusterRepository;
@@ -26,14 +27,13 @@ public class ClusterDomainService {
     @Inject
     private IServiceMarketExternalService serviceMarketExternalService;
 
-    public ClusterAR getCluster() {
-        ClusterAR clusterAR = ClusterAR.builder().name("clustername").build();
-        return clusterAR;
-    }
-
     public String createCluster(ClusterAR clusterAR) {
         System.out.println("ClusterDomainService:" + "createCluster");
-        clusterRepository.createCluster(clusterFactory.toPO(clusterAR));
+        ClusterPO clusterPO = clusterFactory.toPO(clusterAR);
+        clusterRepository.createCluster(clusterPO);
+        // 保存后orm框架回填主键id
+        Integer clusterId = clusterPO.getId();
+        String operateBatchId = (String) DddRequestContext.getAttribute("operateBatchId");
         ClusterAR cluster = serviceMarketExternalService.createOrder(clusterAR);
         System.out.println("success");
         return "succ";
@@ -43,5 +43,4 @@ public class ClusterDomainService {
         ClusterPO clusterPO = clusterRepository.getById(id);
         return clusterFactory.toDO(clusterPO);
     }
-
 }

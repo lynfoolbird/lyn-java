@@ -34,7 +34,7 @@ public interface CommonConstants {
      * 利用内部类将常量分组
      */
     interface State {
-        String VALID = "Y";
-        String INVALID = "N";
+        String VALID = "N";
+        String INVALID = "Y";
     }
 }

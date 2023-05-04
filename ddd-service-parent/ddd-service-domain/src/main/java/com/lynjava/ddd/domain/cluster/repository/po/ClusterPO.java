@@ -2,7 +2,7 @@ package com.lynjava.ddd.domain.cluster.repository.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.lynjava.ddd.common.model.BaseEntity;
+import com.lynjava.ddd.domain.shared.entity.BaseEntity;
 import lombok.Data;
 
 /**
@@ -15,7 +15,10 @@ public class ClusterPO extends BaseEntity {
     @TableField
     private String name;
 
-    @TableField(exist = false)
+    @TableField
     private String category;
+
+    @TableField(exist = false)
+    private String type;
 
 }

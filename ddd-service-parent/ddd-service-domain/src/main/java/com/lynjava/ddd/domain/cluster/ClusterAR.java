@@ -1,6 +1,6 @@
 package com.lynjava.ddd.domain.cluster;
 
-import com.lynjava.ddd.common.model.BaseEntity;
+import com.lynjava.ddd.domain.shared.entity.BaseEntity;
 import com.lynjava.ddd.domain.cluster.entity.InstanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;

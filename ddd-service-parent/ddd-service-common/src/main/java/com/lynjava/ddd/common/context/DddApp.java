@@ -1,9 +1,9 @@
-package com.lynjava.ddd.common.utils;
+package com.lynjava.ddd.common.context;
 
 import org.springframework.context.ApplicationContext;
 
 /**
- * 应用上下文工具类
+ * 应用容器上下文工具类
  *
  * @author li
  */

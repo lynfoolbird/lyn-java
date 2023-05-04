@@ -4,7 +4,7 @@ import com.lynjava.ddd.common.annotation.DistributeLock;
 import com.lynjava.ddd.common.consts.RedisLockTypeEnum;
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
-import com.lynjava.ddd.common.utils.DddApp;
+import com.lynjava.ddd.common.context.DddApp;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import com.lynjava.ddd.test.common.ITestPrinter;
 import com.lynjava.limiter.annotation.LynLimit;

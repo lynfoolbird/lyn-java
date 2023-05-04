@@ -1,6 +1,6 @@
 package com.lynjava.ddd.test.constant;
 
-import com.lynjava.ddd.common.utils.DddApp;
+import com.lynjava.ddd.common.context.DddApp;
 import com.lynjava.ddd.test.service.ITestService;
 
 import java.util.HashMap;

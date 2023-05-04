@@ -31,7 +31,12 @@ public class ServiceMarketExternalServiceImpl extends BaseExternalService
         // DTO转换
         OrderExtInDto orderExtInDto = serviceMarketConverter.toInputDto(clusterAR);
         // 响应体
-        OrderExtOutDto response = sendRequest(RequestURIEnum.SERVICE_MARKET_CREATE_ORDER, orderExtInDto, OrderExtOutDto.class,"CREATE");
+        OrderExtOutDto response = new OrderExtOutDto();
+        try {
+            response = sendRequest(RequestURIEnum.SERVICE_MARKET_CREATE_ORDER, orderExtInDto, OrderExtOutDto.class,"CREATE");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
         // DTO转换
         return serviceMarketConverter.toDO(response);
     }

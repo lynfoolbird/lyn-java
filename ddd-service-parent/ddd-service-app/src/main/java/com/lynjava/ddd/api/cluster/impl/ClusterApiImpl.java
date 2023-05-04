@@ -21,8 +21,8 @@ public class ClusterApiImpl implements IClusterApi {
 
     @Override
     @DataScopeLimit(resourceIdSpel = "#id", resourceType = "CLUSTER_ID", rights = {"read"})
-    public Result<ClusterOutputDto> getCluster(String id) {
-        ClusterOutputDto outputDto = clusterAppService.getCluster();
+    public Result<ClusterOutputDto> getCluster(Integer id) {
+        ClusterOutputDto outputDto = clusterAppService.queryClusterById(id);
         return Result.success(outputDto);
     }
 
@@ -39,17 +39,17 @@ public class ClusterApiImpl implements IClusterApi {
     }
 
     @Override
-    public Result updateCluster(String clusterId, ClusterInputDto clusterInputDto) {
+    public Result updateCluster(Integer clusterId, ClusterInputDto clusterInputDto) {
         return Result.success(clusterAppService.updateCluster(clusterId, clusterInputDto));
     }
 
     @Override
-    public Result patchCluster(String clusterId, String type, String body) {
+    public Result patchCluster(Integer clusterId, String type, String body) {
         return Result.success(clusterAppService.patchCluster(clusterId, type, body));
     }
 
     @Override
-    public Result deleteCluster(String clusterId) {
+    public Result deleteCluster(Integer clusterId) {
         return Result.success();
     }
 

@@ -6,8 +6,10 @@ import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
 import com.lynjava.ddd.common.consts.CommonConstants;
+import com.lynjava.ddd.common.context.DddRequestContext;
 import com.lynjava.ddd.common.exception.AppException;
-import com.lynjava.ddd.common.utils.DddApp;
+import com.lynjava.ddd.common.context.DddApp;
+import com.lynjava.ddd.common.utils.UUIDUtils;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
 import com.lynjava.ddd.domain.external.iam.IamExternalService;
@@ -62,8 +64,8 @@ public class ClusterAppService {
         }
     }
 
-    public ClusterOutputDto getCluster() {
-        return clusterAssembler.toOutputDto(clusterDomainService.getCluster());
+    public ClusterOutputDto queryClusterById(int id) {
+        return clusterAssembler.toOutputDto(clusterDomainService.getById(id));
     }
 
     public String createCluster(ClusterInputDto clusterInputDto) {
@@ -71,16 +73,18 @@ public class ClusterAppService {
         if (Objects.equals(CommonConstants.SWITCH_ON, clusterIamEnable)) {
             iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
         }
+        // 操作批次放到请求上下文中
+        DddRequestContext.addAttribute("operateBatchId", UUIDUtils.getId());
         return clusterDomainService.createCluster(clusterAssembler.toDO(clusterInputDto));
     }
 
-    public String updateCluster(String id, ClusterInputDto clusterInputDto) {
+    public String updateCluster(Integer id, ClusterInputDto clusterInputDto) {
         clusterInputDto.setId(id);
         ClusterAR clusterAR = clusterAssembler.toDO(clusterInputDto);
         return clusterAR.toString();
     }
 
-    public Object patchCluster(String id, String type, String body) {
+    public Object patchCluster(Integer id, String type, String body) {
         IClusterPartialService bean1 = applicationContext.getBean(type, IClusterPartialService.class);
         bean1.process(body);
 

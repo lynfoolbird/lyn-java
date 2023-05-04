@@ -22,6 +22,6 @@ public class ServiceMarketConverter {
     }
 
     public ClusterAR toDO(OrderExtOutDto orderExtOutDto) {
-        return ClusterAR.builder().id(orderExtOutDto.getOrderId()).build();
+        return ClusterAR.builder().build();
     }
 }
