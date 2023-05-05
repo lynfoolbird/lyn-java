@@ -11,7 +11,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>ddd-service-api</module>         <!-- 接口层：对外提供服务接口 -->
+        <module>ddd-service-api</module>         <!-- 接口层：对外提供依赖接口、rest服务接口 -->
         <module>ddd-service-app</module>         <!-- 应用服务层：应用服务，编排领域服务 -->
         <module>ddd-service-domain</module>      <!-- 领域层：领域服务 -->
         <module>ddd-service-common</module>      <!-- 公共层：项目内公共模块 -->
@@ -28,16 +28,20 @@
     </parent>
 
     <properties>
+        <!-- 自身版本 -->
+        <ddd-service.version>1.0-SNAPSHOT</ddd-service.version>
+        <!-- 二方包版本 -->
+        <!-- 三方包版本 -->
         <hutool.version>5.7.13</hutool.version>
         <fastjson.version>1.2.75</fastjson.version>
         <guava.version>30.1.1-jre</guava.version>
-        <ddd-service.version>1.0-SNAPSHOT</ddd-service.version>
         <cxf.verson>3.5.5</cxf.verson>
         <openfeign.version>3.1.3</openfeign.version>
     </properties>
 
-    <!-- 在父项目中作依赖版本说明，不会引入具体jar包；
-     子项目中引入具体依赖时不用再写版本号，由父项目统一管理版本 -->
+    <!-- 1、在父项目中作依赖版本说明，不会引入具体jar包；
+         2、子项目中引入具体依赖时不用再写版本号，由父项目统一管理版本
+         3、按照自身、二方包、三方包顺序引入依赖 -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -122,11 +126,7 @@
             <version>${openfeign.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.lynjava</groupId>
-            <artifactId>lyn-limiter-spring-boot-starter</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
     </dependencies>
 
     <!-- 发布库管理 -->
