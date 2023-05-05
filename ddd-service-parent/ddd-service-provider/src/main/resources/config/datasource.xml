@@ -51,6 +51,7 @@
     <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="mapperLocations" value="classpath*:com/lynjava/ddd/mapper/**/*Dao.xml" />
+        <property name="plugins" ref="mybatisPlusInterceptor" />
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -64,7 +65,6 @@
             </list>
         </property>
     </bean>
-
     <bean id="paginationInnerInterceptor"
           class="com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor">
         <constructor-arg name="dbType" value="mysql"/>
@@ -72,6 +72,8 @@
 
     <bean id="globalConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig">
         <property name="dbConfig" ref="dbConfig"/>
+        <property name="metaObjectHandler" ref="dddMetaObjectHandler" />
+        <property name="sqlInjector" ref="dddSqlInjector" />
     </bean>
 
     <bean id="dbConfig" class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">

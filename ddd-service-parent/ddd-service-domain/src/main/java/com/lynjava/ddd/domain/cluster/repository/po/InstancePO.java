@@ -5,21 +5,20 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.lynjava.ddd.domain.shared.entity.BaseEntity;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * 和db表对应
  */
 @Data
-@TableName("cluster_t")
-public class ClusterPO extends BaseEntity {
+@TableName("instance_t")
+public class InstancePO extends BaseEntity {
 
     @TableField
-    private String name;
+    private String hostname;
 
     @TableField
-    private String category;
+    private Integer port;
 
-    @TableField(exist = false)
-    private List<InstancePO> instanceList;
+    @TableField
+    private Integer clusterId;
+
 }

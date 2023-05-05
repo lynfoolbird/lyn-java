@@ -1,9 +1,9 @@
 package com.lynjava.ddd.persistence.cluster.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lynjava.ddd.domain.cluster.repository.po.ClusterPO;
+import com.lynjava.ddd.persistence.mybatis.DddBaseMapper;
 
-public interface IClusterDao extends BaseMapper<ClusterPO> {
+public interface IClusterDao extends DddBaseMapper<ClusterPO> {
 
     Integer selectMaxAge();
 }

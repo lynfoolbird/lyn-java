@@ -26,15 +26,15 @@ public class BaseEntity implements Serializable {
     @TableLogic(value = "N", delval = "Y")
     private String isDeleted;
 
-    @TableField(value = "created_date")
+    @TableField(value = "created_date", fill = FieldFill.INSERT)
     private Date createdDate;
 
-    @TableField(value = "created_by")
+    @TableField(value = "created_by", fill = FieldFill.INSERT)
     private String createdBy;
 
-    @TableField(value = "last_updated_date")
+    @TableField(value = "last_updated_date", fill = FieldFill.INSERT_UPDATE)
     private Date lastUpdatedDate;
 
-    @TableField(value = "last_updated_by")
+    @TableField(value = "last_updated_by", fill = FieldFill.INSERT_UPDATE)
     private String lastUpdatedBy;
 }

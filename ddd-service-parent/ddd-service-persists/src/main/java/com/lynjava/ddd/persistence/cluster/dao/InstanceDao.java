@@ -1,6 +1,7 @@
 package com.lynjava.ddd.persistence.cluster.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lynjava.ddd.domain.cluster.repository.po.InstancePO;
+import com.lynjava.ddd.persistence.mybatis.DddBaseMapper;
 
-public interface InstanceDao extends BaseMapper {
+public interface InstanceDao extends DddBaseMapper<InstancePO> {
 }
