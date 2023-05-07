@@ -1,6 +1,8 @@
 package com.lynjava.ddd.app.cluster.appservice;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
@@ -66,6 +68,11 @@ public class ClusterAppService {
 
     public ClusterOutputDto queryClusterById(int id) {
         return clusterAssembler.toOutputDto(clusterDomainService.getById(id));
+    }
+
+    public IPage listByPage(int curPage, int pageSize, String category) {
+        IPage page = new Page(curPage, pageSize);
+        return clusterDomainService.listByPage(page, category);
     }
 
     public String createCluster(ClusterInputDto clusterInputDto) {

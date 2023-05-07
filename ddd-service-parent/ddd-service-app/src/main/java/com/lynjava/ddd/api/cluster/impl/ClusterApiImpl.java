@@ -27,8 +27,8 @@ public class ClusterApiImpl implements IClusterApi {
     }
 
     @Override
-    public Result<List<ClusterOutputDto>> listByPage(Integer curPage, Integer pageSize, String type) {
-        return null;
+    public Result listByPage(Integer curPage, Integer pageSize, String category) {
+        return Result.success(clusterAppService.listByPage(curPage, pageSize, category));
     }
 
     @Override

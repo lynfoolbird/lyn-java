@@ -1,6 +1,7 @@
 package com.lynjava.ddd.domain.cluster.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lynjava.ddd.common.context.DddRequestContext;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.factory.ClusterFactory;
@@ -42,5 +43,9 @@ public class ClusterDomainService {
     public ClusterAR getById(int id) {
         ClusterPO clusterPO = clusterRepository.getById(id);
         return clusterFactory.toDO(clusterPO);
+    }
+
+    public IPage listByPage(IPage page, String category) {
+        return clusterRepository.listByPage(page, category);
     }
 }

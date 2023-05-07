@@ -39,9 +39,9 @@ public interface IClusterApi {
      */
     @GET
     @Path("/")
-    Result<List<ClusterOutputDto>> listByPage(@QueryParam("curPage") Integer curPage,
+    Result listByPage(@QueryParam("curPage") Integer curPage,
                                               @QueryParam("pageSize") Integer pageSize,
-                                              @QueryParam("type") String type);
+                                              @QueryParam("category") String category);
 
     /**
      * 新增集群

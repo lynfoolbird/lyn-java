@@ -1,4 +1,4 @@
-package com.lynjava.ddd.persistence.mybatis;
+package com.lynjava.ddd.persistence.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
