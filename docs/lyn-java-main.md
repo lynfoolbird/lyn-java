@@ -18,6 +18,8 @@ session、cookie、token、jwt、单点登录、用户管理（用户/角色/权
 
 github：735835816@qq.com   lynfoolbird/三南@生
 
+mysql：root/Changeme_123
+
 https://github.com/xingshaocheng/architect-awesome   architect-awesome  
 
 https://github.com/AobingJava     敖丙Java
