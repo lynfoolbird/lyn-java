@@ -31,7 +31,7 @@ operation_log id  batch_no  一个动作涉及多个操作，用批次号聚合
 
 建议优先用自增主键
 
-
+ALTER TABLE cluster_t AUTO_INCREMENT=1;  从1开始自增
 
 mysql插入
 insert into、insert select、replace into、insert into  where、on duplicate key、insert into select
