@@ -8,6 +8,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Profile({"red"})
+@Profile({"!blue"})
 public @interface RedProfile {
 }
