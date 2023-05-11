@@ -1,6 +1,6 @@
 package com.lynjava.ddd;
 
-import com.lynjava.ddd.test.spring.extend.ThirdPartyServiceScan;
+import com.lynjava.ddd.test.spring.third.ThirdPartyServiceScan;
 import com.outter.EnableLock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

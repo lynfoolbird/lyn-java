@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.spring.extend;
+package com.lynjava.ddd.test.spring.third;
 
 import org.springframework.context.annotation.Import;
 
