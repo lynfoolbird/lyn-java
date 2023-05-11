@@ -19,7 +19,7 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 public class BaseEntity implements Serializable {
 
-    @TableId(type = IdType.NONE)
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     @TableField(value = "is_deleted", select = false, fill = FieldFill.INSERT)
