@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/client")
 public class ClientController {
 
-    @Autowired
+    @Autowired(required = false)
     private ThirdPartyQueryService thirdPartyQueryService;
 
     @GetMapping("/order")
