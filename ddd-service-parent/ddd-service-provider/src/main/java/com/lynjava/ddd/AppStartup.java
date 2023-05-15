@@ -1,7 +1,7 @@
 package com.lynjava.ddd;
 
 import com.lynjava.ddd.test.spring.third.ThirdPartyServiceScan;
-import com.outter.EnableLock;
+import com.lynjava.limiter.annotation.EnableLock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

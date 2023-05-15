@@ -8,7 +8,7 @@ import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import com.lynjava.ddd.test.common.ITestPrinter;
 import com.lynjava.limiter.annotation.LynLimit;
-import com.outter.LockService;
+import com.lynjava.limiter.manager.ILockService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +40,7 @@ public class TestRestController extends BaseAdminController{
     private ExecutorService executorService;
 
     @Autowired
-    private LockService lockService;
+    private ILockService lockService;
 
     @GetMapping("/{strategy}")
     public String doOperate(@PathVariable("strategy") String strategy, @RequestParam("type") String type,
@@ -69,8 +69,8 @@ public class TestRestController extends BaseAdminController{
         ITestPrinter testPrinter = DddAppContext.getContext().getBean(ITestPrinter.class);
         testPrinter.print("hello world");
         printer.print("Ronaldo");
-        lockService.lock();
-        lockService.unLock();
+        lockService.lock("orderId001", "123");
+        lockService.unLock("orderId001", "123");
         return msgResponse(LiveResponseCode.LIVE_ROOM_HAS_DELETED);
     }
 

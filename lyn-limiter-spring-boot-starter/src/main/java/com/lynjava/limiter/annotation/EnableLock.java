@@ -1,5 +1,6 @@
-package com.outter;
+package com.lynjava.limiter.annotation;
 
+import com.lynjava.limiter.config.LockConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;

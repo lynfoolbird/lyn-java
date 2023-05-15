@@ -41,4 +41,13 @@ public final class DddRequestContext {
         HttpServletRequest request = getRequest();
         request.setAttribute(key, value);
     }
+
+    /**
+     * 获取请求头
+     * @param key
+     * @return
+     */
+    public static String getHeader(String key) {
+        return getRequest().getHeader(key);
+    }
 }
