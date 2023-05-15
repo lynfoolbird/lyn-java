@@ -7,6 +7,7 @@ import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
 import com.lynjava.ddd.test.common.ITestPrinter;
+import com.lynjava.ddd.test.spring.integrate.external.ITestRpcService;
 import com.lynjava.limiter.annotation.LynLimit;
 import com.lynjava.limiter.manager.ILockService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -42,6 +43,9 @@ public class TestRestController extends BaseAdminController{
     @Autowired
     private ILockService lockService;
 
+    @Autowired
+    private ITestRpcService testRpcService;
+
     @GetMapping("/{strategy}")
     public String doOperate(@PathVariable("strategy") String strategy, @RequestParam("type") String type,
                             @RequestHeader("changeNo") String changeNo) {
@@ -76,8 +80,8 @@ public class TestRestController extends BaseAdminController{
 
     @PutMapping("/test4.do")
     @DistributeLock(typeEnum = RedisLockTypeEnum.ONE, lockTimeout = 2)
-    public BaseResponse test4(@QueryParam("orderId") String orderId){
-        return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
+    public BaseResponse test4(@QueryParam("orderId") String orderId) {
+        return testRpcService.sendJob("helloworld");
     }
 
     @PostMapping("/test5.do")

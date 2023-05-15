@@ -34,7 +34,7 @@ public class RestClientFactoryBean<T> implements FactoryBean<T> {
                         HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(args[0]));
                         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
                         String bodyJson = responseEntity.getBody();
-                        return JSONObject.parse(bodyJson, method.getReturnType().getModifiers());
+                        return JSONObject.parseObject(bodyJson, method.getReturnType());
                     }
                     return method.invoke(this, args);
                 });
