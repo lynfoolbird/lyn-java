@@ -34,26 +34,4 @@ public class CallServiceBuilder {
         }
         return null;
     }
-    public static <T extends AbstractCallService> AbstractCallService buildCallService2(Class<T> clazz, URIEnum uri, Object param) {
-        try {
-            Constructor constroctor = clazz.getConstructor(URIEnum.class, Object.class);
-            AbstractCallService service = (AbstractCallService) constroctor.newInstance(uri, param);
-            return service;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static <T extends AbstractCallService> AbstractCallService buildCallService3(Class<T> clazz) {
-        try {
-            AbstractCallService service = clazz.newInstance();
-            return service;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
 }

@@ -21,14 +21,14 @@ public class Client {
                 .execute();
         System.out.println(result);
         System.out.println("hello world");
-        String result2 = CallServiceBuilder
-                .buildCallService2(AlbCallService.class,URIEnum.ALB_SYNC_STATIC_ROUTER, "google")
+        String result2 = CallServiceFactory
+                .createCallService(AlbCallService.class, URIEnum.ALB_SYNC_STATIC_ROUTER, "google")
                 .execute();
         System.out.println(result2);
-        String result3 = CallServiceBuilder.buildCallService3(AlbCallService.class)
-                                           .setUri(URIEnum.ALB_SYNC_STATIC_ROUTER)
-                                           .setParam("facebook")
-                                           .execute();
+        String result3 = CallServiceFactory.createCallService(AlbCallService.class)
+                        .setUri(URIEnum.ALB_SYNC_STATIC_ROUTER)
+                        .setParam("")
+                        .execute();
         System.out.println(result3);
     }
 }
