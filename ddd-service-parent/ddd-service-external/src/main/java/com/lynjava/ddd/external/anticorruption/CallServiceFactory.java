@@ -7,13 +7,15 @@ import com.lynjava.ddd.external.anticorruption.service.AbstractCallService;
 import java.lang.reflect.Constructor;
 
 
+/**
+ * @author li
+ */
 public class CallServiceFactory {
 
     public static <T extends AbstractCallService> AbstractCallService createCallService(Class<T> clazz, URIEnum uri, Object param) {
         try {
-            Constructor constroctor = clazz.getConstructor(URIEnum.class, Object.class);
-            AbstractCallService service = (AbstractCallService) constroctor.newInstance(uri, param);
-            return service;
+            Constructor<T> constructor = clazz.getConstructor(URIEnum.class, Object.class);
+            return constructor.newInstance(uri, param);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -22,8 +24,7 @@ public class CallServiceFactory {
 
     public static <T extends AbstractCallService> AbstractCallService createCallService(Class<T> clazz) {
         try {
-            AbstractCallService service = clazz.newInstance();
-            return service;
+            return clazz.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

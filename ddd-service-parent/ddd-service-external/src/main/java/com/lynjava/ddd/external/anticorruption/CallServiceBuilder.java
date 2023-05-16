@@ -26,9 +26,8 @@ public class CallServiceBuilder {
 
     public <T extends AbstractCallService> AbstractCallService buildCallService(Class<T> clazz) {
         try {
-            Constructor constroctor = clazz.getConstructor(URIEnum.class, Object.class);
-            AbstractCallService service = (AbstractCallService) constroctor.newInstance(this.uri, this.param);
-            return service;
+            Constructor<T> constructor = clazz.getConstructor(URIEnum.class, Object.class);
+            return constructor.newInstance(this.uri, this.param);
         } catch (Exception e) {
             e.printStackTrace();
         }
