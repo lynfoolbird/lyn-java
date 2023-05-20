@@ -8,33 +8,35 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestOperateFactory {
+public class TestStrategyContext {
     private static Map<String, ITestOperateService> map = new HashMap<>();
 
     public static void main(String[] args) {
+        TestStrategyContext.getByType("OPRB").operate();
         System.out.println("okkk");
     }
 
+    // 通过JDK工具类
     static {
-        String pkgname = TestOperateFactory.class.getPackage().getName();
-        String packageDirName = pkgname.replace('.', '/');
+        String pkgName = TestStrategyContext.class.getPackage().getName();
+        String packageDirName = pkgName.replace('.', '/');
 
         try {
-            Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader()
+                    .getResources(packageDirName);
             while (dirs.hasMoreElements()) {
                 URL url = dirs.nextElement();
                 File file = new File(url.getFile());
                 File[] files = file.listFiles();
                 for (File ff : files) {
                     String clazzName = ff.getName().substring(0, ff.getName().length() - 6);
-                    String clzFullName = pkgname + "." + clazzName;
+                    String clzFullName = pkgName + "." + clazzName;
                     Class clazz = Thread.currentThread().getContextClassLoader().loadClass(clzFullName);
                     if (ITestOperateService.class.isAssignableFrom(clazz)
-                    && !clazz.isInterface()) {
+                        && !clazz.isInterface()) {
                         ITestOperateService instance = (ITestOperateService) ReflectUtils.newInstance(clazz);
                         map.put(instance.opearteType(), instance);
                     }
-
                 }
             }
             System.out.println(map);
@@ -43,7 +45,7 @@ public class TestOperateFactory {
         }
     }
 
-    public ITestOperateService getByType(String oprType) {
+    public static ITestOperateService getByType(String oprType) {
         return map.get(oprType);
     }
 
