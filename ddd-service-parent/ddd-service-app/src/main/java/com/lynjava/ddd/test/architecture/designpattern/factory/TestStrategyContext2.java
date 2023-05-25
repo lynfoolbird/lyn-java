@@ -7,7 +7,7 @@ import java.util.Map;
 public class TestStrategyContext2 {
     private static Map<String, ITestOperateService> map = new HashMap<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         TestStrategyContext2.getByType("OPRB").operate();
         System.out.println("okkk");
     }
@@ -31,6 +31,10 @@ public class TestStrategyContext2 {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
+
+    public static void register(String type, ITestOperateService operateService) {
+        map.put(type, operateService);
     }
 
     public static ITestOperateService getByType(String oprType) {

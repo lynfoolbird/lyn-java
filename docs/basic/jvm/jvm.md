@@ -402,6 +402,15 @@ JVM 中内置了三个重要的 ClassLoader，启动类加载器（Bootstrap Cla
 
 有了线程上下文加载器，JNDI服务使用这个线程上下文加载器去加载所需要的SPI代码，也就是父类加载器请求子类加载器去完成类加载的动作，这种行为实际上就是打通了双亲委派模型的层次结构来逆向使用类加载器，实际上已经违背了双亲委派模型的一般性原则。但这无可奈何，Java中所有涉及SPI的加载动作基本都采用这种方式。例如JNDI，JDBC，JCE，JAXB，JBI等。
 
+```java
+// ServiceLoader.java   由Bootstrap类加载器加载，其为Native实现，调用getClassLoader方法返回null
+// 传入线程上下文类加载器，其为AppClassLoader，用于加载classpath下的SPI相应实现类
+    public static <S> ServiceLoader<S> load(Class<S> service) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        return ServiceLoader.load(service, cl);
+    }
+```
+
 #### 5.2.3.3 热部署
 •第三次破坏：热部署
 
