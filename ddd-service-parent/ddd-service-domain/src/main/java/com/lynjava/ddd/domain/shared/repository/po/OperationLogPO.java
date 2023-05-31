@@ -55,7 +55,13 @@ public class OperationLogPO extends BaseEntity {
     private String status;
 
     /**
-     * 租户id
+     * 租户项目id
+     */
+    @TableField(value = "app_id")
+    private String appId;
+
+    /**
+     * 租户企业id
      */
     @TableField(value = "tenant_id")
     private String tenantId;
