@@ -1,2 +1,2 @@
-com.lynjava.ddd.domain.shared.EurekaRegistryImpl
-com.lynjava.ddd.domain.shared.ZookeeperRegistryImpl
+com.lynjava.ddd.domain.other.EurekaRegistryImpl
+com.lynjava.ddd.domain.other.ZookeeperRegistryImpl

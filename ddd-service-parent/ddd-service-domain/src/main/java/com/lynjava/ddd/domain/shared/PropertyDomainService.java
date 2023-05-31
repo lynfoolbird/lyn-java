@@ -8,4 +8,8 @@ public class PropertyDomainService {
     public String getValueWithDefault(String property, String defaultValue) {
         return defaultValue;
     }
+
+    public Integer getIntWithDefault(String property, Integer defaultValue) {
+        return defaultValue;
+    }
 }

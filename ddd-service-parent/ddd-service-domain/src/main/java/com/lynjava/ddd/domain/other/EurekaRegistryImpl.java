@@ -1,4 +1,4 @@
-package com.lynjava.ddd.domain.shared;
+package com.lynjava.ddd.domain.other;
 
 import com.lynjava.ddd.common.utils.IRegistry;
 
