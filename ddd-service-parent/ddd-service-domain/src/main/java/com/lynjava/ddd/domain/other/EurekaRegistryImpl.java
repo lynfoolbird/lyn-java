@@ -1,6 +1,6 @@
 package com.lynjava.ddd.domain.other;
 
-import com.lynjava.ddd.common.utils.IRegistry;
+import com.lynjava.ddd.common.other.IRegistry;
 
 public class EurekaRegistryImpl implements IRegistry {
     @Override

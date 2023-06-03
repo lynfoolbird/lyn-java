@@ -3,7 +3,7 @@ package com.lynjava.ddd.common.utils;
 import java.util.UUID;
 
 /**
- * Created by liyanan on 2018/5/26.
+ * Created by li
  */
 public final class UUIDUtils {
 

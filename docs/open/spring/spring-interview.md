@@ -1953,7 +1953,7 @@ public @interface EnableAutoConfiguration {
   的配置类，配合 @Import就可以将相应的类导入到 Spring 容器中。
 - 获取注入类的方法是 selectImports()，它实际调用的是 getAutoConfigurationEntry ，这个方法是获取自动装配类的关键，主要流程可以分为这么几步：
 
-1. 获取注解的属性，⽤用于后面的排除
+1. 获取注解的属性，用于后面的排除
 2. 获取所有需要自动装配的配置类的路径：这一步是最关键的，从 META-INF/spring.factories 获取自动
 配置类的路径
 3. 去掉重复的配置类和需要排除的重复类，把需要自动加载的配置类的路径存储起来 

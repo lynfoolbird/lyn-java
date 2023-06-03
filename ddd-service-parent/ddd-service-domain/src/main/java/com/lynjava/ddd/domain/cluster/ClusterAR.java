@@ -4,7 +4,9 @@ import com.lynjava.ddd.domain.shared.entity.BaseEntity;
 import com.lynjava.ddd.domain.cluster.entity.InstanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
@@ -15,10 +17,12 @@ import java.util.Map;
  * 聚合根：集群
  * 封装行为、充血模型
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class ClusterAR extends BaseEntity {
 
     private String name;

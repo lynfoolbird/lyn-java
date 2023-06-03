@@ -1,6 +1,6 @@
 package com.lynjava.ddd.test.extension.spi;
 
-import com.lynjava.ddd.common.utils.IRegistry;
+import com.lynjava.ddd.common.other.IRegistry;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;

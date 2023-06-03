@@ -1,4 +1,4 @@
-package com.lynjava.ddd.common.utils;
+package com.lynjava.ddd.common.other;
 
 public interface IRegistry {
 
