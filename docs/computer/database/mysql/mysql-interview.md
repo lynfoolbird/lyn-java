@@ -32,7 +32,7 @@ https://www.toutiao.com/article/7219126151191560756/?log_from=dc5ebb1000d5_16810
 
 读写分离、分库分表
 
-3、SQL优化
+3、SQL优化  执行计划
 
 4、存储引擎与表结构
 
