@@ -2452,6 +2452,10 @@ public Page find(Integer page, Integer size) {
 mapstruct、dozer、JSON序列化反序列化
 [12种 vo2dto 方法大比拼](https://zhuanlan.zhihu.com/p/420054993)
 
+深拷贝：https://www.jb51.net/article/259793.htm
+
+克隆、反序列化，commons工具
+
 驼峰、下划线 转换工具
 
 javax-validator + Hibernate Validator、jsonschema、写代码+全局异常处理+AOP 自定义异常类 异常码
@@ -2461,5 +2465,8 @@ javax-validator + Hibernate Validator、jsonschema、写代码+全局异常处�
 ## 3.30  开发 RESTful Web 服务常⽤的注解有哪些？
 
 ## 3.31 项目中如何进行日志处理？链路追踪？
+MDC
+
 ELK 日志切面 
+
 https://zhuanlan.zhihu.com/p/446975740
