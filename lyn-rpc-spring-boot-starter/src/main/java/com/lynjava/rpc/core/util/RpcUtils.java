@@ -8,4 +8,8 @@ public final class RpcUtils {
     public static String getUuid() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
+
+    public static String serviceKey(String serviceName, String version) {
+        return String.join("-", serviceName, version);
+    }
 }
