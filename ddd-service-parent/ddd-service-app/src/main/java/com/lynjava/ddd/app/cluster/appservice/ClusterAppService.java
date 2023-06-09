@@ -7,18 +7,21 @@ import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
-import com.lynjava.ddd.common.consts.CommonConstants;
+import com.lynjava.ddd.common.consts.RootConstants;
 import com.lynjava.ddd.common.context.DddRequestContext;
 import com.lynjava.ddd.common.exception.AppException;
 import com.lynjava.ddd.common.context.DddAppContext;
-import com.lynjava.ddd.common.utils.UUIDUtils;
+import com.lynjava.ddd.common.utils.CommonUtils;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
+import com.lynjava.ddd.domain.cluster.service.AsyncService;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
 import com.lynjava.ddd.domain.external.iam.IamExternalService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 功能：面向业务接口，编排需要调用的领域服务和防腐层接口
@@ -54,6 +58,12 @@ public class ClusterAppService {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Inject
+    private AsyncService asyncService;
+
+    @Inject
+    private ExecutorService resourceUploadPool;
+
     private Map<String, IClusterPartialService> patchServiceMap = new HashMap<>();
 
     /**
@@ -67,6 +77,21 @@ public class ClusterAppService {
     }
 
     public ClusterOutputDto queryClusterById(int id) {
+        System.out.println("queryClusterById:" + Thread.currentThread().getName());
+        ListenableFuture<String> asyncResult = asyncService.print();
+        asyncResult.addCallback(new ListenableFutureCallback<String>() {
+            @Override
+            public void onFailure(Throwable ex) {
+                System.out.println(ex.getMessage() + ":" + Thread.currentThread().getName());
+            }
+            @Override
+            public void onSuccess(String result) {
+                System.out.println(result + ":" + Thread.currentThread().getName());
+            }
+        });
+        resourceUploadPool.execute(() -> {
+            System.out.println("resourceUpload: " + Thread.currentThread().getName());
+        });
         return clusterAssembler.toOutputDto(clusterDomainService.getById(id));
     }
 
@@ -77,11 +102,11 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
-        if (Objects.equals(CommonConstants.SWITCH_ON, clusterIamEnable)) {
+        if (Objects.equals(RootConstants.SWITCH_ON, clusterIamEnable)) {
             iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
         }
         // 操作批次放到请求上下文中
-        DddRequestContext.addAttribute("operateBatchId", UUIDUtils.getId());
+        DddRequestContext.addAttribute("operateBatchId", CommonUtils.getId());
         return clusterDomainService.createCluster(clusterAssembler.toDO(clusterInputDto));
     }
 

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public interface CommonConstants {
+public interface RootConstants {
 
     String SUCCESS = "success";
 

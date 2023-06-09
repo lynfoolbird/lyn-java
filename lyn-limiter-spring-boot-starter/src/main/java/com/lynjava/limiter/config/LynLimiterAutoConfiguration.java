@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class LynLimiterConfigure {
+public class LynLimiterAutoConfiguration {
     @Bean
     @ConditionalOnProperty(name = "limit.type", havingValue = "local")
     public ILynLimiter guavaLimiter(){

@@ -1,6 +1,6 @@
 package com.lynjava.ddd.external.common.consts;
 
-import com.lynjava.ddd.common.consts.CommonConstants;
+import com.lynjava.ddd.common.consts.RootConstants;
 import org.springframework.http.HttpMethod;
 
 import java.util.regex.Matcher;
@@ -27,7 +27,7 @@ public enum RequestURIEnum {
     public String buildRequestUrl(String gateway, String...params) {
         StringBuilder sb = new StringBuilder(64);
         sb.append(gateway);
-        Matcher mather = CommonConstants.RegexPattern.EXTRACT_PARAMS.matcher(this.uri);
+        Matcher mather = RootConstants.RegexPattern.EXTRACT_PARAMS.matcher(this.uri);
         String finalUrl = this.uri;
         int index = 0;
         while (mather.find() && index<params.length) {

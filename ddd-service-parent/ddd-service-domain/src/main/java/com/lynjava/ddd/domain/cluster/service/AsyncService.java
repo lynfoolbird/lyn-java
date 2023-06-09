@@ -4,14 +4,13 @@ package com.lynjava.ddd.domain.cluster.service;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.Future;
+import org.springframework.util.concurrent.ListenableFuture;
 
 @Service
 public class AsyncService {
 
-    @Async("taskExector")
-    public Future<String> print() {
+    @Async("asyncTaskExecutor")
+    public ListenableFuture<String> print() {
         try {
             System.out.println(Thread.currentThread().getName());
             System.out.println("async print start");
