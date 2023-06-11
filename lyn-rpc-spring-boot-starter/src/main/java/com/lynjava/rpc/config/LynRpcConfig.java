@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class LynRpcConfig {
     /**
-     *  应用名称
+     *  应用名称(必填)
      */
     private String appName;
 
