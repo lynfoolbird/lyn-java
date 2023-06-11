@@ -13,6 +13,10 @@
     <artifactId>ddd-service-provider</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
         <!-- 项目内模块依赖 begin -->
         <dependency>
             <groupId>com.lynjava</groupId>

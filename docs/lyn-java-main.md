@@ -96,6 +96,10 @@ https://www.jianshu.com/p/9ea61d204559
 
 Profile用途：配置区分环境、按环境加载不同bean；注解@Profile、xml配置
 
+热加载：devtools、jrebel、idea-Run-DebuggingActions-ReloadChangedClass
+
+
+
 ## 2.2 mybatis
 mybatis/mybatis plus jdbc orm 
 
