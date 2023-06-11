@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LynRpcAutowired {
+
+    String version() default "1.0";
 }

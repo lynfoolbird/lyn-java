@@ -2,7 +2,7 @@ package com.lynjava.rpc.server.transport;
 
 import com.lynjava.rpc.core.codec.RpcDecoder;
 import com.lynjava.rpc.core.codec.RpcEncoder;
-import com.lynjava.rpc.server.handler.RpcRequestHandler;
+import com.lynjava.rpc.server.transport.handler.RpcRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -21,8 +21,14 @@ import java.net.InetAddress;
 @Slf4j
 public class NettyRpcServer implements RpcServer {
 
+    private int port = 9999;
+
+    public NettyRpcServer(int port) {
+        this.port = port;
+    }
+
     @Override
-    public void start(int port) {
+    public void start() {
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();
 
@@ -45,8 +51,8 @@ public class NettyRpcServer implements RpcServer {
                     })
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture channelFuture = bootstrap.bind(serverAddress, port).sync();
-            log.info("server addr {} started on port {}", serverAddress, port);
+            ChannelFuture channelFuture = bootstrap.bind(serverAddress, this.port).sync();
+            log.info("server addr {} started on port {}", serverAddress, this.port);
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
             log.error("NettyRpcServer start exception:", e);

@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface IServiceDiscovery {
 
-    List<ServiceInfo> findServiceList(String serviceName);
+    ServiceInfo discovery(String serviceName) throws Exception;
 }

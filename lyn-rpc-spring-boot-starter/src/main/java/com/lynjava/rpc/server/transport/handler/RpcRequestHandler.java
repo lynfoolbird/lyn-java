@@ -1,4 +1,4 @@
-package com.lynjava.rpc.server.handler;
+package com.lynjava.rpc.server.transport.handler;
 
 import com.lynjava.rpc.core.consts.MsgStatusEnum;
 import com.lynjava.rpc.core.consts.MsgTypeEnum;

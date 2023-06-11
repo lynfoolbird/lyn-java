@@ -9,6 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "lyn.rpc")
 @Data
 public class LynRpcConfig {
+    /**
+     *  应用名称
+     */
+    private String appName;
 
     /**
      * 服务注册中心地址
@@ -18,7 +22,7 @@ public class LynRpcConfig {
     /**
      * 服务暴露端口
      */
-    private Integer serverPort = 9999;
+    private Integer port = 9999;
     /**
      * 服务协议
      */
@@ -31,4 +35,10 @@ public class LynRpcConfig {
      * 权重，默认为1
      */
     private Integer weight = 1;
+
+    private Integer timeout;
+
+    private String serializer;
+
+
 }

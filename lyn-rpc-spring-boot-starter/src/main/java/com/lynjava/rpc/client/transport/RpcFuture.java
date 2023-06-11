@@ -1,4 +1,4 @@
-package com.lynjava.rpc.client;
+package com.lynjava.rpc.client.transport;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
