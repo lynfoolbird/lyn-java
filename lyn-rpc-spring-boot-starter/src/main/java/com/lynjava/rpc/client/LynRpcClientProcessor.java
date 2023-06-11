@@ -1,6 +1,6 @@
 package com.lynjava.rpc.client;
 
-import com.lynjava.rpc.client.discovery.IServiceDiscovery;
+import com.lynjava.rpc.client.discovery.IServiceSubscribe;
 import com.lynjava.rpc.client.proxy.ClientStubProxyFactory;
 import com.lynjava.rpc.config.LynRpcConfig;
 import com.lynjava.rpc.core.annotation.LynRpcAutowired;
@@ -20,16 +20,16 @@ import java.util.Objects;
 @Slf4j
 public class LynRpcClientProcessor implements BeanFactoryPostProcessor, ApplicationContextAware {
     private LynRpcConfig rpcConfig;
-    private IServiceDiscovery serviceDiscovery;
+    private IServiceSubscribe serviceSubscribe;
     private ClientStubProxyFactory clientStubProxyFactory;
 
     private ApplicationContext applicationContext;
 
     public LynRpcClientProcessor(LynRpcConfig rpcConfig,
-                                 IServiceDiscovery serviceDiscovery,
+                                 IServiceSubscribe serviceSubscribe,
                                  ClientStubProxyFactory clientStubProxyFactory) {
         this.rpcConfig = rpcConfig;
-        this.serviceDiscovery = serviceDiscovery;
+        this.serviceSubscribe = serviceSubscribe;
         this.clientStubProxyFactory = clientStubProxyFactory;
     }
 
@@ -47,8 +47,10 @@ public class LynRpcClientProcessor implements BeanFactoryPostProcessor, Applicat
                 if (rpcAutowired != null) {
                     Object bean = applicationContext.getBean(clazz);
                     field.setAccessible(true);
+                    Object proxyObj = clientStubProxyFactory
+                            .getProxy(field.getType(), rpcAutowired.version(), serviceSubscribe, rpcConfig);
                     // 修改为代理对象
-                    ReflectionUtils.setField(field, bean, clientStubProxyFactory.getProxy(field.getType(), rpcAutowired.version(), serviceDiscovery, rpcConfig));
+                    ReflectionUtils.setField(field, bean, proxyObj);
                 }
             });
         }

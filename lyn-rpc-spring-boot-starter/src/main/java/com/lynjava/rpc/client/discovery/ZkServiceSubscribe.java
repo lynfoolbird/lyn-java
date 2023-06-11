@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
  * 使用zk作注册中心：服务发现
  */
 @Slf4j
-public class ZkServiceDiscovery implements IServiceDiscovery {
+public class ZkServiceSubscribe implements IServiceSubscribe {
     private ServiceDiscovery<ServiceInfo> serviceDiscovery;
 
-    private ILoadBalancer loadBalance;
+    private ILoadBalancer loadBalancer;
 
-    public ZkServiceDiscovery(String registryAddress, ILoadBalancer loadBalance) {
-        this.loadBalance = loadBalance;
+    public ZkServiceSubscribe(String registryAddress, ILoadBalancer loadBalancer) {
+        this.loadBalancer = loadBalancer;
         try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(registryAddress,
                     new ExponentialBackoffRetry(RpcConstants.ZK.CONNECT_BASE_SLEEP_TIME_MS, RpcConstants.ZK.CONNECT_MAX_RETRIES));
@@ -52,7 +52,7 @@ public class ZkServiceDiscovery implements IServiceDiscovery {
         if (CollectionUtils.isEmpty(serviceInstances)) {
             return null;
         }
-        return loadBalance.chooseOne(serviceInstances.stream().map(ServiceInstance::getPayload).collect(Collectors.toList()));
+        return loadBalancer.chooseOne(serviceInstances.stream().map(ServiceInstance::getPayload).collect(Collectors.toList()));
     }
 
     @Override

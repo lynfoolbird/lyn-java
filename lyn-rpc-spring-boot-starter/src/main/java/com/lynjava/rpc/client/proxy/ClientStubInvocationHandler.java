@@ -1,6 +1,6 @@
 package com.lynjava.rpc.client.proxy;
 
-import com.lynjava.rpc.client.discovery.IServiceDiscovery;
+import com.lynjava.rpc.client.discovery.IServiceSubscribe;
 import com.lynjava.rpc.client.transport.NetClientTransportFactory;
 import com.lynjava.rpc.client.transport.RequestMetadata;
 import com.lynjava.rpc.config.LynRpcConfig;
@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 @Slf4j
 public class ClientStubInvocationHandler implements InvocationHandler {
 
-    private IServiceDiscovery serviceDiscovery;
+    private IServiceSubscribe serviceSubscribe;
 
     private LynRpcConfig rpcConfig;
 
@@ -28,12 +28,12 @@ public class ClientStubInvocationHandler implements InvocationHandler {
 
     private String version;
 
-    public ClientStubInvocationHandler(IServiceDiscovery serviceDiscovery, LynRpcConfig rpcConfig,
+    public ClientStubInvocationHandler(IServiceSubscribe serviceSubscribe, LynRpcConfig rpcConfig,
                                        Class<?> clazz, String version) {
         super();
         this.clazz = clazz;
         this.version = version;
-        this.serviceDiscovery = serviceDiscovery;
+        this.serviceSubscribe = serviceSubscribe;
         this.rpcConfig = rpcConfig;
     }
 
@@ -41,7 +41,7 @@ public class ClientStubInvocationHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String serviceKey = RpcUtils.serviceKey(rpcConfig.getAppName(), this.clazz.getName(), this.version, rpcConfig.getUsf());
         // 1、获得服务信息
-        ServiceInfo serviceInfo = serviceDiscovery.discovery(serviceKey);
+        ServiceInfo serviceInfo = serviceSubscribe.discovery(serviceKey);
         if (serviceInfo == null) {
             throw new RpcException("404");
         }

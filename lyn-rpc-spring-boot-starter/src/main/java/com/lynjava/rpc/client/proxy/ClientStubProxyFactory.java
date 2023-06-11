@@ -1,6 +1,6 @@
 package com.lynjava.rpc.client.proxy;
 
-import com.lynjava.rpc.client.discovery.IServiceDiscovery;
+import com.lynjava.rpc.client.discovery.IServiceSubscribe;
 import com.lynjava.rpc.config.LynRpcConfig;
 
 import java.lang.reflect.Proxy;
@@ -19,9 +19,9 @@ public class ClientStubProxyFactory {
      * @param <T>
      * @return 代理对象
      */
-    public <T> T getProxy(Class<T> clazz, String version, IServiceDiscovery serviceDiscovery, LynRpcConfig rpcConfig) {
+    public <T> T getProxy(Class<T> clazz, String version, IServiceSubscribe serviceSubscribe, LynRpcConfig rpcConfig) {
         return (T) objectCache.computeIfAbsent(clazz, clz ->
-                Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, new ClientStubInvocationHandler(serviceDiscovery, rpcConfig,
+                Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, new ClientStubInvocationHandler(serviceSubscribe, rpcConfig,
                         clz, version))
         );
     }

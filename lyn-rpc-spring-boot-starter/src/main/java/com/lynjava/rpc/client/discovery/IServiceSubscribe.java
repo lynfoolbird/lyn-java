@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author li
  */
-public interface IServiceDiscovery {
+public interface IServiceSubscribe {
 
     ServiceInfo discovery(String serviceKey) throws Exception;
 

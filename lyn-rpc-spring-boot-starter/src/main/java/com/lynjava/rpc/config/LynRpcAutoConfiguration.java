@@ -3,8 +3,8 @@ package com.lynjava.rpc.config;
 import com.lynjava.rpc.client.LynRpcClientProcessor;
 import com.lynjava.rpc.client.balancer.ILoadBalancer;
 import com.lynjava.rpc.client.balancer.LoadBalancerFactory;
-import com.lynjava.rpc.client.discovery.IServiceDiscovery;
-import com.lynjava.rpc.client.discovery.ZkServiceDiscovery;
+import com.lynjava.rpc.client.discovery.IServiceSubscribe;
+import com.lynjava.rpc.client.discovery.ZkServiceSubscribe;
 import com.lynjava.rpc.client.proxy.ClientStubProxyFactory;
 import com.lynjava.rpc.core.consts.RpcConstants;
 import com.lynjava.rpc.server.LynRpcServerProcessor;
@@ -46,18 +46,18 @@ public class LynRpcAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean({LynRpcConfig.class, ILoadBalancer.class})
-    public IServiceDiscovery serviceDiscovery(@Autowired LynRpcConfig rpcConfig,
+    public IServiceSubscribe serviceSubscribe(@Autowired LynRpcConfig rpcConfig,
                                               @Autowired ILoadBalancer loadBalancer) {
-        return new ZkServiceDiscovery(rpcConfig.getRegisterAddress(), loadBalancer);
+        return new ZkServiceSubscribe(rpcConfig.getRegisterAddress(), loadBalancer);
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "client.enable", havingValue = "true", matchIfMissing = true)
     public LynRpcClientProcessor lynRpcClientProcessor(@Autowired LynRpcConfig rpcConfig,
-                                                       @Autowired IServiceDiscovery serviceDiscovery,
+                                                       @Autowired IServiceSubscribe serviceSubscribe,
                                                        @Autowired ClientStubProxyFactory clientStubProxyFactory) {
-        return new LynRpcClientProcessor(rpcConfig, serviceDiscovery, clientStubProxyFactory);
+        return new LynRpcClientProcessor(rpcConfig, serviceSubscribe, clientStubProxyFactory);
     }
     @Bean
     @ConditionalOnMissingBean
