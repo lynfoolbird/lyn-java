@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 本地结果缓存
- * 服务注册缓存
+ *
  */
 public class LocalRpcResponseCache {
 

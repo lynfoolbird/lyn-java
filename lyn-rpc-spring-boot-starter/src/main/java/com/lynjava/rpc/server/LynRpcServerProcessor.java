@@ -58,7 +58,7 @@ public class LynRpcServerProcessor implements ApplicationListener<ContextRefresh
             try {
                 String serviceName = rpcService.interfaceType().getName();
                 String version = rpcService.version();
-                String serviceKey = RpcUtils.serviceKey(serviceName, version);
+                String serviceKey = RpcUtils.serviceKey(rpcConfig.getAppName(), serviceName, version, rpcConfig.getUsf());
                 // 服务端缓存服务与bean映射关系
                 LocalServerCache.store(serviceKey, bean);
                 // 服务注册
@@ -68,6 +68,7 @@ public class LynRpcServerProcessor implements ApplicationListener<ContextRefresh
                         .port(rpcConfig.getPort())
                         .serviceName(serviceName)
                         .version(version)
+                        .usf(rpcConfig.getUsf())
                         .build();
                 serviceRegister.register(serviceInfo);
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {

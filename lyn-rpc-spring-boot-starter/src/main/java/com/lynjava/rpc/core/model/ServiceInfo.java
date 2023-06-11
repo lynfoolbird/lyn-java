@@ -1,5 +1,6 @@
 package com.lynjava.rpc.core.model;
 
+import com.lynjava.rpc.core.util.RpcUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class ServiceInfo implements Serializable {
 	private String appName;
 
 	/**
-	 *  地址
+	 *  主机/IP
 	 */
 	private String address;
 
@@ -38,4 +39,15 @@ public class ServiceInfo implements Serializable {
 	 *  版本
 	 */
 	private String version;
+
+	/**
+	 * 环境标识
+	 */
+	private String usf;
+
+	private Integer weight;
+
+	public String buildServiceKey() {
+		return RpcUtils.serviceKey(appName, serviceName, version, usf);
+	}
 }

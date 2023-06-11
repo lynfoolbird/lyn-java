@@ -85,7 +85,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
                 .msgLen(dataLength)
                 .build();
         ISerializer rpcSerialization = SerializerFactory
-                .getRpcSerialization(SerializerTypeEnum.parseByType(serializeType));
+                .getSerializer(SerializerTypeEnum.parseByType(serializeType));
         switch (msgTypeEnum) {
             case REQUEST:
                 RpcRequest request = rpcSerialization.deserialize(data, RpcRequest.class);

@@ -1,6 +1,11 @@
 package com.lynjava.rpc.core.serializer;
 
 import com.lynjava.rpc.core.consts.SerializerTypeEnum;
+import com.lynjava.rpc.core.serializer.impl.FastJsonSerializer;
+import com.lynjava.rpc.core.serializer.impl.HessianSerializer;
+import com.lynjava.rpc.core.serializer.impl.JacksonSerializer;
+import com.lynjava.rpc.core.serializer.impl.JdkSerializer;
+import com.lynjava.rpc.core.serializer.impl.ProtobufSerializer;
 
 /**
  * 序列化器工厂
@@ -9,14 +14,16 @@ import com.lynjava.rpc.core.consts.SerializerTypeEnum;
  */
 public class SerializerFactory {
 
-    public static ISerializer getRpcSerialization(SerializerTypeEnum typeEnum) {
+    public static ISerializer getSerializer(SerializerTypeEnum typeEnum) {
         switch (typeEnum) {
             case HESSIAN:
-//                return new HessianSerializer();
-            case JSON:
-//                return new JacksonSerializer();
+                return new HessianSerializer();
+            case JACKSON:
+                return new JacksonSerializer();
             case FASTJSON:
-//                return new FastJsonSerializer();
+                return new FastJsonSerializer();
+            case PROTOBUF:
+                return new ProtobufSerializer();
             default:
                 return new JdkSerializer();
         }

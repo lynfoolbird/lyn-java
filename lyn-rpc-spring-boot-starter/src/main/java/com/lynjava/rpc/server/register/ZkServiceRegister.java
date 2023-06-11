@@ -17,19 +17,19 @@ import java.io.IOException;
  * 使用zk作注册中心：服务注册
  */
 @Slf4j
-public class ZkServiceRegiser implements IServiceRegister {
+public class ZkServiceRegister implements IServiceRegister {
     private ServiceDiscovery<ServiceInfo> serviceDiscovery;
 
-    public ZkServiceRegiser(String registryAddress) {
+    public ZkServiceRegister(String registryAddress) {
         try {
             CuratorFramework client = CuratorFrameworkFactory.newClient(registryAddress,
-                    new ExponentialBackoffRetry(RpcConstants.ZK_CONNECT_BASE_SLEEP_TIME_MS, RpcConstants.ZK_CONNECT_MAX_RETRIES));
+                    new ExponentialBackoffRetry(RpcConstants.ZK.CONNECT_BASE_SLEEP_TIME_MS, RpcConstants.ZK.CONNECT_MAX_RETRIES));
             client.start();
             JsonInstanceSerializer<ServiceInfo> serializer = new JsonInstanceSerializer<>(ServiceInfo.class);
             this.serviceDiscovery = ServiceDiscoveryBuilder.builder(ServiceInfo.class)
                     .client(client)
                     .serializer(serializer)
-                    .basePath(RpcConstants.ZK_BASE_PATH)
+                    .basePath(RpcConstants.ZK.REGISTRY_BASE_PATH)
                     .build();
             this.serviceDiscovery.start();
         } catch (Exception e) {
@@ -40,7 +40,7 @@ public class ZkServiceRegiser implements IServiceRegister {
     @Override
     public void register(ServiceInfo serviceInfo) throws Exception {
         ServiceInstance<ServiceInfo> serviceInstance = ServiceInstance.<ServiceInfo>builder()
-                .name(serviceInfo.getServiceName())
+                .name(serviceInfo.buildServiceKey())
                 .address(serviceInfo.getAddress())
                 .port(serviceInfo.getPort())
                 .payload(serviceInfo)
@@ -52,7 +52,7 @@ public class ZkServiceRegiser implements IServiceRegister {
     public void unRegister(ServiceInfo serviceInfo) throws Exception {
         ServiceInstance<ServiceInfo> serviceInstance = ServiceInstance
                 .<ServiceInfo>builder()
-                .name(serviceInfo.getServiceName())
+                .name(serviceInfo.buildServiceKey())
                 .address(serviceInfo.getAddress())
                 .port(serviceInfo.getPort())
                 .payload(serviceInfo)

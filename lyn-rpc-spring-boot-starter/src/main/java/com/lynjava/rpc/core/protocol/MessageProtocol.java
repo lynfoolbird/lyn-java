@@ -1,6 +1,9 @@
 package com.lynjava.rpc.core.protocol;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -10,6 +13,9 @@ import java.io.Serializable;
  * @author li
  */
 @Data
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageProtocol<T> implements Serializable {
 
     /**

@@ -56,7 +56,7 @@ public class RpcEncoder<T> extends MessageToByteEncoder<MessageProtocol<T>> {
         byteBuf.writeCharSequence(header.getRequestId(), Charset.forName("UTF-8"));
 
         ISerializer rpcSerialization = SerializerFactory
-                .getRpcSerialization(SerializerTypeEnum.parseByType(header.getSerialization()));
+                .getSerializer(SerializerTypeEnum.parseByType(header.getSerialization()));
         byte[] data = rpcSerialization.serialize(messageProtocol.getBody());
 
         // 数据长度

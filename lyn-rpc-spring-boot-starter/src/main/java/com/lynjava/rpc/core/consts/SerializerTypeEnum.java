@@ -8,8 +8,9 @@ public enum SerializerTypeEnum {
      * HESSIAN
      */
     HESSIAN((byte) 0),
-    JSON((byte) 1),
-    FASTJSON((byte) 2);
+    JACKSON((byte) 1),
+    FASTJSON((byte) 2),
+    PROTOBUF((byte) 3);
 
     @Getter
     private byte type;

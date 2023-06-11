@@ -9,9 +9,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <netty.version>4.1.75.Final</netty.version>
-        <curator.version>4.2.0</curator.version>
-        <jackson.verison>2.12.3</jackson.verison>
+        <netty.version>4.1.90.Final</netty.version>
+        <curator.version>5.3.0</curator.version>
+        <jackson.verison>2.15.1</jackson.verison>
     </properties>
 
     <parent>
@@ -37,11 +37,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
         <!-- netty -->
         <dependency>
             <groupId>io.netty</groupId>
@@ -49,7 +44,7 @@
             <version>${netty.version}</version>
         </dependency>
         <!-- netty -->
-        <!-- zk -->
+        <!-- zk begin-->
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
@@ -60,7 +55,37 @@
             <artifactId>curator-x-discovery</artifactId>
             <version>${curator.version}</version>
         </dependency>
-        <!-- zk -->
+        <!-- zk end-->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.66</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>2.0.32</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.22.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.verison}</version>
+        </dependency>
 
 
     </dependencies>

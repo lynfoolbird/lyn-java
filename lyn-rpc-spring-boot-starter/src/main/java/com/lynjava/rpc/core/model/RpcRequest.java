@@ -20,9 +20,9 @@ public class RpcRequest implements Serializable {
 
     private String requestId;
     /**
-     * 请求的服务名
+     * 请求的服务key(服务名+版本)
      */
-    private String serviceName;
+    private String serviceKey;
     /**
      * 请求调用的方法
      */

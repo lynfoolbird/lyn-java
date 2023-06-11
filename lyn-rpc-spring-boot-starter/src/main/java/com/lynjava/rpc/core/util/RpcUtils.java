@@ -9,7 +9,7 @@ public final class RpcUtils {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    public static String serviceKey(String serviceName, String version) {
-        return String.join("-", serviceName, version);
+    public static String serviceKey(String appName, String serviceName, String version, String usf) {
+        return String.join("-", appName, serviceName, version, usf);
     }
 }

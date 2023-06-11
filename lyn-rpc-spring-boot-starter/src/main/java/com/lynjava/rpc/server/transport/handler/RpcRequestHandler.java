@@ -10,6 +10,7 @@ import com.lynjava.rpc.server.cache.LocalServerCache;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -58,11 +59,13 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<MessageProtoc
      */
     private Object handle(RpcRequest request) {
         try {
-            Object bean = LocalServerCache.get(request.getServiceName());
+            Object bean = LocalServerCache.get(request.getServiceKey());
             if (bean == null) {
-                throw new RuntimeException(String.format("service not exist: %s !", request.getServiceName()));
+                throw new RuntimeException(String.format("service not exist: %s !", request.getServiceKey()));
             }
             // 反射调用
+            Method method2 = ReflectionUtils.findMethod(bean.getClass(), request.getMethod(), request.getParameterTypes());
+            ReflectionUtils.invokeMethod(method2, bean, request.getParameters());
             Method method = bean.getClass().getMethod(request.getMethod(), request.getParameterTypes());
             return method.invoke(bean, request.getParameters());
         } catch (Exception e) {

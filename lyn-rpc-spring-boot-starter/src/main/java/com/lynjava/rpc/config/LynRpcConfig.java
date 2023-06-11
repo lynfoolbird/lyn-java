@@ -1,18 +1,24 @@
 package com.lynjava.rpc.config;
 
+import com.lynjava.rpc.core.consts.RpcConstants;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author li
  */
-@ConfigurationProperties(prefix = "lyn.rpc")
+@ConfigurationProperties(prefix = RpcConstants.CONFIG_PREFIX)
 @Data
 public class LynRpcConfig {
     /**
      *  应用名称
      */
     private String appName;
+
+    /**
+     * 环境标识
+     */
+    private String usf;
 
     /**
      * 服务注册中心地址
@@ -23,22 +29,17 @@ public class LynRpcConfig {
      * 服务暴露端口
      */
     private Integer port = 9999;
-    /**
-     * 服务协议
-     */
-    private String protocol = "java";
+
+    private String serializer;
+
     /**
      * 负载均衡算法
      */
-    private String loadBalance = "random";
+    private String balancer;
     /**
      * 权重，默认为1
      */
     private Integer weight = 1;
 
     private Integer timeout;
-
-    private String serializer;
-
-
 }

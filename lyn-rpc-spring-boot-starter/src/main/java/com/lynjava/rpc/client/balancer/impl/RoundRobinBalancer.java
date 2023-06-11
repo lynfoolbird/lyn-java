@@ -1,6 +1,8 @@
-package com.lynjava.rpc.client.balancer;
+package com.lynjava.rpc.client.balancer.impl;
 
 
+import com.lynjava.rpc.client.balancer.ILoadBalancer;
+import com.lynjava.rpc.core.consts.LoadBalancerTypeEnum;
 import com.lynjava.rpc.core.model.ServiceInfo;
 
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 /**
  * 轮询算法
  */
-public class RoundRobinLoadBalancer implements ILoadBalancer {
+public class RoundRobinBalancer implements ILoadBalancer {
     private int index;
 
     @Override
@@ -18,5 +20,10 @@ public class RoundRobinLoadBalancer implements ILoadBalancer {
             index = 0;
         }
         return services.get(index++);
+    }
+
+    @Override
+    public String getUniqueCode() {
+        return LoadBalancerTypeEnum.ROUND_ROBIN.getCode();
     }
 }

@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface ILoadBalancer {
     ServiceInfo chooseOne(List<ServiceInfo> services);
+
+    String getUniqueCode();
 }
