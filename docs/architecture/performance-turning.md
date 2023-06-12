@@ -64,7 +64,7 @@ https://mp.weixin.qq.com/s/KndeH1BbEH7OUpcjJ8oZUw
 
 2、池化思想：（内存池各种连接池对象池线程池等，预分配循环使用，复用)
 
-3、缓存缓冲：（借助Buffer、MQ、本地缓存分布式缓存Map、CDN等，使用缓存MQ承接大流量）
+3、缓存缓冲：（借助Buffer、MQ、本地缓存分布式缓存Map、CDN，nginx缓存等，使用缓存MQ承接大流量）
 
 4、异步思想：（借助MQspringevent线程、延时任务等，非核心逻辑异步化、Future、监听回调机制，非阻塞)
 
@@ -84,11 +84,15 @@ https://mp.weixin.qq.com/s/KndeH1BbEH7OUpcjJ8oZUw
 
 流量控制：熔断限流降级，包括前端限流、Nginx接入层限流、服务端的限流。对流量进行削峰填谷，通过缓存MQ承接流量。单机限流、分布式限流
 
-10、代码层面（锁、事务控制、粒度上下文传递集合初始容量等，读多写少的场景用乐观锁 threadlocal、volatile+cas、distrpor；数据结构与算法（时间换空间，空间换时间等，贪心 分治 回溯 动态规划 查找排序 ）)，11、存储层面（分库分表分区、sql优化索引锁事务、数据冗余字段冗余，数据异构（选择合适的工具、关系型数据库，NoSQL、mongodb、es、mysql、hbase等)）
+10、业务层面
 
-12、中间件层（组件调优：tomcat jvm db cache mq solr Nginx）
+11、代码层面（锁、事务控制、粒度上下文传递集合初始容量等，读多写少的场景用乐观锁 threadlocal、volatile+cas、distrpor；数据结构与算法（时间换空间，空间换时间等，贪心 分治 回溯 动态规划 查找排序 ）)，
 
-13、硬件底层（CPU内存网卡固态硬盘；顺序写零拷贝IO复用；JVMGC算法选择等，尽可能减少GC频率和耗时）
+12、存储层面（分库分表分区、sql优化索引锁事务、数据冗余字段冗余，数据异构（选择合适的工具、关系型数据库，NoSQL、mongodb、es、mysql、hbase等)）
+
+13、中间件层（组件调优：tomcat jvm db cache mq solr Nginx）
+
+14、硬件底层（CPU内存网卡固态硬盘；顺序写零拷贝IO复用；JVMGC算法选择等，尽可能减少GC频率和耗时）
 
 ​        上述方案无外乎从计算和 IO 两个维度考虑所有可能的优化点，需要有配套的监控系统实时了解当前的性能表现，并支撑你进行性能瓶颈分析，然后再遵循二八原则，抓主要矛盾进行优化。
 

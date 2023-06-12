@@ -1,5 +1,10 @@
 RPC原理
 
+Netty channelPipeline执行顺序
+
+入站  head--> tail      解码  二进制流转成对象     反序列化
+出站  tail    --> head  编码  对象转成二进制流     序列化
+
 # 为什么要用RPC?
 
 服务化/微服务
