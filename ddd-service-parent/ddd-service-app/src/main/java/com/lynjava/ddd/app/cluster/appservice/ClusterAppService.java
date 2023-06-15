@@ -118,18 +118,18 @@ public class ClusterAppService {
 
     public Object patchCluster(Integer id, String type, String body) {
         IClusterPartialService bean1 = applicationContext.getBean(type, IClusterPartialService.class);
-        bean1.process(body);
+        bean1.process(id, body);
 
         IClusterPartialService bean2 = DddAppContext.getContext().getBean(type, IClusterPartialService.class);
-        bean2.process(body);
+        bean2.process(id, body);
 
         IClusterPartialService bean3 = patchServiceMap.get(type);
-        bean3.process(body);
+        bean3.process(id, body);
 
         IClusterPartialService bean4 = partialServiceMap.get(type);
         if (Objects.isNull(bean4)) {
             throw new AppException("Not found service.");
         }
-        return bean4.process(body);
+        return bean4.process(id, body);
     }
 }
