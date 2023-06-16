@@ -2,7 +2,7 @@ package com.lynjava.rpc.client;
 
 import com.lynjava.rpc.client.discovery.IServiceSubscribe;
 import com.lynjava.rpc.client.proxy.ClientStubProxyFactory;
-import com.lynjava.rpc.config.LynRpcConfig;
+import com.lynjava.rpc.config.LynRpcProperties;
 import com.lynjava.rpc.core.annotation.LynRpcAutowired;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -19,16 +19,16 @@ import java.util.Objects;
 
 @Slf4j
 public class LynRpcClientProcessor implements BeanFactoryPostProcessor, ApplicationContextAware {
-    private LynRpcConfig rpcConfig;
+    private LynRpcProperties rpcProperties;
     private IServiceSubscribe serviceSubscribe;
     private ClientStubProxyFactory clientStubProxyFactory;
 
     private ApplicationContext applicationContext;
 
-    public LynRpcClientProcessor(LynRpcConfig rpcConfig,
+    public LynRpcClientProcessor(LynRpcProperties rpcProperties,
                                  IServiceSubscribe serviceSubscribe,
                                  ClientStubProxyFactory clientStubProxyFactory) {
-        this.rpcConfig = rpcConfig;
+        this.rpcProperties = rpcProperties;
         this.serviceSubscribe = serviceSubscribe;
         this.clientStubProxyFactory = clientStubProxyFactory;
     }
@@ -48,7 +48,7 @@ public class LynRpcClientProcessor implements BeanFactoryPostProcessor, Applicat
                     Object bean = applicationContext.getBean(clazz);
                     field.setAccessible(true);
                     Object proxyObj = clientStubProxyFactory
-                            .getProxy(field.getType(), rpcAutowired.version(), serviceSubscribe, rpcConfig);
+                            .getProxy(field.getType(), rpcAutowired.version(), serviceSubscribe, rpcProperties);
                     // 修改为代理对象
                     ReflectionUtils.setField(field, bean, proxyObj);
                 }

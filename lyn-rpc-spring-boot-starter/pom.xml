@@ -9,9 +9,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <netty.version>4.1.90.Final</netty.version>
+        <netty.version>4.1.76.Final</netty.version>
         <curator.version>5.3.0</curator.version>
-        <jackson.verison>2.15.1</jackson.verison>
+        <jackson.verison>2.13.2</jackson.verison>
     </properties>
 
     <parent>

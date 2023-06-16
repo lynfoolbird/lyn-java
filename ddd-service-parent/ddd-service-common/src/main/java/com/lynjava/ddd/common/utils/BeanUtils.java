@@ -21,11 +21,32 @@ public final class BeanUtils {
      * @return T
      * @param <T>
      */
-    public static <T> T deepCopy1(Object object, Class<T> clazz) {
+    public static <T> T deepCopy(Object object, Class<T> clazz) {
         String json = JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
         return JSON.parseObject(json, clazz);
     }
 
+    /**
+     * 同类对象复制部分属性
+     * @param srcObj
+     * @param destObj
+     * @param clazz
+     * @param fieldNames
+     * @param <T>
+     */
+    public static <T> void copyFields(T srcObj, T destObj, Class<T> clazz, String...fieldNames) {
+        for (String fieldName : fieldNames) {
+            Field field = ReflectionUtils.findField(clazz, fieldName);
+            if (Objects.isNull(field)) {
+                continue;
+            }
+            ReflectionUtils.makeAccessible(field);
+            Object fieldValue = ReflectionUtils.getField(field, srcObj);
+            if (Objects.nonNull(fieldValue)) {
+                ReflectionUtils.setField(field, destObj, fieldValue);
+            }
+        }
+    }
     /**
      * 设置指定属性为null
      * @param object

@@ -13,22 +13,26 @@ import com.lynjava.rpc.server.register.ZkServiceRegister;
 import com.lynjava.rpc.server.transport.NettyRpcServer;
 import com.lynjava.rpc.server.transport.RpcServer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * @author li
  */
 @Configuration
-@EnableConfigurationProperties(LynRpcConfig.class)
+@EnableConfigurationProperties({LynRpcProperties.class})
 public class LynRpcAutoConfiguration {
-
-    @Autowired
-    private LynRpcConfig rpcConfig;
+    @Bean
+    public LynRpcProperties rpcProperties(Environment environment) {
+        BindResult<LynRpcProperties> result = Binder.get(environment).bind(RpcConstants.CONFIG_PREFIX, LynRpcProperties.class);
+        return result.get();
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -38,45 +42,44 @@ public class LynRpcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ILoadBalancer loadBalancer(@Autowired LynRpcConfig rpcConfig) {
+    public ILoadBalancer loadBalancer(@Autowired LynRpcProperties rpcProperties) {
         // 支持SPI扩展
-        return LoadBalancerFactory.getLoadBalancer(rpcConfig.getBalancer());
+        return LoadBalancerFactory.getLoadBalancer(rpcProperties.getBalancer());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnBean({LynRpcConfig.class, ILoadBalancer.class})
-    public IServiceSubscribe serviceSubscribe(@Autowired LynRpcConfig rpcConfig,
+    public IServiceSubscribe serviceSubscribe(@Autowired LynRpcProperties rpcProperties,
                                               @Autowired ILoadBalancer loadBalancer) {
-        return new ZkServiceSubscribe(rpcConfig.getRegisterAddress(), loadBalancer);
+        return new ZkServiceSubscribe(rpcProperties.getRegisterAddress(), loadBalancer);
     }
 
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "client.enable", havingValue = "true", matchIfMissing = true)
-    public LynRpcClientProcessor lynRpcClientProcessor(@Autowired LynRpcConfig rpcConfig,
+    public LynRpcClientProcessor lynRpcClientProcessor(@Autowired LynRpcProperties rpcProperties,
                                                        @Autowired IServiceSubscribe serviceSubscribe,
                                                        @Autowired ClientStubProxyFactory clientStubProxyFactory) {
-        return new LynRpcClientProcessor(rpcConfig, serviceSubscribe, clientStubProxyFactory);
+        return new LynRpcClientProcessor(rpcProperties, serviceSubscribe, clientStubProxyFactory);
     }
     @Bean
     @ConditionalOnMissingBean
-    public IServiceRegister serviceRegister() {
-        return new ZkServiceRegister(rpcConfig.getRegisterAddress());
+    public IServiceRegister serviceRegister(@Autowired LynRpcProperties rpcProperties) {
+        return new ZkServiceRegister(rpcProperties.getRegisterAddress());
     }
 
     @Bean
     @ConditionalOnMissingBean(RpcServer.class)
-    public RpcServer rpcServer(@Autowired LynRpcConfig rpcConfig) {
-        return new NettyRpcServer(rpcConfig.getPort());
+    public RpcServer rpcServer(@Autowired LynRpcProperties rpcProperties) {
+        return new NettyRpcServer(rpcProperties.getPort());
     }
 
     @Bean
     @ConditionalOnMissingBean(LynRpcServerProcessor.class)
     @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "server.enable", havingValue = "true", matchIfMissing = true)
-    public LynRpcServerProcessor lynRpcServerProcessor(@Autowired LynRpcConfig rpcConfig,
+    public LynRpcServerProcessor lynRpcServerProcessor(@Autowired LynRpcProperties rpcProperties,
                                                        @Autowired IServiceRegister serviceRegister,
                                                        @Autowired RpcServer rpcServer) {
-        return new LynRpcServerProcessor(rpcConfig, serviceRegister, rpcServer);
+        return new LynRpcServerProcessor(rpcProperties, serviceRegister, rpcServer);
     }
 }

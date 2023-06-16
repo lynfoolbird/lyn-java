@@ -1,6 +1,6 @@
 package com.lynjava.rpc.server;
 
-import com.lynjava.rpc.config.LynRpcConfig;
+import com.lynjava.rpc.config.LynRpcProperties;
 import com.lynjava.rpc.core.annotation.LynRpcService;
 import com.lynjava.rpc.core.model.ServiceInfo;
 import com.lynjava.rpc.core.util.RpcUtils;
@@ -19,14 +19,14 @@ import java.util.Objects;
 
 @Slf4j
 public class LynRpcServerProcessor implements ApplicationListener<ContextRefreshedEvent> {
-    private LynRpcConfig rpcConfig;
+    private LynRpcProperties rpcProperties;
     private IServiceRegister serviceRegister;
     private RpcServer rpcServer;
 
-    public LynRpcServerProcessor(LynRpcConfig rpcConfig,
+    public LynRpcServerProcessor(LynRpcProperties rpcProperties,
                                  IServiceRegister serviceRegister,
                                  RpcServer rpcServer) {
-        this.rpcConfig = rpcConfig;
+        this.rpcProperties = rpcProperties;
         this.serviceRegister = serviceRegister;
         this.rpcServer = rpcServer;
     }
@@ -40,7 +40,7 @@ public class LynRpcServerProcessor implements ApplicationListener<ContextRefresh
             // 启动Netty Server
             if (needStartServer) {
                 new Thread(() -> rpcServer.start()).start();
-                log.info(" rpc server :{} start, appName :{} , port :{}", rpcServer, rpcConfig.getAppName(), rpcConfig.getPort());
+                log.info(" rpc server :{} start, appName :{} , port :{}", rpcServer, rpcProperties.getAppName(), rpcProperties.getPort());
             }
         }
     }
@@ -58,17 +58,17 @@ public class LynRpcServerProcessor implements ApplicationListener<ContextRefresh
             try {
                 String serviceName = rpcService.interfaceType().getName();
                 String version = rpcService.version();
-                String serviceKey = RpcUtils.serviceKey(rpcConfig.getAppName(), serviceName, version, rpcConfig.getUsf());
+                String serviceKey = RpcUtils.serviceKey(rpcProperties.getAppName(), serviceName, version, rpcProperties.getUsf());
                 // 服务端缓存服务与bean映射关系
                 LocalServerCache.store(serviceKey, bean);
                 // 服务注册
                 ServiceInfo serviceInfo = ServiceInfo.builder()
-                        .appName(rpcConfig.getAppName())
+                        .appName(rpcProperties.getAppName())
                         .address(InetAddress.getLocalHost().getHostAddress())
-                        .port(rpcConfig.getPort())
+                        .port(rpcProperties.getPort())
                         .serviceName(serviceName)
                         .version(version)
-                        .usf(rpcConfig.getUsf())
+                        .usf(rpcProperties.getUsf())
                         .build();
                 serviceRegister.register(serviceInfo);
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {

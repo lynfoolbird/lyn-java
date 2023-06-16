@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = RpcConstants.CONFIG_PREFIX)
 @Data
-public class LynRpcConfig {
+public class LynRpcProperties {
     /**
      *  应用名称(必填)
      */
