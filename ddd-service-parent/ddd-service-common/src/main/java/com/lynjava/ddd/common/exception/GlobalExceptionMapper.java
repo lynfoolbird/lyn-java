@@ -10,6 +10,10 @@ import javax.ws.rs.ext.Provider;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * JAX-RS全局异常处理
+ * @author li
+ */
 @Provider
 public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
     @Override
