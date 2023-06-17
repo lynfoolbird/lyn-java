@@ -5,9 +5,11 @@ import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.api.shared.Result;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.List;
 @Path("/clusters")
 @Consumes({ MediaType.APPLICATION_JSON})
 @Produces({ MediaType.APPLICATION_JSON})
-@Valid
+@Validated
 public interface IClusterApi {
 
     /**
@@ -41,6 +43,7 @@ public interface IClusterApi {
     @Path("/")
     Result listByPage(@QueryParam("curPage") Integer curPage,
                                               @QueryParam("pageSize") Integer pageSize,
+                                              @Size(max = 1, message = "category less than 1")
                                               @QueryParam("category") String category);
 
     /**
@@ -50,7 +53,7 @@ public interface IClusterApi {
      */
     @POST
     @Path("/")
-    Result createCluster(ClusterInputDto clusterInputDto);
+    Result createCluster(@Valid ClusterInputDto clusterInputDto);
 
     /**
      * 修改集群

@@ -12,12 +12,14 @@ import com.lynjava.limiter.annotation.LynLimit;
 import com.lynjava.limiter.manager.ILockService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.Size;
 import javax.ws.rs.QueryParam;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -29,6 +31,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @RestController
 @RequestMapping("/test")
+@Validated
 public class TestRestController extends BaseAdminController{
 
     @Autowired
@@ -92,6 +95,12 @@ public class TestRestController extends BaseAdminController{
 
     @DeleteMapping("/test6.do")
     public BaseResponse test6(){
+        return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
+    }
+
+    @GetMapping("/test10.do")
+    public BaseResponse test10(@Size(max = 1, message = "id less than 1")
+                                   @RequestParam("id") String id){
         return msgFormatResponse(LiveResponseCode.LIVE_ROOM_START, new Date());
     }
 
