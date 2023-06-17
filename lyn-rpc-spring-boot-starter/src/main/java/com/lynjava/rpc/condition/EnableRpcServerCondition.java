@@ -20,10 +20,10 @@ public class EnableRpcServerCondition implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         // 无法获取到
         List lynRpcEnableList = context.getEnvironment()
-                .getProperty(RpcConstants.CONFIG_PREFIX + "." + "enable", List.class);
+                .getProperty(RpcConstants.CONFIG_PREFIX + "." + "active", List.class);
         LynRpcProperties rpcProperties = Objects.requireNonNull(context.getBeanFactory())
                 .getBean(LynRpcProperties.class);
-        return !CollectionUtils.isEmpty(rpcProperties.getEnable())
-                && rpcProperties.getEnable().contains("server");
+        return !CollectionUtils.isEmpty(rpcProperties.getActive())
+                && rpcProperties.getActive().contains("server");
     }
 }

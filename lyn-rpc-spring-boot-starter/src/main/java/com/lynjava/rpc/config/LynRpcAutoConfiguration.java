@@ -30,6 +30,7 @@ import org.springframework.core.env.Environment;
  */
 @Configuration
 @EnableConfigurationProperties({LynRpcProperties.class})
+@ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "enable")
 public class LynRpcAutoConfiguration {
     // =====================公共配置 begin=========================
 
@@ -66,7 +67,7 @@ public class LynRpcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "enable", havingValue = "client", matchIfMissing = false)
+    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "active", havingValue = "client", matchIfMissing = false)
     public LynRpcClientProcessor lynRpcClientProcessor(@Autowired LynRpcProperties rpcProperties,
                                                        @Autowired IServiceSubscribe serviceSubscribe,
                                                        @Autowired ClientStubProxyFactory clientStubProxyFactory) {
@@ -92,7 +93,7 @@ public class LynRpcAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(LynRpcServerProcessor.class)
     @Conditional(EnableRpcServerCondition.class)
-//    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "enable", havingValue = "server", matchIfMissing = true)
+//    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "active", havingValue = "server", matchIfMissing = true)
     public LynRpcServerProcessor lynRpcServerProcessor(@Autowired LynRpcProperties rpcProperties,
                                                        @Autowired IServiceRegister serviceRegister,
                                                        @Autowired RpcServer rpcServer) {

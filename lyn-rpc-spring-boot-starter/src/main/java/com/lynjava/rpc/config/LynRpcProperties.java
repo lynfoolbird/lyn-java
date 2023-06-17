@@ -14,7 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 public class LynRpcProperties {
-    private List<String> enable;
+    private Boolean enable;
+
+    private List<String> active;
     /**
      *  应用名称(必填)
      */

@@ -24,7 +24,10 @@ cluster:
 
 lyn:
   rpc:
-    enable:
+    # 总开关
+    enable: true
+    # server: 提供服务，client: 消费服务
+    active:
        - client
        - server
     app-name: ddd_service
