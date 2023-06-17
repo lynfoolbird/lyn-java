@@ -1,8 +1,17 @@
 package com.lynjava.ddd.common.exception;
 
-public class AppException extends RuntimeException {
-    public AppException() {
+import lombok.Getter;
 
+@Getter
+public class AppException extends RuntimeException {
+    private String errCode;
+
+    public AppException() {
+    }
+
+    public AppException(String errCode, String message) {
+        super(message);
+        this.errCode = errCode;
     }
 
     public AppException(String message) {

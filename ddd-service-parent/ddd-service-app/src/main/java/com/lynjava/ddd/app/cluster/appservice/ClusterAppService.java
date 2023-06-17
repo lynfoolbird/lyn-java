@@ -106,6 +106,9 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
+        if (!Objects.equals(clusterInputDto.getCategory(), "MASTER")) {
+            throw new AppException("CLUSTER0001", "category not support.");
+        }
         ClusterAR clusterAR = clusterMapper.toDO(clusterInputDto);
         if (Objects.equals(RootConstants.SWITCH_ON, clusterIamEnable)) {
             iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
@@ -132,9 +135,6 @@ public class ClusterAppService {
         bean3.process(id, body);
 
         IClusterPartialService bean4 = partialServiceMap.get(type);
-        if (Objects.isNull(bean4)) {
-            throw new AppException("Not found service.");
-        }
         return bean4.process(id, body);
     }
 }

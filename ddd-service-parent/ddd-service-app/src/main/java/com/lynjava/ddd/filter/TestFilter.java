@@ -1,14 +1,12 @@
 package com.lynjava.ddd.filter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Servlet过滤器
@@ -27,7 +25,8 @@ public class TestFilter implements Filter {
         System.out.println("TestFilter doFilter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         log.info("Request: {}  {}", request.getMethod(), request.getRequestURL() + "?" +request.getQueryString());
-        log.info("Body is {}", IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.toString()));
+        // 此处输入流只能获取一次，否则后续处理无法获取body
+//        log.info("Body is {}", IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.toString()));
         System.out.println("requestHeader is " + request.getHeaderNames());
         // 下面一行必须有
         filterChain.doFilter(servletRequest, servletResponse);
