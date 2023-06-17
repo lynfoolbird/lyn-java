@@ -1,15 +1,20 @@
 package com.lynjava.rpc.config;
 
 import com.lynjava.rpc.core.consts.RpcConstants;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.List;
 
 /**
  * @author li
  */
 @ConfigurationProperties(prefix = RpcConstants.CONFIG_PREFIX)
-@Data
+@Getter
+@Setter
 public class LynRpcProperties {
+    private List<String> enable;
     /**
      *  应用名称(必填)
      */

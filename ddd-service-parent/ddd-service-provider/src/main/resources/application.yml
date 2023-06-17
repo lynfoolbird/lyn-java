@@ -24,6 +24,9 @@ cluster:
 
 lyn:
   rpc:
+    enable:
+       - client
+       - server
     app-name: ddd_service
     register-address: 127.0.0.1:2182
     balancer: Random

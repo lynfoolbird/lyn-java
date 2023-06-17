@@ -20,7 +20,7 @@ import java.net.InetAddress;
  */
 @Slf4j
 public class NettyRpcServer implements RpcServer {
-    private int port;
+    private final int port;
 
     public NettyRpcServer(int port) {
         this.port = port;
