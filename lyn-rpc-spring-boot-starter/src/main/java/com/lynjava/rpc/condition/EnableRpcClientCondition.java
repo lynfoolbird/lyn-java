@@ -23,7 +23,7 @@ public class EnableRpcClientCondition implements Condition {
                 .getProperty(RpcConstants.CONFIG_PREFIX + "." + "enable", List.class);
         LynRpcProperties rpcProperties = Objects.requireNonNull(context.getBeanFactory())
                 .getBean(LynRpcProperties.class);
-        return CollectionUtils.isEmpty(rpcProperties.getEnable())
-                || rpcProperties.getEnable().contains("client");
+        return !CollectionUtils.isEmpty(rpcProperties.getEnable())
+                && rpcProperties.getEnable().contains("client");
     }
 }
