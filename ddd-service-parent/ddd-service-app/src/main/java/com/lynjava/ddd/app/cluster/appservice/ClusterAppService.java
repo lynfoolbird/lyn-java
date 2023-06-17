@@ -4,6 +4,7 @@ package com.lynjava.ddd.app.cluster.appservice;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
+import com.lynjava.ddd.api.cluster.assembler.ClusterMapper;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
@@ -42,6 +43,9 @@ public class ClusterAppService {
 
     @Inject
     private ClusterAssembler clusterAssembler;
+
+    @Inject
+    private ClusterMapper clusterMapper;
 
     @Inject
     private ClusterDomainService clusterDomainService;
@@ -102,6 +106,7 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
+        ClusterAR clusterAR = clusterMapper.toDO(clusterInputDto);
         if (Objects.equals(RootConstants.SWITCH_ON, clusterIamEnable)) {
             iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
         }
