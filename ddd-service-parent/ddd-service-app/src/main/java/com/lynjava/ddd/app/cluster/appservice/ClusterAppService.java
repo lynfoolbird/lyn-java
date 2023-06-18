@@ -12,12 +12,14 @@ import com.lynjava.ddd.common.consts.RootConstants;
 import com.lynjava.ddd.common.context.DddRequestContext;
 import com.lynjava.ddd.common.exception.AppException;
 import com.lynjava.ddd.common.context.DddAppContext;
+import com.lynjava.ddd.common.other.ILynRpcDemoService;
 import com.lynjava.ddd.common.utils.CommonUtils;
 import com.lynjava.ddd.domain.cluster.ClusterAR;
 import com.lynjava.ddd.domain.cluster.service.AsyncService;
 import com.lynjava.ddd.domain.cluster.service.ClusterDomainService;
 import com.lynjava.ddd.domain.external.iam.IamExternalService;
 
+import com.lynjava.rpc.core.annotation.LynRpcAutowired;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -52,6 +54,9 @@ public class ClusterAppService {
 
     @Inject
     private IamExternalService iamExternalService;
+
+    @LynRpcAutowired
+    private ILynRpcDemoService lynRpcDemoService;
 
     /**
      * 依赖注入：setter注入map
@@ -106,6 +111,7 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
+        String str = lynRpcDemoService.doSomething("127.0.0.1", 999);
         if (!Objects.equals(clusterInputDto.getCategory(), "MASTER")) {
             throw new AppException("CLUSTER0001", "category not support.");
         }

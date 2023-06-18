@@ -67,7 +67,8 @@ public class LynRpcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "active", havingValue = "client", matchIfMissing = false)
+    @Conditional(EnableRpcClientCondition.class)
+//    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "active", havingValue = "client", matchIfMissing = false)
     public LynRpcClientProcessor lynRpcClientProcessor(@Autowired LynRpcProperties rpcProperties,
                                                        @Autowired IServiceSubscribe serviceSubscribe,
                                                        @Autowired ClientStubProxyFactory clientStubProxyFactory) {

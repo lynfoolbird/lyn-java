@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class Result<T> {
 
-    private Integer code;
+    private String code;
 
     private String message;
 
@@ -18,17 +18,17 @@ public class Result<T> {
 
     private boolean success;
 
-    private final static Integer CODE_SUCCESS = 200;
-    private final static Integer COD_FAILURE = 500;
+    private final static String CODE_SUCCESS = "0";
+    private final static String COD_FAILURE = "-1";
 
     // 构造器私有
-    private Result(Integer code, String message, T data){
+    private Result(String code, String message, T data){
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    private Result(Integer code, String message){
+    private Result(String code, String message){
         this(code, message, null);
     }
 
@@ -45,7 +45,7 @@ public class Result<T> {
         return new Result(COD_FAILURE, "服务内部错误");
     }
 
-    public static Result failure(Integer code, String message) {
+    public static Result failure(String code, String message) {
         return new Result(code, message);
     }
 }

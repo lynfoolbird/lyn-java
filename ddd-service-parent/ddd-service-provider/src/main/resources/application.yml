@@ -31,6 +31,6 @@ lyn:
        - client
        - server
     app-name: ddd_service
-    register-address: 127.0.0.1:2182
-    balancer: Random
+    register-address: 127.0.0.1:2181
+    balancer: SmoothWeightRound
     usf: lyn-dev
