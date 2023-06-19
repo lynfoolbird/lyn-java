@@ -4,6 +4,8 @@ innodb默认隔离级别是可重复读，要做分布式事务最高能到哪�
 
 abc三列建立组合索引，a单独再建索引，查询a=?会选择哪个索引？
 
+[MySQL调优实践最全!必懂!知识点一站式掌握](https://www.toutiao.com/article/7244777929136276020/?log_from=4251e511c1585_1687089508067)
+
 [最新MySQL面试111题](https://blog.lupf.cn/articles/2021/02/03/1612317006386.html)
 
 [MySQL高频面试题背诵版](https://www.zhihu.com/question/486204688/answer/2207943559)

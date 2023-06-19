@@ -115,6 +115,11 @@
                 <version>${mapstruct.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>${dbcp2.version}</version>

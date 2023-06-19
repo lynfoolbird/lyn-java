@@ -8,6 +8,8 @@ import org.mapstruct.MappingConstants;
 import org.springframework.beans.BeanUtils;
 
 /**
+ * 使用MapStruct进行对象转换
+ *
  * @author li
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)

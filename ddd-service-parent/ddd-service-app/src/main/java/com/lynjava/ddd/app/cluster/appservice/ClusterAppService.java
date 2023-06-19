@@ -111,11 +111,11 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
+        ClusterAR clusterAR = clusterMapper.toDO(clusterInputDto);
         String str = lynRpcDemoService.doSomething("127.0.0.1", 999);
         if (!Objects.equals(clusterInputDto.getCategory(), "MASTER")) {
             throw new AppException("CLUSTER0001", "category not support.");
         }
-        ClusterAR clusterAR = clusterMapper.toDO(clusterInputDto);
         if (Objects.equals(RootConstants.SWITCH_ON, clusterIamEnable)) {
             iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
         }
