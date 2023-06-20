@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Max;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -42,9 +42,9 @@ public interface IClusterApi {
     @GET
     @Path("/")
     Result listByPage(@QueryParam("curPage") Integer curPage,
-                                              @QueryParam("pageSize") Integer pageSize,
-                                              @Size(max = 1, message = "category less than 1")
-                                              @QueryParam("category") String category);
+                      @Max(value = 500, message = "pageSize must less than 500")
+                      @QueryParam("pageSize") Integer pageSize,
+                                              @QueryParam("") ClusterInputDto queryParam);
 
     /**
      * 新增集群

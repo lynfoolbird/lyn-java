@@ -43,6 +43,7 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <dbcp2.version>2.9.0</dbcp2.version>
         <commons-collections.version>4.1</commons-collections.version>
+        <commons-io.version>2.6</commons-io.version>
         <httpclient5.version>5.2.1</httpclient5.version>
     </properties>
 
@@ -138,6 +139,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
                 <version>${commons-collections.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>

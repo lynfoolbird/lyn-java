@@ -1,14 +1,23 @@
 package com.lynjava.ddd.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpHeaders;
+
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
  * @author li
  */
+@Slf4j
 public final class CommonUtils {
 
     public static String getId(){
@@ -16,11 +25,19 @@ public final class CommonUtils {
         return  uuid.replace("-", "").toUpperCase();
     }
 
+    public static String getRequestBody(HttpServletRequest request) {
+        try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+            String conLength = request.getHeader(HttpHeaders.CONTENT_LENGTH);
+            int size = Objects.nonNull(conLength) ? Integer.parseInt(conLength) : 8192;
+            byte[] bytes = new byte[size];
+            IOUtils.read(bis, bytes);
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.error("getRequestBody exception:", e);
+        }
+        return null;
+    }
 
-
-    /**
-     * 获取请求地址上的参数
-     */
     public static Map<String, Object> getRequestParams(HttpServletRequest request) {
         Enumeration<String> enu = request.getParameterNames();
         Map<String, Object> params = new HashMap<>();

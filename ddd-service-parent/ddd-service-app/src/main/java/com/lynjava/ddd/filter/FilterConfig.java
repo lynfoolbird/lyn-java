@@ -12,7 +12,7 @@ public class FilterConfig {
     private TestFilter testFilter;
 
     @Bean
-    public FilterRegistrationBean registFilter(){
+    public FilterRegistrationBean registerFilter(){
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setFilter(testFilter);
         registrationBean.addUrlPatterns("/*");

@@ -1,10 +1,11 @@
 package com.lynjava.ddd.filter;
 
-import cn.hutool.http.ContentType;
-import com.lynjava.ddd.common.model.DddServletRequestWrapper;
+import com.lynjava.ddd.common.model.MultiReadServletRequestWrapper;
 import com.lynjava.ddd.common.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -29,20 +30,24 @@ public class TestFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         System.out.println("TestFilter doFilter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        // 包装request，可以打印多次body
-        String body = "";
-        // 如果是文件上传，不打印body体
-        boolean notFileUpload = !StringUtils.startsWith(request.getContentType(), ContentType.MULTIPART.getValue());
-        if (notFileUpload) {
-            request = new DddServletRequestWrapper(request);
-            body = ((DddServletRequestWrapper) request).getBody()
-                    .replaceAll("[\r\n\t]", "").replaceAll("\"", "'");
-        }
-        Map<String, Object> params = CommonUtils.getRequestParams(request);
-        Map<String, Object> headers = CommonUtils.getRequestHeaders(request);
         log.info("RequestURL: {}  {}", request.getMethod(), request.getRequestURL() + "?" +request.getQueryString());
-        log.info("RequestHeader is {}", headers);
-        log.info("RequestBody is {}", body);
+        log.info("RequestHeader is {}", CommonUtils.getRequestHeaders(request));
+        Map<String, Object> params = CommonUtils.getRequestParams(request);
+        String contentType = request.getContentType();
+        // 表单请求
+        if (StringUtils.startsWith(contentType, MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+
+
+        } else if (StringUtils.startsWith(contentType, MediaType.MULTIPART_FORM_DATA_VALUE)) {
+            // 如果是文件上传，不打印body体
+
+        } else {
+            // 包装request，可以打印多次body
+            if (!HttpMethod.GET.matches(request.getMethod())) {
+                request = new MultiReadServletRequestWrapper(request);
+                log.info("RequestBody is {}", CommonUtils.getRequestBody(request));
+            }
+        }
         // 下面一行必须有，使用包装后的流，否则无法传递
         filterChain.doFilter(request, servletResponse);
     }
