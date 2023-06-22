@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test;
+package com.lynjava.ddd.controller;
 
 import com.lynjava.ddd.common.annotation.DistributeLock;
 import com.lynjava.ddd.common.consts.RedisLockTypeEnum;
@@ -6,7 +6,6 @@ import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.LiveResponseCode;
 import com.lynjava.ddd.common.context.DddAppContext;
 import com.lynjava.ddd.test.architecture.designpattern.strategy.MainOperateService;
-import com.lynjava.ddd.test.common.ITestPrinter;
 import com.lynjava.ddd.test.spring.integrate.external.ITestRpcService;
 import com.lynjava.limiter.annotation.LynLimit;
 import com.lynjava.limiter.manager.ILockService;
@@ -32,14 +31,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 @RestController
 @RequestMapping("/test")
 @Validated
-public class TestRestController extends BaseAdminController{
+public class TestRestController extends BaseAdminController {
 
     @Autowired
     private MainOperateService mainOperateService;
-
-    @Autowired
-    private ITestPrinter printer;
-
     @Autowired
     private ExecutorService executorService;
 
@@ -50,7 +45,8 @@ public class TestRestController extends BaseAdminController{
     private ITestRpcService testRpcService;
 
     @GetMapping("/{strategy}")
-    public String doOperate(@PathVariable("strategy") String strategy, @RequestParam("type") String type,
+    public String doOperate(@PathVariable("strategy") String strategy,
+                            @RequestParam("type") String type,
                             @RequestHeader("changeNo") String changeNo) {
         mainOperateService.doOperate(strategy);
         mainOperateService.doOperate2(type);
@@ -73,9 +69,6 @@ public class TestRestController extends BaseAdminController{
 
     @RequestMapping(value = {"/test3.do"}, method = RequestMethod.GET)
     public BaseResponse test3(){
-        ITestPrinter testPrinter = DddAppContext.getContext().getBean(ITestPrinter.class);
-        testPrinter.print("hello world");
-        printer.print("Ronaldo");
         lockService.lock("orderId001", "123");
         lockService.unLock("orderId001", "123");
         return msgResponse(LiveResponseCode.LIVE_ROOM_HAS_DELETED);

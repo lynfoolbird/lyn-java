@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.other;
+package com.lynjava.ddd.test.service;
 
 import com.lynjava.ddd.common.other.ILynRpcDemoService;
 import com.lynjava.rpc.core.annotation.LynRpcService;

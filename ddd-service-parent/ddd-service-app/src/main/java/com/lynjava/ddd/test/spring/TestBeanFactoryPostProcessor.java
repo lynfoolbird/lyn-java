@@ -5,14 +5,13 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Component
 public class TestBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         System.out.println("lynTestBeanFactoryPostProcessor:");
-        System.out.println(Arrays.toString(configurableListableBeanFactory.getBeanDefinitionNames()));
+        TestBeanFactoryPostProcessor bean = beanFactory.getBean(TestBeanFactoryPostProcessor.class);
+        String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
     }
 }

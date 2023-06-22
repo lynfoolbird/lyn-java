@@ -1,14 +1,18 @@
-package com.lynjava.ddd.test.architecture.designpattern.factory;
+package com.lynjava.ddd.test.architecture.designpattern.strategy;
 
 import com.google.common.reflect.ClassPath;
+
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 策略模式：guava反射包加载
+ */
 public class TestStrategyContext2 {
-    private static Map<String, ITestOperateService> map = new HashMap<>();
+    private static Map<String, IOperateService> map = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        TestStrategyContext2.getByType("OPRB").operate();
+        TestStrategyContext2.getByType("StrategyA").doSomething();
         System.out.println("okkk");
     }
 
@@ -20,11 +24,11 @@ public class TestStrategyContext2 {
 
             for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive(pkgName)) {
                 Class clazz = Class.forName(classInfo.getName());
-                if (ITestOperateService.class.isAssignableFrom(clazz)
+                if (IOperateService.class.isAssignableFrom(clazz)
                         && !clazz.isInterface()) {
-                    ITestOperateService instance = (ITestOperateService) clazz.asSubclass(ITestOperateService.class)
+                    IOperateService instance = (IOperateService) clazz.asSubclass(IOperateService.class)
                             .newInstance();
-                    map.put(instance.opearteType(), instance);
+                    map.put(instance.getOperateType(), instance);
                 }
                 System.out.println(classInfo);
             }
@@ -33,11 +37,11 @@ public class TestStrategyContext2 {
         }
     }
 
-    public static void register(String type, ITestOperateService operateService) {
+    public static void register(String type, IOperateService operateService) {
         map.put(type, operateService);
     }
 
-    public static ITestOperateService getByType(String oprType) {
+    public static IOperateService getByType(String oprType) {
         return map.get(oprType);
     }
 

@@ -1,4 +1,4 @@
 package com.lynjava.ddd.domain.shared.repository;
 
-public interface IResourceApplyRepository {
+public interface IResourceRepository {
 }

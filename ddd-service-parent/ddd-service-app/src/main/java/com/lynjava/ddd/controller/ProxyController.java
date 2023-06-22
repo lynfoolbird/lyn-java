@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test;
+package com.lynjava.ddd.controller;
 
 import com.lynjava.ddd.common.model.HttpResult;
 import com.lynjava.ddd.common.utils.HttpClientUtils;
@@ -20,10 +20,14 @@ public class ProxyController {
 
     @GetMapping("/alb_ops_check")
     public void proxyGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String albScheme = request.getHeader("alb_scheme"); // 请求协议http、https
-        String albHost = request.getHeader("alb_host"); // 目标主机
-        String albProxyIp = request.getHeader("alb_proxy_ip"); // ip端口或域名
-        String albProxyUri = request.getHeader("alb_proxy_uri"); // 目标uri
+        // 请求协议http、https
+        String albScheme = request.getHeader("alb_scheme");
+        // 目标主机
+        String albHost = request.getHeader("alb_host");
+        // ip端口或域名
+        String albProxyIp = request.getHeader("alb_proxy_ip");
+        // 目标uri
+        String albProxyUri = request.getHeader("alb_proxy_uri");
         StringBuilder url = new StringBuilder().append(albScheme)
                 .append("://")
                 .append(albProxyIp)
@@ -42,5 +46,17 @@ public class ProxyController {
 
     @PostMapping("/alb_ops_check")
     public void proxyPost(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
+    }
+
+    @PutMapping("/alb_ops_check")
+    public void proxyPut(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
+    }
+
+    @PatchMapping("/alb_ops_check")
+    public void proxyPatch(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
+    }
+
+    @DeleteMapping("/alb_ops_check")
+    public void proxyDelete(HttpServletRequest request, HttpServletResponse response, @RequestBody Object body) {
     }
 }

@@ -1,7 +1,7 @@
-package com.lynjava.ddd.test;
+package com.lynjava.ddd.controller;
 
 import com.lynjava.ddd.common.context.DddAppContext;
-import com.lynjava.ddd.test.constant.DispatchEnum;
+import com.lynjava.ddd.test.service.DispatchEnum;
 import lombok.Data;
 
 import org.springframework.util.ReflectionUtils;

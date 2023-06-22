@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.architecture.designpattern.factory;
+package com.lynjava.ddd.test.architecture.designpattern.strategy;
 
 import org.springframework.cglib.core.ReflectUtils;
 
@@ -8,11 +8,14 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 策略模式：JDK反射加载
+ */
 public class TestStrategyContext {
-    private static Map<String, ITestOperateService> map = new HashMap<>();
+    private static Map<String, IOperateService> map = new HashMap<>();
 
     public static void main(String[] args) {
-        TestStrategyContext.getByType("OPRB").operate();
+        TestStrategyContext.getByType("StrategyB").doSomething();
         System.out.println("okkk");
     }
 
@@ -32,10 +35,10 @@ public class TestStrategyContext {
                     String clazzName = ff.getName().substring(0, ff.getName().length() - 6);
                     String clzFullName = pkgName + "." + clazzName;
                     Class clazz = Thread.currentThread().getContextClassLoader().loadClass(clzFullName);
-                    if (ITestOperateService.class.isAssignableFrom(clazz)
+                    if (IOperateService.class.isAssignableFrom(clazz)
                         && !clazz.isInterface()) {
-                        ITestOperateService instance = (ITestOperateService) ReflectUtils.newInstance(clazz);
-                        map.put(instance.opearteType(), instance);
+                        IOperateService instance = (IOperateService) ReflectUtils.newInstance(clazz);
+                        map.put(instance.getOperateType(), instance);
                     }
                 }
             }
@@ -45,7 +48,7 @@ public class TestStrategyContext {
         }
     }
 
-    public static ITestOperateService getByType(String oprType) {
+    public static IOperateService getByType(String oprType) {
         return map.get(oprType);
     }
 

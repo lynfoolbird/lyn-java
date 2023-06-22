@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * 策略模式：spring ioc
+ */
 @Service
 public class MainOperateService {
 

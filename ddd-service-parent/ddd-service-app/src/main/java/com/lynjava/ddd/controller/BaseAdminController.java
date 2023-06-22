@@ -1,11 +1,11 @@
-package com.lynjava.ddd.test;
+package com.lynjava.ddd.controller;
 
 
 import com.lynjava.ddd.common.model.BaseResponse;
 import com.lynjava.ddd.common.model.BaseResponseCode;
 
 /**
- * Created by liyanan on 2018/6/16.
+ * @author li
  */
 public abstract  class BaseAdminController {
     public static final int SUCCESS_CODE = 0;
@@ -15,7 +15,7 @@ public abstract  class BaseAdminController {
         return new BaseResponse(responseCode.getCode(), responseCode.getMessage());
     }
 
-    public  BaseResponse successMsgResponse(){
+    public  BaseResponse successMsgResponse() {
         return new BaseResponse(SUCCESS_CODE, SUCCESS_MSG);
     }
 
