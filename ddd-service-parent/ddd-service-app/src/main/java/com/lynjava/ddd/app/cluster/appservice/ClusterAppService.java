@@ -4,7 +4,6 @@ package com.lynjava.ddd.app.cluster.appservice;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
-import com.lynjava.ddd.api.cluster.assembler.ClusterMapper;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
@@ -45,9 +44,6 @@ public class ClusterAppService {
 
     @Inject
     private ClusterAssembler clusterAssembler;
-
-    @Inject
-    private ClusterMapper clusterMapper;
 
     @Inject
     private ClusterDomainService clusterDomainService;
@@ -111,17 +107,17 @@ public class ClusterAppService {
 
     public String createCluster(ClusterInputDto clusterInputDto) {
         System.out.println("ClusterAppService: " + "createCluster");
-        ClusterAR clusterAR = clusterMapper.toDO(clusterInputDto);
+        ClusterAR clusterAR = clusterAssembler.toDO(clusterInputDto);
         String str = lynRpcDemoService.doSomething("127.0.0.1", 999);
         if (!Objects.equals(clusterInputDto.getCategory(), "MASTER")) {
             throw new AppException("CLUSTER0001", "category not support.");
         }
-        if (Objects.equals(RootConstants.SWITCH_ON, clusterIamEnable)) {
+        if (Objects.equals(RootConstants.State.ENABLE, clusterIamEnable)) {
             iamExternalService.printIam(clusterAssembler.toDO(clusterInputDto));
         }
         // 操作批次放到请求上下文中
         DddRequestContext.addAttribute("operateBatchId", CommonUtils.getId());
-        return clusterDomainService.createCluster(clusterAssembler.toDO(clusterInputDto));
+        return clusterDomainService.createCluster(clusterAR);
     }
 
     public String updateCluster(Integer id, ClusterInputDto clusterInputDto) {

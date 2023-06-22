@@ -8,10 +8,6 @@ public interface RootConstants {
 
     String SUCCESS = "success";
 
-    String SWITCH_ON = "Y";
-
-    String SWITCH_OFF = "N";
-
     Map<String, Boolean> STRING_2_BOOLEAN = new HashMap<String, Boolean>(){
         {
             put("Y", true);
@@ -36,5 +32,7 @@ public interface RootConstants {
     interface State {
         String VALID = "N";
         String INVALID = "Y";
+        String ENABLE = "Y";
+        String DISABLE = "N";
     }
 }
