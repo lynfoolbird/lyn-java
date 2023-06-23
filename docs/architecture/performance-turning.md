@@ -92,7 +92,7 @@ https://mp.weixin.qq.com/s/KndeH1BbEH7OUpcjJ8oZUw
 
 13、中间件层（组件调优：tomcat jvm db cache mq solr Nginx）
 
-14、硬件底层（CPU内存网卡固态硬盘；顺序写零拷贝IO复用；JVMGC算法选择等，尽可能减少GC频率和耗时）
+、14、硬件底层（CPU内存网卡固态硬盘；顺序写零拷贝IO复用；JVMGC算法选择等，尽可能减少GC频率和耗时）
 
 ​        上述方案无外乎从计算和 IO 两个维度考虑所有可能的优化点，需要有配套的监控系统实时了解当前的性能表现，并支撑你进行性能瓶颈分析，然后再遵循二八原则，抓主要矛盾进行优化。
 

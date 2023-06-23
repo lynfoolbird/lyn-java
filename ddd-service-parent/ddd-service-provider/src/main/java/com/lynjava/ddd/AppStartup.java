@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  */
 @SpringBootApplication(scanBasePackages = {"com.lynjava.ddd"})
 //@ComponentScan(basePackages ={ "com.lynjava.ddd"})
-@ThirdPartyServiceScan({"com.lynjava.ddd.test.spring.extend"})
+@ThirdPartyServiceScan({"com.lynjava.ddd.test.spring.third"})
 @EnableLock
 @EnableAsync
 @ImportResource(locations = { "classpath:config/*.xml" })
