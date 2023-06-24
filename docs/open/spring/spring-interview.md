@@ -616,7 +616,7 @@ Spring的bean加载顺序，默认情况下是按照文件完整路径递归查�
 
 ![img](images/spring-bean-load-1.jpg)
 
-Spring 提供了除了构造函数注入和原型注入外的，setter循环依赖注入解决方案。三级缓存机制，即三个Map，将对象创建过程分成实例化、初始化两阶段。
+Spring 提供了除了构造函数注入和原型注入外的，setter循环依赖注入解决方案。三级缓存机制，即三个Map，将对象创建过程分成实例化、初始化两阶段。提前暴露+三级缓存
 
 singletonObjects：一级缓存，实例化并且初始化完成的bean
 
@@ -2459,6 +2459,8 @@ mapstruct、dozer、JSON序列化反序列化
 驼峰、下划线 转换工具
 
 javax-validator + Hibernate Validator、jsonschema、写代码+全局异常处理+AOP 自定义异常类 异常码
+
+分组校验、自定义校验
 
 [SpringBoot中处理校验逻辑的两种方式](https://zhuanlan.zhihu.com/p/470209366)
 
