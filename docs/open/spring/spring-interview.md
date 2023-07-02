@@ -1875,7 +1875,7 @@ Spring MVC提供了一种分离式的方法来开发Web应用。通过运用像D
 
 Spring和Spring MVC的问题在于需要配置大量参数。  SpringBoot通过一个自动配置和启动项来解决这个问题。
 
-## 3.4  SpringBoot的核心注解是什么？由那些注解组成？
+## 3.4  SpringBoot的核心注解？由那些注解组成？常用注解？
 启动类上@SpringBootApplication是 SpringBoot 的核心注解
 ```java
 @Target(ElementType.TYPE)
@@ -1897,7 +1897,18 @@ public @interface SpringBootApplication {
 - @**ComponentScan**：
   Spring组件扫描。
 
+![img](images/spring-annotations-2.png)
+
+导入：@Import、@ImportResource
+
+条件注解：@ConditionalOnBean、@ConditionalOnClass、@ConditionalOnProperty、@ConditionalOnMissingBean...
+
+@Lazy  @DependsOn
+
+@EnableXXX
+
 ## 3.5 什么是JavaConfig？
+
 Spring JavaConfig 是 Spring 社区的产品，它提供了配置 Spring IoC 容器的纯Java 方法。因此它有助于避免使用 XML 配置。使用 JavaConfig 的优点在于：
 - 面向对象的配置。
 由于配置被定义为 JavaConfig 中的类，因此用户可以充分利用 Java 中的面向对象功能。一个配置类可以继承另一个，重写它的@Bean 方法等。
@@ -1908,6 +1919,12 @@ JavaConfig 提供了一种类型安全的方法来配置 Spring容器。由于 J
 
 ## 3.6 SpringBoot自动配置原理是什么？
 https://zhuanlan.zhihu.com/p/359797989
+
+@Import + @Configuration + Spring SPI
+
+自动配置类由各个starter提供，使用@Configuration+@Bean定义配置类，放到META-INF/spring.factories文件中，使用SpringSPI机制扫描META-INF/spring.factories下的配置类，使用@Import导入自动配置类中bean。
+
+![img](images/spring-boot-autoconfigure-2.png)
 
 SpringBoot启动会加载大量的自动配置类，给容器中自动配置类添加组件的时候，会从properties类中获取某些属性。我们只需要在配置文件中指定这些属性的值即可；
 

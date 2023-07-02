@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lynjava.ddd.api.cluster.assembler.ClusterAssembler;
 import com.lynjava.ddd.api.cluster.dto.ClusterInputDto;
 import com.lynjava.ddd.api.cluster.dto.ClusterOutputDto;
+import com.lynjava.ddd.app.cluster.appservice.partial.ClusterPartialServiceContext;
 import com.lynjava.ddd.app.cluster.appservice.partial.IClusterPartialService;
 import com.lynjava.ddd.common.consts.RootConstants;
 import com.lynjava.ddd.common.context.DddRequestContext;
@@ -137,6 +138,9 @@ public class ClusterAppService {
         bean3.process(id, body);
 
         IClusterPartialService bean4 = partialServiceMap.get(type);
-        return bean4.process(id, body);
+        bean4.process(id, body);
+
+        IClusterPartialService bean5 = ClusterPartialServiceContext.getByType(type);
+        return bean5.process(id, body);
     }
 }

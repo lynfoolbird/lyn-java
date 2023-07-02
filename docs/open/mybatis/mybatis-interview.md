@@ -43,7 +43,7 @@ like模糊查询写法：CONCAT('%',#{question},'%') 使用CONCAT()函数
 注：这道题是京东⾯试官⾯试我时问的。
 答：除了常⻅的 select|insert|updae|delete 标签之外还有很多其他的标签， resultMap、 parameterMap 、 sql 、 include 、 selectKey ，加上动态 sql 的 9个标签， trim|where|set|foreach|if|choose|when|otherwise|bind 等，其中为 sql ⽚段标签，通过include 标签引⼊ sql ⽚段， selectKey 为不⽀持⾃增的主键⽣成策略标签。
 
-# 3 通常⼀个 xml 映射⽂件都会写⼀个 Dao 接⼝与之对应，这个 Dao 接⼝的⼯作原理是什么？ Dao 接⼝⾥的⽅法，参数不同时，⽅法能重载吗？
+# 3 Dao 接⼝的⼯作原理是什么？ Dao 接⼝⽅法能重载吗？
 注：这道题也是京东⾯试官⾯试我时问的。
 答： Dao 接⼝，就是⼈们常说的 Mapper 接⼝，接⼝的全限名，就是映射⽂件中的 namespace的值，接⼝的⽅法名，就是映射⽂件中 MappedStatement 的 id 值，接⼝⽅法内的参数，就是传递给 sql 的参数。 Mapper 接⼝是没有实现类的，当调⽤接⼝⽅法时，接⼝全限名+⽅法名拼接字符串作为 key 值，可唯⼀定位⼀个 MappedStatement ，
 
@@ -59,7 +59,86 @@ Dao 接⼝的⼯作原理是 JDK 动态代理， Mybatis 运⾏时会使⽤ JDK 
 - MapperFactoryBean，spring动态代理的方式将实现的mapper对象又进行了一层分装
 - 最终，当执行mapper时，将先去获取ThreadLocal中获取sqlSession，无则创建，然后调用sqlsession.Mapper的方式获得到最终的Mapper对象。
 
+MapperScannerConfigurer实现了BeanDefinitionRegistryPostProcessor接口，可以修改beandefinition，MapperScannerConfigurer的属性basePackage指定要扫描的mapper接口包路径，ClassPathMapperScanner继承ClassPathBeanDefinitionScanner类，可扫描指定包目录的class文件并注册beandefinitionregistry，然后后置处理修改beandefinition将benaclass设置为MapperFactoryBean。这样可以在repo中注入dao接口。MapperFactoryBean的getObject方法返回的是sqlSession的getMapper(interface)。
+
+![img](images/mybatis-mapper.png)
+
+```java
+public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+MapperProxyFactory<T> mapperProxyFactory =
+(MapperProxyFactory)this.knownMappers.get(type);
+if (mapperProxyFactory == null) {
+     throw new BindingException("Type " + type + " is not known to the
+     MapperRegistry.");
+} else {
+   try {
+      return mapperProxyFactory.newInstance(sqlSession);
+   } catch (Exception var5) {
+      throw new BindingException("Error getting mapper instance. Cause: " + var5,
+      var5);
+   }
+  }
+}
+```
+
+```java
+public class MapperProxyFactory<T> {
+private final Class<T> mapperInterface;
+……
+protected T newInstance(MapperProxy<T> mapperProxy) {
+return Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[]
+      {this.mapperInterface}, mapperProxy);
+}
+    
+public T newInstance(SqlSession sqlSession) {
+    MapperProxy<T> mapperProxy = new MapperProxy(sqlSession, this.mapperInterface,
+    this.methodCache);
+    return this.newInstance(mapperProxy);
+    }
+}
+```
+
+```java
+public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+try {
+    return Object.class.equals(method.getDeclaringClass()) ? method.invoke(this,
+args) : this.cachedInvoker(method).invoke(proxy, method, args, this.sqlSession);
+  } catch (Throwable var5) {
+    throw ExceptionUtil.unwrapThrowable(var5);
+  }
+}
+```
+
+```java
+public Object execute(SqlSession sqlSession, Object[] args) {
+Object result;
+Object param;
+……
+case SELECT:
+if (this.method.returnsVoid() && this.method.hasResultHandler()) {
+   this.executeWithResultHandler(sqlSession, args);
+   result = null;
+} else if (this.method.returnsMany()) {
+   result = this.executeForMany(sqlSession, args);
+} else if (this.method.returnsMap()) {
+   result = this.executeForMap(sqlSession, args);
+} else if (this.method.returnsCursor()) {
+   result = this.executeForCursor(sqlSession, args);
+} else {
+   param = this.method.convertArgsToSqlCommandParam(args);
+   result = sqlSession.selectOne(this.command.getName(), param);
+if (this.method.returnsOptional() && (result == null ||
+!this.method.getReturnType().equals(result.getClass()))) {
+    result = Optional.ofNullable(result);
+ }
+}
+break;
+……
+}
+```
+
 # 4 Mybatis 是如何进⾏分⻚的？分⻚插件的原理是什么？
+
 注：我出的。
 答： Mybatis 使⽤ RowBounds 对象进⾏分⻚，它是针对 ResultSet 结果集执⾏的内存分⻚，⽽⾮物理分⻚，可以在 sql 内直接书写带有物理分⻚的参数来完成物理分⻚功能，也可以使⽤分⻚插件来完成物理分⻚。分⻚插件的基本原理是使⽤ Mybatis 提供的插件接⼝，实现⾃定义插件，在插件的拦截⽅法内拦截待执⾏的 sql，然后重写 sql，根据 dialect ⽅⾔，添加对应的物理分⻚语句和物理分⻚参数。举例： select _ from student ，拦截 sql 后重写为： select t._ from select \* from student t limit 0 10
 
