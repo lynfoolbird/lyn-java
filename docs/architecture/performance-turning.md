@@ -88,7 +88,7 @@ https://mp.weixin.qq.com/s/KndeH1BbEH7OUpcjJ8oZUw
 
 11、代码层面（锁、事务控制、粒度上下文传递集合初始容量等，读多写少的场景用乐观锁 threadlocal、volatile+cas、distrpor；数据结构与算法（时间换空间，空间换时间等，贪心 分治 回溯 动态规划 查找排序 ）)，
 
-12、存储层面（分库分表分区、sql优化索引锁事务、数据冗余字段冗余，数据异构（选择合适的工具、关系型数据库，NoSQL、mongodb、es、mysql、hbase等)）
+12、存储层面（读写分离、分库分表分区、sql优化索引锁事务、数据冗余字段冗余，数据异构（选择合适的工具、关系型数据库，NoSQL、mongodb、es、mysql、hbase等)）
 
 13、中间件层（组件调优：tomcat jvm db cache mq solr Nginx）
 
