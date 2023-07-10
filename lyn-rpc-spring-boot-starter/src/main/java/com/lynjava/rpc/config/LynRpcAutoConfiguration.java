@@ -1,6 +1,7 @@
 package com.lynjava.rpc.config;
 
 import com.lynjava.rpc.client.LynRpcClientProcessor;
+import com.lynjava.rpc.client.LynRpcClientV2Processor;
 import com.lynjava.rpc.client.balancer.ILoadBalancer;
 import com.lynjava.rpc.client.balancer.LoadBalancerFactory;
 import com.lynjava.rpc.client.discovery.IServiceSubscribe;
@@ -69,10 +70,11 @@ public class LynRpcAutoConfiguration {
     @ConditionalOnMissingBean
     @Conditional(EnableRpcClientCondition.class)
 //    @ConditionalOnProperty(prefix = RpcConstants.CONFIG_PREFIX, name = "active", havingValue = "client", matchIfMissing = false)
-    public LynRpcClientProcessor lynRpcClientProcessor(@Autowired LynRpcProperties rpcProperties,
+    public LynRpcClientV2Processor lynRpcClientProcessor(@Autowired LynRpcProperties rpcProperties,
                                                        @Autowired IServiceSubscribe serviceSubscribe,
                                                        @Autowired ClientStubProxyFactory clientStubProxyFactory) {
-        return new LynRpcClientProcessor(rpcProperties, serviceSubscribe, clientStubProxyFactory);
+//        return new LynRpcClientProcessor(rpcProperties, serviceSubscribe, clientStubProxyFactory);
+        return new LynRpcClientV2Processor();
     }
 
     // =====================服务端配置 begin=========================

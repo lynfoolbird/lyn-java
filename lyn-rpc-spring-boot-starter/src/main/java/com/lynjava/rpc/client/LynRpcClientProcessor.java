@@ -13,6 +13,9 @@ import org.springframework.util.ReflectionUtils;
 
 import java.util.Objects;
 
+/**
+ * 不奏效，无法和其他bean同时注入，待研究
+ */
 @Slf4j
 public class LynRpcClientProcessor implements ApplicationListener<ContextRefreshedEvent> {
     private LynRpcProperties rpcProperties;
