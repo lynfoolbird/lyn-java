@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 
 @Slf4j
 public class ClientStubInvocationHandler implements InvocationHandler {
@@ -40,11 +41,19 @@ public class ClientStubInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String serviceKey = RpcUtils.serviceKey(rpcProperties.getAppName(), this.clazz.getName(), this.version, rpcProperties.getUsf());
-        // 1、获得服务信息
+        // 1、获得服务信息  --无法获取到注册信息 TODO
         ServiceInfo serviceInfo = serviceSubscribe.discovery(serviceKey);
         if (serviceInfo == null) {
             throw new RpcException("404");
         }
+//        ServiceInfo serviceInfo = ServiceInfo.builder()
+//                .appName("ddd_service")
+//                .address("192.168.3.5")
+//                .port(9999)
+//                .serviceName("com.lynjava.ddd.common.other.ILynRpcDemoService")
+//                .version("1.0")
+//                .usf("lyn-dev")
+//                .build();
         // 2、封装请求协议
         RpcRequest request = RpcRequest.builder()
                 .serviceKey(serviceKey)
