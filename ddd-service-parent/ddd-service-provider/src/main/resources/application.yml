@@ -25,7 +25,7 @@ cluster:
 lyn:
   rpc:
     # 总开关
-    enable: true
+    enable: false
     # server: 提供服务，client: 消费服务
     active:
        - client
