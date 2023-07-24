@@ -205,6 +205,7 @@ left join mln_live_classify t4 on t4.parent_classify_id=t3.classify_id
 + with as ：类似子查询，可当做临时表
 + wm_concat ：行转列，多行拼成一起
 + listagg：一对多 按分组拼接
++ regexp_substr
 ```sql
 select t.type_id typeId, sys_connect_by_path(t.type_name, '|') fullPath
   from lyn_type_info t
@@ -227,3 +228,119 @@ group by nation
 经验：
 - 思路一先用with as和sys_connect_by_path获得所有classifyId及其全路径临时表，然后将该临时表与主表关联查询；
 - 思路二查询主表利用子查询对每个classifyId查询其全路径；
+
+# 其他操作
+
+## sql两个条件或
+select 1 from dual where
+   exists(select 1 from mln_live_score s where s.title in...)
+or
+   exists(select 1 from mln_emp p where ...)
+
+## 批量插入 
+Insert into mln_live_gift_new(id,app_id,gift_name)select sys_guid(),'com.mlearning.sxt',g.gift_name from mln_live_gift_new g where g.app_id='com.mlearning.zhiniao'
+
+create table as select
+select * from mln_live_room_exam e
+left join(select * from mln_live_room_exam_redpacket er where er.room_id=#roomId#) rp on rp.exam_id=e.exam_id
+
+## 存在更新不存在插入
+merge into mln_live_rating_summary y
+using dual d
+on (y.room_id=#roomId#)
+when matched then
+ update set y.total_rating = y.total_rating+#rating#,
+             y.total_count = y.total_count+1
+when not matched then
+ insert (room_id,total_rating,total_count)values(#roomId#,0,0);
+commit;
+
+## 行列转换
+
+listagg wm_concat
+
+## 分组排序
+
+举例：一个考试每个用户考多次查询最高成绩对应的记录
+
+```sql
+select
+  id_mln_attempt "attemptId",
+  emp_name "empName",
+  decode(status,'Y','通过','未通过') "status",
+  score "score"
+from 
+ (
+   select 
+     t1.*,rownum rno
+   from
+     ( 
+       select * 
+       from (select a.id_mln_attempt,a.test_id,a.emp_name,a.status,a.score,a.enterprise_name,a.completedate,
+               row_number() over(partition by a.test_id,a.user_id,a.enterprise_id order by a.score desc) rn 
+       	  from 
+       	    mln_attempt a left join mln_enterprise e on a.enterprise_id=e.enterprise_id where a.test_id=#examId#) t0
+       where t0.rn<=1 order by t0.score desc,t0.completedate asc
+	  ) t1 where rownum<=#numPerPage# * #curPage# 
+  ) t2 where t2.rno>#numPerPage# * (#curPage# -1 )
+```
+
+## 使用序列作为主键
+<insert id="add" parameterClass="map">
+   <selectKey resultClass="java.lang.String" keyProperty="testId">
+       select trim(to_char(MLN_EXAM_S.Nextval,'999999999')) as ID from dual
+	</selectKey\>
+	insert into mln_exam(ID_MLN_TEST)values(#testId#)
+</insert>
+
+## 查询7天前置顶的直播间
+select * from mln_live_room r where r.is_del=0 and r.is_top>0
+and trunc(nvl(r.top_date,r.updated_date))<=trunc(sysdate)-7
+oracle sql按天周月季年统计数据
+
+## elasticJob分页分片查询 
+where r.is_del=0 and MOD(to_number(r.room_id),#shardTotal#)=#shardItem#
+MOD(ora_hash(r.room_id),#shardTotal#)=#shardItem#
+select t2.id
+from
+  (select t.*,rownum rn
+    from (select r.id_live_room as id
+	from mln_live_room r 
+	where r.is_del=0 and r.is_top>0
+	and MOD(to_number(r.room_id),#shardTotal#)=#shardItem#) t
+	where rownum<=#p.end#)t2
+	where t2.rn>=#p.start#
+
+## SQL去重
+除id字段外其他几个字段重复，保留一条，获取其他几条记录
+select * from mln_live_classify a where rowid != (select max(roomId) from mln_live_classify b where a.parent_classify_id
+=b.parent_classify_id and a.is_del=b.is_del and b.classify_id='123')
+去重复查询只取一条
+select * from mln_live_classify a where rowid = (select max(roomId) from mln_live_classify b where a.parent_classify_id
+=b.parent_classify_id and a.is_del=b.is_del )
+删除其他冗余记录
+row_number over partition实现方式
+
+## clob字段更新
+declare
+  clobValue mln_live_room.edited_playb_data%TYPE;
+begin
+  clobValue := '超长字符串';
+  update mln_live_room r set r.edited_playb_data = clobValue where r...;
+  commit;
+end;
+/
+
+update mln_live_room r set r.playb_data=replace(r.playb_data,'https:','http')
+
+## 递归查询
+
+start with connect by level
+
+## 执行计划
+
+explain
+
+查看执行计划的方法：select /*+ gather_plan_statistics*/ from xxxx
+select sql_id from v$sql t where t.sql_text like 'select /*+ gather_plan_statistics*/'||'%'
+select * from table(dbms_xplan.display_cursor(sql_id,0,'ALLSTATS LAST'));

@@ -12,6 +12,11 @@
 
 
 
+规则引擎 流程引擎 工作流
+
+八股文：楼仔 javaguide 3y  对线面试官  抖音程序员holis
+saltstack
+
 session、cookie、token、jwt、单点登录、用户管理（用户/角色/权限）、spring security、shiro、oauth2.0
 
 
@@ -25,6 +30,8 @@ https://github.com/xingshaocheng/architect-awesome   architect-awesome
 https://github.com/AobingJava     敖丙Java
 
 http://javainterview.gitee.io/luffy/   对线面试官
+
+https://github.com/ZhongFuCheng3y/athena  3y
 
 https://gitee.com/shishan100/Java-Interview-Advanced  石杉架构
 
@@ -40,7 +47,7 @@ https://blog.csdn.net/weixin_47066028/article/details/112887939?utm_medium=distr
 
 https://blog.csdn.net/java_fenxiang/article/details/86517010
 
-https://blog.csdn.net/weixin_34381687/article/details/88740638?utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.pc_relevant_baidujshouduan&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.pc_relevant_baidujshouduan
+https://segmentfault.com/a/1190000016172470
 
 # 1  Java基础
 
@@ -181,7 +188,7 @@ mycat、sharding-jdbc
 FastDFS
 
 ## 4.6 任务调度
-xxl-job、elasticJob、quartz、spring task
+xxl-job、elasticJob、quartz、spring task、powerjob
 
 ## 4.7 WEB服务
 tomcat
@@ -213,6 +220,18 @@ Nginx；Java dsmiley.httpproxy包
 限流：限流算法(固定窗口计数器、滑动窗口、令牌桶、漏桶算法)；接入层限流（nginx）、应用层限流（单机限流、分布式限流）；工具：guava ratelimit、hystrix、阿里sentinel 原理；自定义注解+AOP、自定义注解+拦截器+Redis+Lua；
 
 负载均衡：分流；软负载均衡（DNS、LVS四层、nginx七层）、硬负载均衡 （F5）；客户端、服务端负载均衡；算法：随机、轮询、加权轮询、IP哈希、url哈希、最少连接、一致性hash等；Ribbon、LoadBalancer、Feign；DNS负载均衡-> F5 -> nginx负载均衡
+
+远程调用：resttemplate、apache httpclient、okhttp、openfeign；rpc；
+
+注册中心:
+
+网关：
+
+配置中心：
+
+熔断器：
+
+链路追踪：
 
 高可用：HAProxy、keepalived
 

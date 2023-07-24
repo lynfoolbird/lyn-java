@@ -30,6 +30,9 @@ tasklist pid
 
 taskkill /F /pid 123456
 
+命令后台执行
+start /b nginx.exe -c ./conf/nginx.conf
+
 jinfo pid 查看进程运行时JVM参数
 
 ## linux
