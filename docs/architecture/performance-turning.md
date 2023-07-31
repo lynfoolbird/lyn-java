@@ -178,6 +178,8 @@ sign
 
 高性能、高可用、高扩展
 
+对主流程的影响（通过埋点或开关项切面等控制是否执行 降级）
+
 单元测试；
 
 https://blog.csdn.net/weixin_40483369/article/details/119828631

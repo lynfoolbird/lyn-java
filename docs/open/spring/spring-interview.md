@@ -610,6 +610,8 @@ Spring容器能够自动装配bean，通过检查BeanFactory内容让Spring自�
 ## 1.18 Spring Bean的加载过程？循环依赖怎么解决？
 https://www.zhihu.com/question/438247718/answer/1908173247
 
+https://mp.weixin.qq.com/s/dSRQBSG42MYNa992PvtnJA
+
 只有单例的 Bean 才存在循环依赖的情况， 原型情况下Spring 会直接抛异常。原因很简单， AB 循环依赖， A 实例化的时候发现依赖 B，创建 B 实例，创建 B 的时候发现需要 A，创建 A1 实例……无限套娃，直接把系统干垮。 
 
 Spring的bean加载顺序，默认情况下是按照文件完整路径递归查找，按照路径+文件名排序，排在前面的先加载。
