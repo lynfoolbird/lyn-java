@@ -15,7 +15,7 @@ public class DemoWebServiceClient {
         // 1、使用Endpoint发布webservice，放到启动类main方法即可
         Endpoint.publish("http://127.0.0.1:12345/weather",new WeatherDemoWebServiceImpl());
 
-        // 2、查看wsdl，浏览器访问http://127.0.0.1:12345/weather?wsdl
+        // 2、查看wsdl，浏览器访问 http://127.0.0.1:12345/weather?wsdl
 
         // 3、调用webservice服务，可使用restTemplate调用
         String url = "http://127.0.0.1:12345/weather";
