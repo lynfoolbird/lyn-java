@@ -335,7 +335,7 @@ public class FreeMarkerUtils {
      * @return
      */
     public String buildPackTemplate(String messageFormat, List<GwMessageAttrDTO> messageAttrs) {
-        if (Objects.equals(messageFormat, "applicaiton/json")) {
+        if (Objects.equals(messageFormat, "application/json")) {
             return buildPackTemplateJson(messageAttrs);
         } else if (Objects.equals(messageFormat, "application/xml")) {
             return buildPackTemplateXml(messageAttrs);
