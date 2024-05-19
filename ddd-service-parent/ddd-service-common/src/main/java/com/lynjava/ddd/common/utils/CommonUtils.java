@@ -2,11 +2,14 @@ package com.lynjava.ddd.common.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -58,5 +61,33 @@ public final class CommonUtils {
             params.put(name, request.getHeader(name));
         }
         return params;
+    }
+
+    /**
+     * x-www-form-urlencoded提交时
+     * 若是GET请求则将参数拼接到url中，
+     * POST请求时会放到body体中，以编码后字符串形式存在，下面方法可将其转换为Map形式
+     * 注意：应先使用&、=分割后再解码；若先解码再分割，则如果原字符串中存在&、=将导致解析错误
+     * @param urlParam
+     * @param charset
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static Map<String, String> transUrlParams2Map(String urlParam, String charset) throws UnsupportedEncodingException {
+        Map<String, String> resultMap = new HashMap<>();
+        if (StringUtils.isBlank(urlParam)) {
+            return resultMap;
+        }
+        String[] paramArr =  urlParam.split("&");
+        for (String param : paramArr) {
+            String[] keyValue = param.split("=");
+            if (keyValue.length < 2) {
+                continue;
+            }
+            String key = URLDecoder.decode(keyValue[0], charset);
+            String value = URLDecoder.decode(keyValue[1], charset);
+            resultMap.put(key, value);
+        }
+        return resultMap;
     }
 }

@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.algorithm;
+package com.lynjava.ddd.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
