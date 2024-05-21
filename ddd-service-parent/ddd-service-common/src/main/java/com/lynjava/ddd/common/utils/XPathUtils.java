@@ -116,8 +116,7 @@ public class XPathUtils {
         System.out.println("hehe");
     }
 
-    private static FieldConfig filterFieldConfig(String freemarkerKey, List<FieldConfig> fieldConfigList)
-    {
+    private static FieldConfig filterFieldConfig(String freemarkerKey, List<FieldConfig> fieldConfigList) {
         if (CollectionUtils.isEmpty(fieldConfigList)) {
             return null;
         }
@@ -126,7 +125,10 @@ public class XPathUtils {
                 return fieldConfig;
             }
             if (CollectionUtils.isNotEmpty(fieldConfig.getChildFields())) {
-                return filterFieldConfig(freemarkerKey, fieldConfig.getChildFields());
+                FieldConfig target = filterFieldConfig(freemarkerKey, fieldConfig.getChildFields());
+                if (Objects.nonNull(target)) {
+                    return target;
+                }
             }
         }
         return null;
