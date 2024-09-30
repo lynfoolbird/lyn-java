@@ -1,7 +1,8 @@
-package com.lynjava.limiter.config;
+package com.lynjava.distributedlock.config;
 
-import com.lynjava.limiter.manager.ILockService;
-import com.lynjava.limiter.manager.impl.DbLockServiceImpl;
+import com.lynjava.distributedlock.api.ILockService;
+import com.lynjava.distributedlock.service.DbLockServiceImpl;
+import com.lynjava.distributedlock.service.RedisLockServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,6 @@ public class LockConfiguration {
     @Bean
     @ConditionalOnProperty(name = "lock.type", havingValue = "redis")
     public ILockService redisLockService() {
-        return new DbLockServiceImpl();
+        return new RedisLockServiceImpl();
     }
 }

@@ -1,6 +1,6 @@
-package com.lynjava.limiter.annotation;
+package com.lynjava.distributedlock.annotation;
 
-import com.lynjava.limiter.config.LockConfiguration;
+import com.lynjava.distributedlock.config.LockConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Documented;

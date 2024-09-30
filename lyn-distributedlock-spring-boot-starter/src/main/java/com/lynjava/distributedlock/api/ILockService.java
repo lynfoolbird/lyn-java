@@ -1,4 +1,4 @@
-package com.lynjava.limiter.manager;
+package com.lynjava.distributedlock.api;
 
 public interface ILockService {
     void lock(String lockKey, String lockValue);

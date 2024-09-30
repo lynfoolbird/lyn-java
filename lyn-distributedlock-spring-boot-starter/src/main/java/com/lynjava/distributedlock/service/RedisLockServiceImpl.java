@@ -1,6 +1,6 @@
-package com.lynjava.limiter.manager.impl;
+package com.lynjava.distributedlock.service;
 
-import com.lynjava.limiter.manager.ILockService;
+import com.lynjava.distributedlock.api.ILockService;
 
 public class RedisLockServiceImpl implements ILockService {
     @Override
