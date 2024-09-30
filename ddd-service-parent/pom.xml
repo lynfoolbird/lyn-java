@@ -33,9 +33,10 @@
         <!-- 二方包版本 -->
         <lyn-limiter.version>1.0-SNAPSHOT</lyn-limiter.version>
         <lyn-rpc.version>1.0-SNAPSHOT</lyn-rpc.version>
+        <lyn-distributedlock.version>1.0-SNAPSHOT</lyn-distributedlock.version>
         <!-- 三方包版本 -->
         <spring.openfeign.version>3.1.3</spring.openfeign.version>
-        <hutool.version>5.7.13</hutool.version>
+        <hutool.version>5.7.14</hutool.version>
         <commons-collections.version>4.1</commons-collections.version>
         <commons-io.version>2.6</commons-io.version>
         <guava.version>30.1.1-jre</guava.version>
@@ -50,6 +51,7 @@
         <dbcp2.version>2.9.0</dbcp2.version>
         <httpclient5.version>5.2.1</httpclient5.version>
         <freemarker.version>2.3.28</freemarker.version>
+        <lombok.version>1.18.22</lombok.version>
     </properties>
 
     <!-- 1、在父项目中作依赖版本说明，不会引入具体jar包；
@@ -97,6 +99,11 @@
                 <groupId>com.lynjava</groupId>
                 <artifactId>lyn-rpc-spring-boot-starter</artifactId>
                 <version>${lyn-rpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lynjava</groupId>
+                <artifactId>lyn-distributedlock-spring-boot-starter</artifactId>
+                <version>${lyn-distributedlock.version}</version>
             </dependency>
             <!--二方包end-->
             <!--三方包begin-->
