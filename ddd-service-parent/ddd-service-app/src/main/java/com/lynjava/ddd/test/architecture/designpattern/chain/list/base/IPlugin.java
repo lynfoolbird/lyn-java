@@ -1,12 +1,12 @@
-package com.lynjava.ddd.test.architecture.designpattern.chain.list;
+package com.lynjava.ddd.test.architecture.designpattern.chain.list.base;
 
-import com.lynjava.ddd.test.architecture.designpattern.chain.ApplyContext;
+import com.lynjava.ddd.test.architecture.designpattern.chain.GatewayContext;
 import com.lynjava.ddd.test.architecture.designpattern.chain.InvokeResult;
 
 import java.util.List;
 
 public interface IPlugin {
-    InvokeResult invoke(ApplyContext context, Chain chain) throws Exception;
+    InvokeResult invoke(GatewayContext context, Chain chain) throws Exception;
 
     interface Chain {
 
@@ -17,11 +17,11 @@ public interface IPlugin {
 
         private final int index;
 
-        private final ApplyContext context;
+        private final GatewayContext context;
 
         private final List<IPlugin> plugins;
 
-        public PluginChain(int index, ApplyContext context, List<IPlugin> plugins) {
+        public PluginChain(int index, GatewayContext context, List<IPlugin> plugins) {
             this.index = index;
             this.context = context;
             this.plugins = plugins;

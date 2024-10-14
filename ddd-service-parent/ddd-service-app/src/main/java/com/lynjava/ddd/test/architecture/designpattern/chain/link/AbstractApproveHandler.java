@@ -1,6 +1,6 @@
 package com.lynjava.ddd.test.architecture.designpattern.chain.link;
 
-import com.lynjava.ddd.test.architecture.designpattern.chain.ApplyContext;
+import com.lynjava.ddd.test.architecture.designpattern.chain.GatewayContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +14,7 @@ public abstract class AbstractApproveHandler {
     @Setter
     private AbstractApproveHandler next;
 
-    public void handler(ApplyContext context) throws Exception {
+    public void handler(GatewayContext context) throws Exception {
         // 若上层节点未执行成功，直接返回
         Boolean prevResult = context.getSuccess();
         if (Objects.nonNull(prevResult) && !context.getSuccess()) {
@@ -28,7 +28,7 @@ public abstract class AbstractApproveHandler {
         }
     }
 
-    public abstract void process(ApplyContext context) throws Exception;
+    public abstract void process(GatewayContext context) throws Exception;
 
     public static class Builder {
         private AbstractApproveHandler head;

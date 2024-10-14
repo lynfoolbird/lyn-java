@@ -1,4 +1,4 @@
-package com.lynjava.ddd.test.architecture.designpattern.chain.list;
+package com.lynjava.ddd.test.architecture.designpattern.chain.list.base;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,10 @@ public class PluginRegistry {
        }
    }
 
+    /**
+     * 获取公共全局插件
+     * @return
+     */
     public static List<IPlugin> getCommonPlugins() {
         List<IPlugin> plugins = new ArrayList<>();
         plugins.add(getPlugin("com.lynjava.ddd.test.architecture.designpattern.chain.list.EndPointPlugin")); // 黑白名单
