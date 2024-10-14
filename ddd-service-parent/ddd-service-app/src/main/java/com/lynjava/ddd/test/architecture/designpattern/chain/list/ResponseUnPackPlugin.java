@@ -20,6 +20,7 @@ public class ResponseUnPackPlugin implements ConfigurablePlugin {
         InvokeResult result = chain.proceed();
         // 获取插件配置
         PackagePluginConfig config = this.getConfig(context);
+        System.out.println("execute ResponseUnPackPlugin...");
         return null;
     }
 }

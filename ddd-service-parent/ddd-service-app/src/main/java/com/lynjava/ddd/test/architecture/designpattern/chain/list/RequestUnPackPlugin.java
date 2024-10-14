@@ -19,6 +19,7 @@ public class RequestUnPackPlugin implements ConfigurablePlugin {
     public InvokeResult invoke(GatewayContext context, Chain chain) throws Exception {
         // 获取插件配置
         PackagePluginConfig config = this.getConfig(context);
+        System.out.println("execute RequestUnPackPlugin...");
         // 前置插件是先执行逻辑处理再调用chain.proceed()方法
         return chain.proceed();
     }
