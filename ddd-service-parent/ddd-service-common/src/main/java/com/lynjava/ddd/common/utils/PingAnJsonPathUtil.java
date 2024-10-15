@@ -15,9 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class JsonPathUtils {
 
-    private JsonPathUtils() {
+/**
+ * json报文转成Map，key为jsonpath路径，value为对应的值
+ * json树型结构转成扁平结构Map
+ */
+public class PingAnJsonPathUtil {
+
+    private PingAnJsonPathUtil() {
         throw new IllegalStateException("Utility class");
     }
 
