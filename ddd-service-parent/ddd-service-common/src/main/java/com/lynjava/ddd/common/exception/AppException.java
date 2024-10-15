@@ -9,6 +9,10 @@ public class AppException extends RuntimeException {
     public AppException() {
     }
 
+    public AppException(Throwable cause) {
+        super(cause);
+    }
+
     public AppException(String errCode, String message) {
         super(message);
         this.errCode = errCode;
@@ -16,5 +20,10 @@ public class AppException extends RuntimeException {
 
     public AppException(String message) {
         super(message);
+    }
+
+    public AppException(String errCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errCode = errCode;
     }
 }

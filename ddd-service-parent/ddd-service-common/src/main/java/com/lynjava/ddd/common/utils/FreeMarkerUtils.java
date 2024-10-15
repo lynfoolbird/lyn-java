@@ -3,6 +3,7 @@ package com.lynjava.ddd.common.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.IOUtils;
 import com.lynjava.ddd.common.model.GwMessageAttrDTO;
+import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -28,8 +29,26 @@ import java.util.function.BiFunction;
  **/
 public class FreeMarkerUtils {
 
-    private static final Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
+    private static final Configuration CONFIGURATION = new Configuration(Configuration.VERSION_2_3_28);
 
+    static {
+        StringTemplateLoader templateLoader = new StringTemplateLoader();
+        CONFIGURATION.setTemplateLoader(templateLoader);
+        CONFIGURATION.setNumberFormat("#");
+    }
+
+    /**
+     * 用于预加载模板
+     * @param name
+     * @param template
+     */
+    public static void loadTemplate(String name, String template) {
+        ((StringTemplateLoader)CONFIGURATION.getTemplateLoader()).putTemplate(name, template);
+    }
+
+    public static void removeTemplate(String name) {
+        ((StringTemplateLoader) CONFIGURATION.getTemplateLoader()).removeTemplate(name);
+    }
     /**
      * 获取模板渲染
      *
@@ -39,10 +58,10 @@ public class FreeMarkerUtils {
      */
     public static String getTemplate(String fileName, Map<String, Object> map) throws IOException {
         StringWriter out = new StringWriter();
-        configuration.setDefaultEncoding("UTF-8");
-        configuration.setClassForTemplateLoading(FreeMarkerUtils.class, "/ftl/");
+        CONFIGURATION.setDefaultEncoding("UTF-8");
+        CONFIGURATION.setClassForTemplateLoading(FreeMarkerUtils.class, "/ftl/");
         try {
-            Template temp = configuration.getTemplate(fileName);
+            Template temp = CONFIGURATION.getTemplate(fileName);
             temp.process(map, out);
             out.flush();
         } catch (IOException e) {
@@ -66,11 +85,23 @@ public class FreeMarkerUtils {
     public static String processFreemarker(String template, Map<String, Object> params)
             throws IOException, TemplateException {
         StringWriter result = new StringWriter();
-        Template tpl = new Template( "UTIL_TEMP",template, configuration);
+        Template tpl = new Template( "UTIL_TEMP",template, CONFIGURATION);
         tpl.process(params, result);
         return result.toString();
     }
 
+    public static String processFreemarker(String name, String template, Map<String, Object> params)
+            throws IOException, TemplateException {
+        Template tpl;
+        try {
+            tpl = CONFIGURATION.getTemplate(name);
+        } catch (IOException e) {
+            tpl = new Template( "UTIL_TEMP",template, CONFIGURATION);
+        }
+        StringWriter result = new StringWriter();
+        tpl.process(params, result);
+        return result.toString();
+    }
 
     public static void main(String[] args) throws Exception {
         String xmlData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -122,7 +153,7 @@ public class FreeMarkerUtils {
         String temp7 = "{\n" +
                 "\"data\":{<#if data ??><#if data.tid ??>\"tid\":\"${data.tid}\",</#if> \"provinceList\":[<#if data.provinceList ??><#list data.provinceList as item>{<#assign  realkeys = item?keys/> <#list  realkeys  as key><#if  key=='cityList'>\"cityList\":[<#if item[key] ??><#list item[key] as item>{<#if item.age ??>\"age\":${item.age}</#if> },</#list></#if>]</#if></#list>,<#if id ??>\"id\":\"${id}\"</#if> },</#list></#if>]</#if>}\n" +
                 "}";
-        Template tpl = new Template( "UTIL_TEMP",temp7, configuration);
+        Template tpl = new Template( "UTIL_TEMP",temp7, CONFIGURATION);
         Map<String, Object> oo = JSON.parseObject("{\n" +
                 "\t\"data\": {\n" +
                 "\t\t\"tage\": 789,\n" +

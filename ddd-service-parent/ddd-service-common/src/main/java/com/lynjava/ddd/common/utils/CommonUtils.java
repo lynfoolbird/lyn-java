@@ -10,6 +10,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -89,5 +90,30 @@ public final class CommonUtils {
             resultMap.put(key, value);
         }
         return resultMap;
+    }
+
+    /**
+     * 整数转字节数组
+     * @param value
+     * @return
+     */
+    public static byte[] int2bytes(int value) {
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        buffer.putInt(value);
+        return buffer.array();
+    }
+
+    /**
+     * 整数转字节数组
+     * @param value
+     * @return
+     */
+    public static byte[] int2bytes2(int value) {
+        byte[] bytes = new byte[4];
+        bytes[0] = (byte) (value >> 24);
+        bytes[1] = (byte) (value >> 16);
+        bytes[2] = (byte) (value >> 8);
+        bytes[3] = (byte) (value >> 0);
+        return bytes;
     }
 }
