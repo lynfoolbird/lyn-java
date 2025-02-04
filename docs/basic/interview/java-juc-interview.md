@@ -163,7 +163,7 @@ JAVA提供的锁是对象级的而不是线程级的，每个对象都有锁，�
 
 主要是因为Java API强制要求这样做，如果你不这么做，你的代码会抛出IllegalMonitorStateException异常。还有一个原因是为了避免wait和notify之间产生竞态条件。因为锁定的目标是对象而非线程，而线程并不知道其他等待该锁的线程。
 
-# 14 什么是线程死锁？如何检测死锁？如何避免死锁？手写一个死锁demo？
+# 14 什么是线程死锁？如何检测死锁？如何避免死锁？手写一个死锁demo？什么是活锁？
 多线程由于相互竞争资源而造成的一种僵局称为死锁。产⽣死锁必须具备以下四个条件：
 
 1. 互斥条件：该资源任意⼀个时刻只由⼀个线程占⽤。
@@ -245,6 +245,14 @@ new Thread(() -> {
 resource2 的监视器锁，可以获取到。然后线程 1 释放了对 resource1、 resource2 的监视器锁的
 占⽤，线程 2 获取到就可以执⾏了。这样就破坏了破坏循环等待条件，因此避免了死锁。
 
+活锁：任务或者执行者没有被阻塞，由于某些条件没有满足，导致一直重复尝试，失败，尝试，失败。
+活锁和死锁的区别在于，处于活锁的实体是在不断的改变状态，所谓的“活” ， 而处于死锁的实体表现为等待；活锁有可能自行解开，死锁则不能。饥饿：一个或者多个线程因为种种原因无法获得所需要的资源，导致一直无法执行的状态。
+Java 中导致饥饿的原因：
+高优先级线程吞噬所有的低优先级线程的 CPU 时间。
+线程被永久堵塞在一个等待进入同步块的状态，因为其他线程总是能在它之前持续地对该同步块进行访问。
+线程在等待一个本身也处于永久等待完成的对象(比如调用这个对象的 wait 方法)，因为其他线程总是被持续地获得唤醒。
+Java 中用到的线程调度算法是什么？采用时间片轮转的方式。可以设置线程的优先级，会映射到下层的系统上面的优先级上，如非特别需要，尽量不要用，防止线程饥饿。  
+
 # 15 JMM
 
 ## 15.1 说一下你对Java内存模型（JMM）的理解？
@@ -314,6 +322,8 @@ A和C之间存在数据依赖关系，同时B和C之间也存在数据依赖关�
 
 https://zhuanlan.zhihu.com/p/466843124
 
+[深入分析 volatile 关键字的用法和实现原理，硬核干货](https://mp.weixin.qq.com/s/7XOAjTHaH1T1Av-xQADf5g)
+
 ## 16.1 volatile关键字的作用？
 
 volatile关键字的作用主要有两个：
@@ -327,7 +337,7 @@ volatile 主要有两方面的作用:
 
 1.避免指令重排
 
-2.可见性保证.
+2.可见性保证
 
 例如，JVM 或者 JIT为了获得更好的性能会对语句重排序，但是 volatile 类型变量即使在没有同步块的情况下赋值也不会与其他语句重排序。
 
@@ -499,9 +509,14 @@ Atomic包里的类基本都是使用Unsafe实现的包装类。
 
 LongAddr
 
-https://mp.weixin.qq.com/s?__biz=MzU0OTk3ODQ3Ng==&mid=2247484070&idx=1&sn=c1d49bce3c9da7fcc7e057d858e21d69&chksm=fba6eaa5ccd163b3a935303f10a54a38f15f3c8364c7c1d489f0b1aa1b2ef293a35c565d2fda&mpshare=1&scene=1&srcid=0608QzOXG2l0z2QyfVaCKqRH%23rd
+[大白话聊聊Java并发面试问题之Java 8如何优化CAS性能？【石杉的架构笔记】](https://mp.weixin.qq.com/s?__biz=MzU0OTk3ODQ3Ng==&mid=2247484070&idx=1&sn=c1d49bce3c9da7fcc7e057d858e21d69&chksm=fba6eaa5ccd163b3a935303f10a54a38f15f3c8364c7c1d489f0b1aa1b2ef293a35c565d2fda&mpshare=1&scene=1&srcid=0608QzOXG2l0z2QyfVaCKqRH%23rd)
+
+[Java并发库（JUC）中LongAdder：高并发下基于分段锁和CAS的操作优化](https://mp.weixin.qq.com/s/dAdMjFOJDPE_LuS4bxMVfg)
 
 # 18 掌握ThreadLocal
+
+[最全ThreadLocal总结：InheritableThreadLocal、FastThreadLocal原理应用及高频面试题](https://mp.weixin.qq.com/s/fcSfSOvVlq9-4VWhT4LXKQ)
+
 ## 18.1 什么是线程局部变量ThreadLocal？内存泄漏问题？线程池中使用ThreadLocal需要注意什么？
 线程局部变量是局限于线程内部的变量，属于线程自身所有，不在多个线程间共享。Java提供ThreadLocal类来支持线程局部变量，是一种实现线程安全的方式。但是在管理环境下（如 web 服务器）使用线程局部变量的时候要特别小心，在这种情况下，工作线程的生命周期比任何应用变量的生命周期都要长。任何线程局部变量一旦在工作完成后没有释放，Java 应用就存在内存泄露的风险。
 

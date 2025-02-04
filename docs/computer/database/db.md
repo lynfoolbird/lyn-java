@@ -19,8 +19,9 @@ sql脚本
 
 企业多租(多db/schema/表字段区分)
 
-alb_properties_t 企业多租配置表设计
-id property  value group分组 type(平台、租户) enterprise_id description is_deleted created_by created_date last_updated_by last_updated_date
+alb_properties_t 企业多租配置表(字典表)设计
+id property  value group分组 type(平台、租户) tenant_id description is_deleted created_by created_date last_updated_by last_updated_date
+content 预留字段，json字符串
 
 order_no 排序号；top 置顶号（整数，每次置顶时值+1）；删除状态：若涉及业务唯一性索引，可以用整数，0表示有效，非零为删除，每次删除时值+1
 
