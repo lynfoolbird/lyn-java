@@ -374,11 +374,41 @@ GC回收之后，弱引用：java.lang.Object@7b23ec81
 有些文章认为是弱引用导致了内存泄漏，其实是不对的。假设把弱引用变成强引用，这样无用的对象key和value都不为null，反而不利于GC，只能通过remove()方法手动清理，或者等待线程结束生命周期。也就是说**ThreadLocalMap的生命周期由持有它的线程来决定，线程如果不进入terminated状态，ThreadLocalMap就不会被GC回收，这才是ThreadLocal内存泄露的原因。**
 
 ## 4.2 与线程池
-与线程池配合使用：由于线程复用，存在数据覆盖问题，使用前set初始化
+与线程池配合使用：问题一：由于线程复用导致数据污染覆盖问题，使用前set初始化，使用后remove掉；
+
+问题二：内存泄露，线程一直存在，key为弱引用被回收掉后value无法访问
+
+
 
 **ThreadLocal 内存溢出问题**
 
 通过上面的分析，我们知道expungeStaleEntry() 方法是帮助垃圾回收的，根据源码，我们可以发现 get 和set 方法都可能触发清理方法expungeStaleEntry()，所以正常情况下是不会有内存溢出的 但是如果我们没有调用get 和set 的时候就会可能面临着内存溢出，养成好习惯不再使用的时候调用remove(),加快垃圾回收，避免内存溢出。退一步说，就算我们没有调用get 和set 和remove 方法,线程结束的时候，也就没有强引用再指向ThreadLocal 中的ThreadLocalMap了，这样ThreadLocalMap 和里面的元素也会被回收掉，但是有一种危险是，如果线程是线程池的， 在线程执行完代码的时候并没有结束，只是归还给线程池，这个时候ThreadLocalMap 和里面的元素是不会回收掉的。
+
+```java
+    public static void main(String[] args) {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        for (int i = 0; i < 5; i++) {
+            int requestId = i;
+            executorService.submit(() -> {
+                if (REQUEST_ID.get() == null) {
+                    REQUEST_ID.set("Request-"+ requestId);
+                }
+                System.out.println(Thread.currentThread().getName() + ":" + REQUEST_ID.get());
+//               若不使用下面的语句清空，则会发生线程污染
+//                REQUEST_ID.remove();
+            });
+        }
+        executorService.shutdown();
+    }
+
+pool-1-thread-2:Request-1
+pool-1-thread-1:Request-0
+pool-1-thread-2:Request-1
+pool-1-thread-1:Request-0
+pool-1-thread-2:Request-1
+```
+
+
 
 ## 4.3 InheritableThreadLocal
 父线程能用ThreadLocal来给子线程传值吗？毫无疑问，不能。那该怎么办？`InheritableThreadLocal`。

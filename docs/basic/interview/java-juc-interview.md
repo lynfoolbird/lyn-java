@@ -367,13 +367,18 @@ volatile主要两个特性，可见性和有序性。
 - 可见性是使用lock前缀实现，lock前缀可实现嗅探机制，每个处理器都会有一个嗅探机制，去看自己的工作内存中的数值与主内存中那个的是否一致，不一致，会将自己的工作内存中的数值设置成无效，同时会从主内存中读取数值更新到自己的工作内存中。
 - 有序性是通过内存屏障，禁止指令重排，内存屏障还可以强制刷出各种CPU的缓存数据保证可见性
 
+**可见性底层实现**：
+
+- 通过 **CPU 缓存一致性协议**（如 MESI 协议）实现，确保多核 CPU 缓存中 `volatile` 变量的状态一致。
+- 在硬件层面，可能使用 **Lock 前缀指令**（如 x86 架构的 `lock add`）触发缓存行的锁定或总线嗅探（Snooping），保证写操作全局可见。
+
 关于原子性，对任意单个volatile变量的读写具有原子性，但volatile++复合操作是不具有原子性的。
 
 为了实现volatile的内存语义，编译器在生成字节码时，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序。
 
 1. 在每个volatile写操作的前面插入一个`StoreStore`屏障
 2. 在每个volatile写操作的后面插入一个`StoreLoad`屏障
-3. 在每个volatile读操作的后面插入一个`LoadLoad`屏障
+3. 在每个volatile读操作的前面插入一个`LoadLoad`屏障
 4. 在每个volatile读操作的后面插入一个`LoadStore`屏障
 
 
@@ -564,6 +569,16 @@ public class MyThreadLocal<T> {
 
 
 
+## 18.5 为什么ThreadLocal的key要用弱引用？
+
+`ThreadLocal`的key使用弱引用的主要目的是为了帮助避免内存泄漏。在Java中，弱引用（`WeakReference`）是一种引用类型，它不会阻止其引用的对象被垃圾收集器回收。当垃圾收集器运行时，如果发现一个对象仅被弱引用所引用，那么它就会回收该对象。
+
+在`ThreadLocalMap`中，key是`ThreadLocal`对象，value是与线程相关的值。如果`ThreadLocal`的key使用强引用，那么只要线程对象存在（比如线程池中的线程），即使`ThreadLocal`实例在其他地方已经没有被引用，它也不会被垃圾收集器回收，因为`ThreadLocalMap`中还持有对它的强引用。这种情况下，如果`ThreadLocal`对象持有了其他资源（如大对象、数据库连接等），那么这些资源也不会被回收，从而导致内存泄漏。
+
+通过使用弱引用作为`ThreadLocalMap`中的key，当`ThreadLocal`实例在其他地方不再被引用时，垃圾收集器可以回收它。这样，即使线程仍然存在，与之关联的`ThreadLocal`对象也可以被清理，从而释放了它所持有的资源。然而，需要注意的是，仅仅将key设置为弱引用并不足以完全避免内存泄漏。如果value本身持有了其他不应该被泄漏的资源，那么这些资源仍然可能被泄漏。因此，正确使用`ThreadLocal`（包括在不再需要时调用`remove()`方法）仍然是避免内存泄漏的关键。
+
+
+
 # 19 掌握synchronized
 
 ## 19.1 代码中如何使用synchronized关键字？synchronized关键字能修饰构造方法？
@@ -741,8 +756,7 @@ Java对象头里，有一块结构，叫`Mark Word`标记字段，这块结构�
 - **性能：** 在JDK1.6锁优化以前，synchronized的性能比ReenTrantLock差很多。但是JDK6开始，增加了适应性自旋、锁消除等，两者性能就差不多了。
 
 - **功能特点：** ReentrantLock 比 synchronized 增加了一些高级功能，如等待可中断、可实现公平锁、可实现选择性通知、尝试获取锁。 
-
-  - ReentrantLock提供了一种能够中断等待锁的线程的机制，通过lock.lockInterruptibly()来实现这个机制
+- ReentrantLock提供了一种能够中断等待锁的线程的机制，通过lock.lockInterruptibly()来实现这个机制
   - ReentrantLock可以指定是公平锁还是非公平锁。而synchronized只能是非公平锁。所谓的公平锁就是先等待的线程先获得锁。
   - synchronized与wait()和notify()/notifyAll()方法结合实现等待/通知机制，ReentrantLock类借助Condition接口与newCondition()方法实现。
   - ReentrantLock需要手工声明来加锁和释放锁，一般跟finally配合释放锁。synchronized不用手动释放。
@@ -840,7 +854,19 @@ CyclicBarrier (循环栅栏)： CyclicBarrier 和 CountDownLatch 类似，它也
 
 ## 20.3 ReentrantLock底层原理？公平锁和非公平锁？可重入锁？
 
+[如何轻松的通过ReentrantLock掌握AQS的核心原理](https://www.bilibili.com/video/BV1nHS1YFEUi/?spm_id_from=333.337.search-card.all.click&vd_source=fdd69d38732c35df38d4dd007da6e587)
+
+[对线面试官AQS与ReentrantLock](https://mp.weixin.qq.com/s/HoL-_U-JHw5x7OE0MuAkhw)
+
 ReentrantLock 是可重入的独占锁，只能有一个线程可以获取该锁，其它获取该锁的线程会被阻塞而被放入该锁的阻塞队列里面。
+
+![img](images/reentrantlock.png)
+
+在循环中对线程挂起和唤醒，唤醒后执行循环中逻辑，如果前驱节点是头节点则tryAcquire抢锁，抢锁成功则将节点设置为新的头结点，节点中thread设置为null，exclusiveOwnerThread更新为新线程，原头结点的next为null方便垃圾回收。
+
+![img](images/reentrantlock2.png)
+
+公平锁：多了判断，如果头结点存在后继节点并且后继节点中的线程不是当前的线程，则不能修改state变量进行抢锁只能封装成node节点放到队尾。
 
 **公平锁 FairSync**
 
@@ -931,7 +957,7 @@ public void execute(Runnable command) {
 - TIDYING：线程池自主整理状态，调用 terminated() 方法进行线程池整理。
 - TERMINATED：线程池终止状态。
 
-池中线程状态：运行、空闲
+池中线程状态：运行、阻塞（队列为空）、
 
 **线程池的管理过程**：首先创建线程池，然后根据任务的数量逐步将线程增大到corePoolSize数量，如果此时仍有任务增加，则放置到workQueue中，直到workQueue爆满为止，然后继续增加池中的线程数量，最终到达maximumPoolSize，那如果此时还有任务要增加进来，就需要拒绝策略handler来处理了，或者丢弃新任务或者挤占已有任务或者抛异常。当一个线程完成任务时，它会从队列中取下一个任务来执行。当一个线程无事可做，超过一定的时间（keepAliveTime）时，线程池会判断，如果当前运行的线程数大于 corePoolSize，那么这个线程就被停掉。所以线程池的所有任务完成后，它最终会收缩到 corePoolSize 的大小。
 
@@ -1007,7 +1033,7 @@ shutdownNow() 和 shutdown() 都是用来终止线程池的，它们的原理是
 ## 21.5 如果你提交任务时，线程池队列已满。会时发会生什么？
 这个问题问得很狡猾，许多程序员会认为该任务会阻塞直到线程池队列有空位。事实上如果一个任务不能被调度执行那么ThreadPoolExecutor’s submit()方法将会抛出一个RejectedExecutionException异常。
 
-## 21.6 线程池中核心线程数量大小怎么设置？
+## 21.6 线程池调优核心线程数队列大小怎么设置？
 **CPU密集型任务**：比如像加解密，压缩、计算等一系列需要大量耗费 CPU 资源的任务，大部分场景下都是纯 CPU 计算。尽量使用较小的线程池，一般为CPU核心数+1。因为CPU密集型任务使得CPU使用率很高，若开过多的线程数，会造成CPU过度切换。
 
 **IO密集型任务**：比如像 MySQL 数据库、文件的读写、网络通信等任务，这类任务不会特别消耗 CPU 资源，但是 IO 操作比较耗时，会占用比较多时间。可以使用稍大的线程池，一般为2*CPU核心数。IO密集型任务CPU使用率并不高，因此可以让CPU在等待IO的时候有其他线程去处理别的任务，充分利用CPU时间。
@@ -1023,6 +1049,14 @@ N和U都很容易获得和设置。WT和ST可以在运行项目后，在终端�
 
 另外：线程的平均工作时间所占比例越高，就需要越少的线程；线程的平均等待时间所占比例越高，就需要越多的线程；
 
+**面试官**：**如果任务是复合型的，既包含CPU密集型任务又包含IO计算，如何设置核心线程数呢？假设在一个请求中，计算操作需要5ms，DB操作需要100ms。对于一台有8核的机器，如果要求CPU利用率达到100%，应该如何设置线程数？**
+
+候选者：对于复合型任务，我们可以综合考虑CPU密集型和IO密集型的特点进行设置。在这种情况下，如果计算操作需要5ms（CPU操作5ms），而DB操作需要100ms，那么单核CPU的利用率就是5/(5+100)。为了达到理论上的100% CPU利用率，需要的线程数为1/(5/(5+100))，即21个线程。然而，现在我们只有8个核可用，所以根据这个理论，需要的线程数是168个（8核 * 21线程）。不过，这是一个理论值，实际情况可能受其他因素的限制。
+
+**面试官**：**如果DB操作的最大QPS是1000，应该设置多少核心线程数呢？**
+
+候选者：为了保持相对比例，可以根据比例减少线程数。如果有168个线程，那么DB的访问QPS将达到1600（168 * (1000/(5+100))）。然而，由于DB的最大QPS只能是1000，我们需要按比例减少线程数。因此，核心线程数的大小应该是105个线程（168 * 1000/1600 = 105）。
+
 **BlockingQueue调优**
 
 　　估计单个任务占用内存 以及 确定线程池计划占用内存后即可计算设置BlockingQueue大小。
@@ -1031,21 +1065,173 @@ QueueSize = 期望占用的总内存/单个任务需要占用的内存
 
 以上只是理论值，实际项目中建议在本地或者测试环境进行多次调优，找到相对理想的值大小。
 
+#### **(1) 基于系统资源限制**
+
+- 内存限制：队列容量需确保不会因任务堆积导致内存溢出（OOM）。例如：
+  - 单个任务占用内存约 `1KB`，堆内存为 `4GB`，则理论最大队列容量约为 `4GB / 1KB ≈ 4,000,000`（需预留安全余量）。
+  - 建议：不超过内存可用量的 `50%~70%`。
+
+#### **(2) 基于任务处理速率**
+
+- 公式参考：
+
+  ```markdown
+  队列容量 ≈ 最大预期突发任务量 - 最大线程数 × 任务处理速度
+  ```
+
+  - 例如：系统需承受 `1000` 个突发任务，最大线程数 `50`，每个线程每秒处理 `10` 个任务，则队列容量至少为 `1000 - 50×10 = 500`。
+
+#### **(3) 基于响应时间要求**
+
+- **低延迟场景**：队列容量应较小（如 `0~100`），避免任务排队导致延迟。
+- **允许延迟场景**：可适当增大队列容量（如 `1000~10,000`）。
+
+#### **(4) 通用经验值**
+
+- 默认建议：
+  - 对于 CPU 密集型任务：队列容量设置为 `核心线程数 × 2`。
+  - 对于 I/O 密集型任务：队列容量可稍大（如 `核心线程数 × 3~5`）。
+- **Java 默认行为**：
+   `ThreadPoolExecutor` 默认使用无界队列（`LinkedBlockingQueue`），需手动改为有界队列避免 OOM。
+
 **工具**
 
 在实际调优过程中，也可通过下面链接中提供的工具对任务运行进行监测，工具会自动计算出适合的线程数和BlockingQueue的大小。
 
 https://www.javacodegeeks.com/2012/03/threading-stories-about-robust-thread.html
 
+[线程池参数设置](https://www.toutiao.com/video/7488502251770741267/?log_from=5249cfe8d30dd_1744638473987)
+
+CPU密集型、IO密集型、混合型
+
+核心线程数：建议根据流量中位数设置，比如订单系统每秒处理50个请求，可设置核心线程数为CPU核数乘以2，
+
+例如八核CPU设置为16
+
+最大线程数：IO密集型任务，CPU核数/（1-阻塞系数），例如8核CPU，阻塞系数0.9，可设置为80
+
+队列容量设置：最大响应时间-任务平均处理时间*预估QPS，例如要求500ms响应，任务处理耗时50ms，预估QPS为1000，则队列容量为500-50x1000/1000=450
+
+keepAliveTime：根据业务周期调整，如秒杀系统可设为5到10秒，24小时平稳运行的分析系统可设为30分钟，核心线程默认不会超时回收
+
+拒绝策略：核心业务建议使用CallerRunsPolicy；日志处理等非关键业务使用DiscardOldPolicy；必须记录的业务使用自定义策略，将任务存入数据库或消息队列中；
+
+当遇到线程池与数据库连接池死亡缠绕时建议每两个业务线程配一个数据库连接。
+
+建议线上使用动态线程池。
+
 ## 21.7 线程池为什么要使用阻塞队列而不使用非阻塞队列？
 阻塞队列可以保证任务队列中没有任务时阻塞获取任务的线程，使得线程进入wait状态，释放cpu资源。当队列中有任务时才唤醒对应线程从队列中取出消息进行执行。使得在线程不至于一直占用cpu资源。（线程执行完任务后通过循环再次从任务队列中取出任务进行执行，代码片段如下
  while (task != null || (task = getTask()) != null) {}）。
 不用阻塞队列也是可以的，不过实现起来比较麻烦而已，有好用的为啥不用呢？
 
-## 21.8 知道线程池中线程复用原理吗？
+## 21.8 知道线程池中线程复用原理吗？池中线程如何回收？
 线程池将线程和任务进行解耦，线程是线程，任务是任务，摆脱了之前通过 Thread 创建线程时的一个线程必须对应一个任务的限制。
 
 在线程池中，同一个线程可以从阻塞队列中不断获取新任务来执行，其核心原理在于线程池对 Thread 进行了封装，并不是每次执行任务都会调用 Thread.start() 来创建新线程，而是让每个线程去执行一个“循环任务”，在这个“循环任务”中不停的检查是否有任务需要被执行，如果有则直接执行，也就是调用任务中的 run 方法，将 run 方法当成一个普通的方法执行，通过这种方式将只使用固定的线程就将所有任务的 run 方法串联起来。
+
+###  **线程复用机制**
+
+#### **(1) 工作线程的循环执行**
+
+- 每个工作线程启动后进入**循环**，不断从任务队列中获取任务。
+
+  执行流程：
+
+  1. **获取任务**：通过阻塞队列（如 `BlockingQueue`）的 `take()` 或 `poll()` 方法等待任务。
+  2. **执行任务**：调用任务的 `run()` 方法。
+  3. **循环等待**：任务执行完成后，继续从队列中获取下一个任务。
+
+#### **(2) 阻塞与唤醒机制**
+
+- **队列为空时**：线程通过 `take()` 阻塞，等待新任务加入队列后被唤醒。
+- **队列非空时**：线程被唤醒并取出任务执行。
+
+#### **(3) 核心线程保活**
+
+- **核心线程（Core Threads）**：即使空闲也不会被销毁，除非设置 `allowCoreThreadTimeOut`。
+
+- **非核心线程**：空闲超时后（由 `keepAliveTime` 控制）会被终止，避免资源浪费。
+
+  ```
+  public void execute(Runnable task) {
+      if (workerCount < corePoolSize) {
+          // 创建核心线程
+          addWorker(task, true);
+      } else if (workQueue.offer(task)) {
+          // 任务入队
+          if (workerCount == 0) {
+              addWorker(null, false); // 确保至少一个线程处理队列
+          }
+      } else if (!addWorker(task, false)) {
+          // 创建非核心线程失败，触发拒绝策略
+          reject(task);
+      }
+  }
+  
+  // Worker线程的run方法
+  final void runWorker(Worker w) {
+      while (task != null || (task = getTask()) != null) {
+          try {
+              task.run(); // 执行任务
+          } finally {
+              task = null;
+          }
+      }
+      // 无任务时，线程终止或进入空闲等待
+  }
+  ```
+  
+
+线程回收的核心逻辑
+1. 非核心线程的回收
+    ​触发条件
+    当线程池中总线程数超过corePoolSize时，非核心线程在空闲时间超过keepAliveTime后会被回收。
+    ​实现原理
+    线程从任务队列中获取任务时，调用workQueue.poll(keepAliveTime, TimeUnit)。
+    如果在keepAliveTime时间内未获取到新任务，返回null，线程退出循环并终止。
+
+2. 核心线程的回收
+    ​默认行为
+    核心线程即使空闲也不会被回收（allowCoreThreadTimeOut=false）。
+    ​配置回收
+    若设置allowCoreThreadTimeOut=true，核心线程在空闲超时后也会被回收。
+
+```
+// ThreadPoolExecutor.getTask()
+private Runnable getTask() {
+    boolean timedOut = false;
+    for (;;) {
+        int c = ctl.get();
+        // 检查线程池状态和线程数是否超限
+        if (runStateAtLeast(c, SHUTDOWN) || ...)
+            return null;
+
+        // 是否允许超时回收？
+        boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+        if ((wc > maximumPoolSize || (timed && timedOut))
+            && (wc > 1 || workQueue.isEmpty())) {
+            return null;
+        }
+
+        try {
+            // 核心逻辑：非核心线程用 poll(非阻塞，队列为空返回null)，核心线程用 take（队列为空时阻塞线程直到有元素可用或者线程被中断）
+            Runnable r = timed ?
+                workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                workQueue.take();
+            if (r != null)
+                return r;
+            timedOut = true;
+        } catch (InterruptedException retry) {
+            timedOut = false;
+        }
+    }
+}
+```
+
+阻塞式队列方法：
+
+![img](images\blockingqueue-methods.png)
 
 ## 21.9 线程池异常怎么处理知道吗？
 
@@ -1060,8 +1246,8 @@ https://www.javacodegeeks.com/2012/03/threading-stories-about-robust-thread.html
 ![img](images/threadpool-dynamic-modify.jpg)
 
 - 微服务架构下，可以利用配置中心如Nacos、Apollo等等，也可以自己开发配置中心。业务服务读取线程池配置，获取相应的线程池实例来修改线程池的参数。 
-
 - 如果限制了配置中心的使用，也可以自己去扩展**ThreadPoolExecutor**，重写方法，监听线程池参数变化，来动态修改线程池参数。
+- 使用开源动态线程池，如美团的DynamicPool等。
 
 ## 21.11 单机线程池执行断电了应该怎么处理？
 
@@ -1100,10 +1286,6 @@ setRejectedExecutionHandler()方法，将任务添加到其他队列进行后续
 7、监控和预警： 监控队列长度、线程池状态和任务堆积情况，及时发现队列溢出的问题。可以设置预警机制，当队列长度超过一定阈值时，发送警报或采取相应的处理措施。
 
 8、使用并发框架： 可以考虑使用更高级的并发框架，如Disruptor或Akka，它们具有更高的吞吐量和更低的延迟，可以更好地处理高并发场景下的任务堆积问题。
-
-## 21.14 线程池调优
-
-
 
 
 

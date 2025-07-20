@@ -413,6 +413,8 @@ JVM 中内置了三个重要的 ClassLoader，启动类加载器（Bootstrap Cla
 
 [demo自定义String类](https://blog.csdn.net/bingxuesiyang/article/details/90053387)
 
+用户自定义的加载器会将加载请求向上委派给父类加载器，如果父类加载器还有自己的父加载器，就继续向上委派。最终会由最顶层的加载器执行本次请求。顶层的加载器就是启动类加载器（Bootstrap ClassLoader），启动类加载器会在自己的加载范围内（比如rt.jar包）下查找java.lang.String（原本的String就是在rt.jar包下）。此时在rt.jar包下找到了java.lang.String进行加载，所以自己写的String虽然也在自定的包java.lang下也没用呀。除非父类加载器在自己的加载范围内找不到要加载的类，才会反过来向下让子类加载器加载。
+
 ### 5.2.3 破坏双亲委派模型
 双亲委派模型并不是一个具有强制性约束的模型，而是Java设计者推荐给开发者们的类加载器实现方式。在Java的世界中大部分的类加载器都遵循这个模型，但也有例外的情况，直到Java模块化出现为止，双亲委派模型主要出现过3次较大规模“被破坏”的情况。
 

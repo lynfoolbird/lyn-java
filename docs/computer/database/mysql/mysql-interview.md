@@ -50,7 +50,7 @@ https://www.toutiao.com/article/7219126151191560756/?log_from=dc5ebb1000d5_16810
 
 6、硬件优化
 
-CPU、内存、硬盘、网络
+CPU、内存、硬盘、网络、防火墙
 
 ![img](images/mysql-youhua-1.png)
 

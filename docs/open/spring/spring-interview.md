@@ -1959,7 +1959,7 @@ SpringBoot 开启自动配置的注解是 @EnableAutoConfiguration ，启动类�
 
 ```java
 @AutoConfigurationPackage //将main同级的包下的所有组件注册到容器器中
-@Import({AutoConfigurationImportSelector.class}) //加载⾃自动装配类
+@Import({AutoConfigurationImportSelector.class}) //加载自动装配类
 xxxAutoconfiguration
 public @interface EnableAutoConfiguration {
     String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
@@ -2491,3 +2491,32 @@ MDC
 ELK 日志切面 
 
 https://zhuanlan.zhihu.com/p/446975740
+
+## 3.32 约定优于配置的理解
+
+我从 4 个方面来回答。
+1. 首先， 约定优于配置是一种软件设计的范式，它的核心思想是减少软件开发人员对于配置项的维
+护，从而让开发人员更加聚焦在业务逻辑上。
+2. Spring Boot 就是约定优于配置这一理念下的产物，它类似于 Spring 框架下的一个脚手架，通过
+Spring Boot，我们可以快速开发基于 Spring 生态下的应用程序。
+
+3. 基于传统的Spring框架开发web应用，我们需要做很多和业务开发无关并且只需要做一次的配置，
+   比如
+   a. 管理 jar 包依赖
+   b. web.xml 维护
+   c. Dispatch-Servlet.xml 配置项维护
+   d. 应用部署到 Web 容器
+   e. 第三方组件集成到 Spring IOC 容器中的配置项维护
+   而在 Spring Boot 中，我们不需要再去做这些繁琐的配置，Spring Boot 已经自动帮我们完成了，这
+   就是约定于配置思想的体现。
+4. Spring Boot 约定优于配置的体现有很多，比如
+      a. Spring Boot Starter 启动依赖，它能帮我们管理所有 jar 包版本
+      b. 如果当前应用依赖了 spring mvc 相关的 jar，那么 Spring Boot 会自动内置 Tomcat 容器来
+      运行 web 应用，我们不需要再去单独做应用部署。
+      c. Spring Boot 的自动装配机制的实现中，通过扫描约定路径下的 spring.factories 文件来识别
+      配置类，实现 Bean 的自动装配。
+      d. 默认加载的配置文件 application.properties 等等。
+      总的来说，约定优于配置是一个比较常见的软件设计思想，它的核心本质都是为了更高效以及更便捷地
+      实现软件系统的开发和维护。
+      以上就是我对这个问题的理解  
+
